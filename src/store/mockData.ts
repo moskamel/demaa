@@ -110,6 +110,77 @@ export const COUPONS: Coupon[] = [
   { code: 'SUMMER20', discount: 20, type: 'percent', uses: 50, maxUses: 50, active: false },
 ]
 
+// ── Mock Connectors ──────────────────────────────────────────────────────────
+
+export type ConnectorType = 'aramex' | 'smsa' | 'jt' | 'tabby' | 'tamara' | 'whatsapp' | 'meta_ads' | 'snapchat' | 'qoyod'
+export type ConnectorStatus = 'connected' | 'expired' | 'error' | 'disconnected'
+
+export interface Connector {
+  type: ConnectorType
+  name: string
+  nameAr: string
+  status: ConnectorStatus
+  category: 'shipping' | 'payment' | 'messaging' | 'ads' | 'accounting'
+  lastUsed?: string
+  logo: string
+}
+
+export const CONNECTORS: Connector[] = [
+  { type: 'aramex', name: 'Aramex', nameAr: 'أرامكس', status: 'connected', category: 'shipping', lastUsed: 'اليوم', logo: 'أ' },
+  { type: 'smsa', name: 'SMSA', nameAr: 'SMSA', status: 'connected', category: 'shipping', lastUsed: 'أمس', logo: 'S' },
+  { type: 'jt', name: 'J&T Express', nameAr: 'J&T', status: 'disconnected', category: 'shipping', logo: 'J' },
+  { type: 'tabby', name: 'Tabby', nameAr: 'تابby', status: 'connected', category: 'payment', lastUsed: 'اليوم', logo: 'T' },
+  { type: 'tamara', name: 'Tamara', nameAr: 'تمارا', status: 'expired', category: 'payment', logo: 'تم' },
+  { type: 'whatsapp', name: 'WhatsApp Business', nameAr: 'واتساب', status: 'connected', category: 'messaging', lastUsed: 'منذ ساعة', logo: 'W' },
+  { type: 'meta_ads', name: 'Meta Ads', nameAr: 'ميتا إعلانات', status: 'disconnected', category: 'ads', logo: 'M' },
+  { type: 'snapchat', name: 'Snapchat Ads', nameAr: 'سناب إعلانات', status: 'disconnected', category: 'ads', logo: 'Sc' },
+  { type: 'qoyod', name: 'Qoyod', nameAr: 'قيود', status: 'disconnected', category: 'accounting', logo: 'ق' },
+]
+
+// ── Mock Notifications ───────────────────────────────────────────────────────
+
+export type NotifType = 'low_stock' | 'suspicious_order' | 'payment_failed' | 'pending_too_long' | 'weekly_report' | 'connector_expired' | 'orders_accepted' | 'shipment_created'
+export type NotifPriority = 'urgent' | 'important' | 'info'
+
+export interface Notification {
+  id: string
+  type: NotifType
+  priority: NotifPriority
+  title: string
+  body: string
+  readAt?: string
+  createdAt: string
+}
+
+export const NOTIFICATIONS: Notification[] = [
+  { id: 'N1', type: 'low_stock', priority: 'urgent', title: 'مخزون ينفد!', body: 'كريم الوجه — باقي 8 قطع فقط', createdAt: 'منذ 10 دقائق' },
+  { id: 'N2', type: 'suspicious_order', priority: 'urgent', title: 'طلب يحتاج مراجعة', body: 'طلب #10234 من فاطمة — كاش 750 ر.س · عميلة جديدة', createdAt: 'منذ 18 دقيقة' },
+  { id: 'N3', type: 'pending_too_long', priority: 'important', title: 'طلبات معلقة أكثر من ساعتين', body: '12 طلب في الانتظار منذ الصباح', createdAt: 'منذ 30 دقيقة' },
+  { id: 'N4', type: 'connector_expired', priority: 'important', title: 'انتهت صلاحية تمارا', body: 'يحتاج تجديد الربط لاستمرار الدفع بالتقسيط', createdAt: 'منذ ساعتين' },
+  { id: 'N5', type: 'weekly_report', priority: 'info', title: 'تقرير الأسبوع جاهز', body: '312 طلب · 124,680 ر.س · نمو 18%', createdAt: 'أمس', readAt: 'أمس' },
+  { id: 'N6', type: 'shipment_created', priority: 'info', title: 'تم إنشاء 3 بوالص شحن', body: 'أرامكس · الطلبات 10210، 10211، 10212', createdAt: 'أمس', readAt: 'أمس' },
+]
+
+// ── Mock Team Members ─────────────────────────────────────────────────────────
+
+export type TeamRole = 'admin' | 'order_manager' | 'customer_service'
+
+export interface TeamMember {
+  id: string
+  name: string
+  email: string
+  role: TeamRole
+  avatar: string
+  joinedAt: string
+  lastActive: string
+}
+
+export const TEAM_MEMBERS: TeamMember[] = [
+  { id: 'T1', name: 'محمد العتيبي', email: 'm.otaibi@noor.sa', role: 'admin', avatar: 'م', joinedAt: '2024-10-01', lastActive: 'الآن' },
+  { id: 'T2', name: 'سارة الغامدي', email: 's.ghamdi@noor.sa', role: 'order_manager', avatar: 'س', joinedAt: '2024-11-15', lastActive: 'منذ ساعة' },
+  { id: 'T3', name: 'نواف الشمري', email: 'n.shamri@noor.sa', role: 'customer_service', avatar: 'ن', joinedAt: '2025-01-01', lastActive: 'أمس' },
+]
+
 // ── Store state (mutable in-memory) ─────────────────────────────────────────
 
 export const store = {

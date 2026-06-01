@@ -1,0 +1,187 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ChevronLeft, Plus, Trash2, Shield, ClipboardList, Headphones } from 'lucide-react'
+import { TEAM_MEMBERS, type TeamMember, type TeamRole } from '../store/mockData'
+
+const roleConfig: Record<TeamRole, { label: string; desc: string; icon: typeof Shield; color: string }> = {
+  admin: { label: 'مدير', desc: 'صلاحيات كاملة', icon: Shield, color: '#6a4cf5' },
+  order_manager: { label: 'مدير طلبات', desc: 'إدارة الطلبات والشحن', icon: ClipboardList, color: '#0099ff' },
+  customer_service: { label: 'خدمة عملاء', desc: 'المراسلة والكوبونات', icon: Headphones, color: '#22c55e' },
+}
+
+const PERMISSIONS: Record<TeamRole, string[]> = {
+  admin: ['قبول / رفض الطلبات', 'إنشاء بوالص الشحن', 'إدارة المنتجات', 'التقارير الكاملة', 'إدارة الفريق', 'إعدادات المتجر'],
+  order_manager: ['قبول / رفض الطلبات', 'إنشاء بوالص الشحن', 'تقارير الطلبات'],
+  customer_service: ['مراسلة العملاء', 'إنشاء كوبونات', 'عرض الطلبات فقط'],
+}
+
+export default function Team() {
+  const [members, setMembers] = useState<TeamMember[]>([...TEAM_MEMBERS])
+  const [showInvite, setShowInvite] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState<TeamRole>('order_manager')
+  const [inviting, setInviting] = useState(false)
+
+  const handleInvite = () => {
+    if (!inviteEmail.trim()) return
+    setInviting(true)
+    setTimeout(() => {
+      const newMember: TeamMember = {
+        id: `T${members.length + 1}`,
+        name: inviteEmail.split('@')[0],
+        email: inviteEmail,
+        role: inviteRole,
+        avatar: inviteEmail[0].toUpperCase(),
+        joinedAt: new Date().toISOString().split('T')[0],
+        lastActive: 'لم يسجل دخول بعد',
+      }
+      setMembers(prev => [...prev, newMember])
+      setInviteEmail('')
+      setShowInvite(false)
+      setInviting(false)
+    }, 1200)
+  }
+
+  const handleRemove = (id: string) => {
+    setMembers(prev => prev.filter(m => m.id !== id))
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
+      {/* top bar */}
+      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
+          <ChevronLeft size={14} /> الرئيسية
+        </Link>
+        <span style={{ color: 'var(--hairline)' }}>/</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الفريق</span>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => setShowInvite(true)} className="btn-primary" style={{ fontSize: 13, padding: '8px 16px' }}>
+          <Plus size={13} /> دعوة عضو
+        </button>
+      </div>
+
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px' }}>
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>الفريق والصلاحيات</h1>
+          <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{members.length} أعضاء في الفريق</p>
+        </div>
+
+        {/* roles reference */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 28 }}>
+          {(Object.entries(roleConfig) as [TeamRole, typeof roleConfig[TeamRole]][]).map(([role, cfg]) => {
+            const Icon = cfg.icon
+            return (
+              <div key={role} style={{ background: 'var(--surface-1)', borderRadius: 12, padding: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <Icon size={13} color={cfg.color} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
+                </div>
+                {PERMISSIONS[role].map(p => (
+                  <div key={p} style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 3, display: 'flex', gap: 5 }}>
+                    <span style={{ color: cfg.color }}>✓</span> {p}
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* members */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {members.map(m => {
+            const cfg = roleConfig[m.role]
+            const Icon = cfg.icon
+            return (
+              <div key={m.id} style={{ background: 'var(--surface-1)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)' }}>
+                {/* avatar */}
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: cfg.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: cfg.color }}>{m.avatar}</span>
+                </div>
+
+                {/* info */}
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{m.name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: cfg.color + '18', borderRadius: 4, padding: '2px 7px' }}>
+                      <Icon size={10} color={cfg.color} />
+                      <span style={{ fontSize: 11, color: cfg.color }}>{cfg.label}</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', direction: 'ltr', textAlign: 'right' }}>{m.email}</div>
+                  <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>آخر نشاط: {m.lastActive}</div>
+                </div>
+
+                {/* role selector */}
+                <select
+                  value={m.role}
+                  onChange={e => setMembers(prev => prev.map(x => x.id === m.id ? { ...x, role: e.target.value as TeamRole } : x))}
+                  style={{ background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer' }}
+                >
+                  <option value="admin">مدير</option>
+                  <option value="order_manager">مدير طلبات</option>
+                  <option value="customer_service">خدمة عملاء</option>
+                </select>
+
+                {m.role !== 'admin' && (
+                  <button onClick={() => handleRemove(m.id)} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,85,119,0.08)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                    <Trash2 size={13} color="var(--gradient-coral)" />
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* invite modal */}
+        {showInvite && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
+            onClick={e => e.target === e.currentTarget && setShowInvite(false)}
+          >
+            <div style={{ background: 'var(--surface-1)', borderRadius: 20, padding: '28px', width: 380, border: '1px solid var(--hairline)' }}>
+              <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)', marginBottom: 20, letterSpacing: '-0.3px' }}>دعوة عضو جديد</h2>
+
+              <label style={{ display: 'block', marginBottom: 12 }}>
+                <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6 }}>البريد الإلكتروني</div>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={e => setInviteEmail(e.target.value)}
+                  placeholder="name@company.sa"
+                  style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, direction: 'ltr', fontFamily: 'inherit' }}
+                />
+              </label>
+
+              <label style={{ display: 'block', marginBottom: 20 }}>
+                <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6 }}>الصلاحية</div>
+                <select
+                  value={inviteRole}
+                  onChange={e => setInviteRole(e.target.value as TeamRole)}
+                  style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit' }}
+                >
+                  <option value="order_manager">مدير طلبات</option>
+                  <option value="customer_service">خدمة عملاء</option>
+                  <option value="admin">مدير (صلاحيات كاملة)</option>
+                </select>
+              </label>
+
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={handleInvite}
+                  disabled={!inviteEmail.trim() || inviting}
+                  className="btn-primary"
+                  style={{ flex: 1, justifyContent: 'center', borderRadius: 10, padding: '11px', opacity: inviting ? 0.7 : 1 }}
+                >
+                  {inviting ? 'جاري الإرسال...' : 'إرسال الدعوة'}
+                </button>
+                <button onClick={() => setShowInvite(false)} className="btn-secondary" style={{ flex: 1, justifyContent: 'center', borderRadius: 10, padding: '11px' }}>
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
