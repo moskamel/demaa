@@ -13,6 +13,8 @@ export interface OrderRow {
   status: string
   shipmentId?: string
   issue?: string
+  riskScore?: number
+  suspiciousReason?: string
 }
 
 export interface ProductRow {

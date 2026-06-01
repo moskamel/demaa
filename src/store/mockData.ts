@@ -16,6 +16,10 @@ export interface Order {
   address: string
   shipmentId?: string
   issue?: string
+  // v3.0: Risk Scoring
+  riskScore?: number           // 0–100
+  suspiciousReason?: string    // human-readable reason
+  isNewCustomer?: boolean
 }
 
 export interface Product {
@@ -24,6 +28,7 @@ export interface Product {
   sku: string
   price: number
   stock: number
+  lowStockThreshold?: number
   category: string
   active: boolean
 }
@@ -46,21 +51,108 @@ export interface Coupon {
   active: boolean
 }
 
+// ── v3.0: StoreInsights (AI Memory Layer) ───────────────────────────────────
+
+export interface StoreInsight {
+  key: string
+  value: string
+  confidence: number   // 0.0 → 1.0
+  label: string        // human-readable description
+  lastUpdated: string
+}
+
+export const STORE_INSIGHTS: StoreInsight[] = [
+  { key: 'preferred_carrier', value: 'smsa', confidence: 0.92, label: 'شركة الشحن المفضلة', lastUpdated: 'منذ يومين' },
+  { key: 'cod_rejection_threshold', value: '1000', confidence: 0.85, label: 'حد رفض الكاش (ريال)', lastUpdated: 'منذ أسبوع' },
+  { key: 'best_sales_day', value: 'friday', confidence: 0.78, label: 'أفضل يوم مبيعات', lastUpdated: 'منذ أسبوع' },
+  { key: 'top_city', value: 'riyadh', confidence: 0.95, label: 'أعلى مدينة مبيعاً', lastUpdated: 'اليوم' },
+  { key: 'avg_order_value', value: '340', confidence: 0.99, label: 'متوسط قيمة الطلب', lastUpdated: 'اليوم' },
+  { key: 'peak_hour', value: '21:00', confidence: 0.71, label: 'أوج ساعة الطلبات', lastUpdated: 'منذ 3 أيام' },
+  { key: 'return_rate', value: '0.08', confidence: 0.88, label: 'معدل الإرجاع', lastUpdated: 'منذ أسبوع' },
+  { key: 'top_product', value: 'عطر العود الملكي', confidence: 0.97, label: 'أكثر منتج مبيعاً', lastUpdated: 'اليوم' },
+  { key: 'low_stock_risk', value: 'كريم الوجه,سماعة JBL', confidence: 0.99, label: 'منتجات خطر نفاد', lastUpdated: 'الآن' },
+  { key: 'cash_ratio', value: '0.18', confidence: 0.91, label: 'نسبة الطلبات الكاش', lastUpdated: 'اليوم' },
+]
+
+// Helper to get insight value
+export function getInsight(key: string): string | undefined {
+  return STORE_INSIGHTS.find(i => i.key === key)?.value
+}
+
+// ── v3.0: Risk Scoring ───────────────────────────────────────────────────────
+
+export function computeRiskScore(order: Omit<Order, 'riskScore' | 'suspiciousReason'>): { score: number; reason?: string } {
+  let score = 0
+  const reasons: string[] = []
+
+  if (order.payment === 'cash') {
+    score += 30
+    reasons.push('كاش عند الاستلام')
+    if (order.isNewCustomer) {
+      score += 30
+      reasons.push('عميل جديد')
+    }
+    if (order.total > 800) {
+      score += 20
+      reasons.push(`قيمة عالية (${order.total} ر.س)`)
+    } else if (order.total > 500) {
+      score += 10
+    }
+  }
+  if (!order.address || order.address.length < 10) {
+    score += 20
+    reasons.push('عنوان غير مكتمل')
+  }
+
+  return { score: Math.min(score, 100), reason: reasons.length > 0 ? reasons.join(' · ') : undefined }
+}
+
+// ── v3.0: Feature Flags ──────────────────────────────────────────────────────
+
+export const FEATURE_FLAGS = {
+  whatsapp_beta: false,
+  analytics_v2: false,
+  embedded_mode: false,
+  zid_integration: false,
+  shopify_integration: false,
+  team_management: true,   // Phase 2 enabled
+  billing_automation: false,
+  shipping_integrations: false,
+  marketing_automation: false,
+}
+
+// ── v3.0: Usage Tracking ─────────────────────────────────────────────────────
+
+export interface UsageRecord {
+  month: string
+  ordersProcessed: number
+  productsUpdated: number
+  messagesUsed: number
+  aiTokensUsed: number
+  planLimit: number
+}
+
+export const USAGE_RECORDS: UsageRecord[] = [
+  { month: '2025-01', ordersProcessed: 543, productsUpdated: 18, messagesUsed: 287, aiTokensUsed: 124_000, planLimit: 1000 },
+  { month: '2024-12', ordersProcessed: 891, productsUpdated: 34, messagesUsed: 412, aiTokensUsed: 198_000, planLimit: 1000 },
+  { month: '2024-11', ordersProcessed: 734, productsUpdated: 22, messagesUsed: 356, aiTokensUsed: 167_000, planLimit: 1000 },
+]
+
 // ── Mock Orders ──────────────────────────────────────────────────────────────
 
 export const ORDERS: Order[] = [
-  { id: '10231', customer: 'محمد الأحمدي', phone: '0501234567', city: 'الرياض', total: 340, status: 'pending', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T06:12:00', address: 'حي النزهة، الرياض', issue: undefined },
-  { id: '10232', customer: 'سارة العمري', phone: '0551234567', city: 'جدة', total: 520, status: 'pending', payment: 'tabby', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T06:45:00', address: 'حي الزهراء، جدة' },
-  { id: '10233', customer: 'عبدالله الشمري', phone: '0561234567', city: 'الرياض', total: 180, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T07:10:00', address: 'حي العليا، الرياض' },
-  { id: '10234', customer: 'فاطمة القحطاني', phone: '0571234567', city: 'الدمام', total: 750, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 2, price: 340 }, { name: 'كريم الوجه', qty: 1, price: 90 }], createdAt: '2025-01-15T07:30:00', address: 'حي الشاطئ، الدمام', issue: 'عميل يدفع كاش' },
-  { id: '10235', customer: 'خالد المطيري', phone: '0581234567', city: 'الرياض', total: 290, status: 'pending', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-15T07:55:00', address: 'حي الملقا، الرياض' },
-  { id: '10236', customer: 'نورة السبيعي', phone: '0591234567', city: 'مكة', total: 430, status: 'pending', payment: 'tamara', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-15T08:15:00', address: 'حي العزيزية، مكة' },
-  { id: '10237', customer: 'أحمد الدوسري', phone: '0541234567', city: 'الرياض', total: 195, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 1, price: 90 }, { name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T08:40:00', address: 'حي السليمانية، الرياض' },
-  { id: '10238', customer: 'ريم الزهراني', phone: '0531234567', city: 'جدة', total: 680, status: 'pending', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T08:55:00', address: 'حي الروضة، جدة' },
-  { id: '10239', customer: 'ماجد العتيبي', phone: '0521234567', city: 'الدمام', total: 340, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T09:10:00', address: 'حي الفيصلية، الدمام', issue: 'عميل يدفع كاش' },
-  { id: '10240', customer: 'هند الحربي', phone: '0511234567', city: 'الرياض', total: 840, status: 'pending', payment: 'tabby', items: [{ name: 'ساعة سمارت', qty: 2, price: 290 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T09:25:00', address: 'حي الورود، الرياض' },
-  { id: '10241', customer: 'تركي الرشيدي', phone: '0501111111', city: 'الرياض', total: 105, status: 'pending', payment: 'card', items: [{ name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T09:40:00', address: 'حي النرجس، الرياض' },
-  { id: '10242', customer: 'منى الجهني', phone: '0502222222', city: 'المدينة', total: 260, status: 'pending', payment: 'card', items: [{ name: 'حقيبة جلد صغيرة', qty: 1, price: 260 }], createdAt: '2025-01-15T09:50:00', address: 'حي العزيزية، المدينة' },
+  { id: '10231', customer: 'محمد الأحمدي', phone: '0501234567', city: 'الرياض', total: 340, status: 'pending', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T06:12:00', address: 'حي النزهة، الرياض', isNewCustomer: false },
+  { id: '10232', customer: 'سارة العمري', phone: '0551234567', city: 'جدة', total: 520, status: 'pending', payment: 'tabby', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T06:45:00', address: 'حي الزهراء، جدة', isNewCustomer: false },
+  { id: '10233', customer: 'عبدالله الشمري', phone: '0561234567', city: 'الرياض', total: 180, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T07:10:00', address: 'حي العليا، الرياض', isNewCustomer: false },
+  { id: '10234', customer: 'فاطمة القحطاني', phone: '0571234567', city: 'الدمام', total: 750, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 2, price: 340 }, { name: 'كريم الوجه', qty: 1, price: 90 }], createdAt: '2025-01-15T07:30:00', address: 'حي الشاطئ، الدمام', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 80, suspiciousReason: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ر.س' },
+  { id: '10235', customer: 'خالد المطيري', phone: '0581234567', city: 'الرياض', total: 290, status: 'pending', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-15T07:55:00', address: 'حي الملقا، الرياض', isNewCustomer: false },
+  { id: '10236', customer: 'نورة السبيعي', phone: '0591234567', city: 'مكة', total: 430, status: 'pending', payment: 'tamara', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-15T08:15:00', address: 'حي العزيزية، مكة', isNewCustomer: false },
+  { id: '10237', customer: 'أحمد الدوسري', phone: '0541234567', city: 'الرياض', total: 195, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 1, price: 90 }, { name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T08:40:00', address: 'حي السليمانية، الرياض', isNewCustomer: false },
+  { id: '10238', customer: 'ريم الزهراني', phone: '0531234567', city: 'جدة', total: 680, status: 'pending', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T08:55:00', address: 'حي الروضة، جدة', isNewCustomer: false },
+  { id: '10239', customer: 'ماجد العتيبي', phone: '0521234567', city: 'الدمام', total: 340, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T09:10:00', address: 'حي الفيصلية، الدمام', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 60, suspiciousReason: 'كاش عند الاستلام · عميل جديد' },
+  { id: '10240', customer: 'هند الحربي', phone: '0511234567', city: 'الرياض', total: 840, status: 'pending', payment: 'tabby', items: [{ name: 'ساعة سمارت', qty: 2, price: 290 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T09:25:00', address: 'حي الورود، الرياض', isNewCustomer: false },
+  { id: '10241', customer: 'تركي الرشيدي', phone: '0501111111', city: 'الرياض', total: 105, status: 'pending', payment: 'card', items: [{ name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T09:40:00', address: 'حي النرجس، الرياض', isNewCustomer: false },
+  { id: '10242', customer: 'منى الجهني', phone: '0502222222', city: 'المدينة', total: 260, status: 'pending', payment: 'card', items: [{ name: 'حقيبة جلد صغيرة', qty: 1, price: 260 }], createdAt: '2025-01-15T09:50:00', address: 'حي العزيزية، المدينة', isNewCustomer: false },
 
   // Accepted orders
   { id: '10220', customer: 'وليد الغامدي', phone: '0503333333', city: 'الرياض', total: 480, status: 'accepted', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T05:00:00', address: 'حي الياسمين، الرياض' },
@@ -79,14 +171,14 @@ export const ORDERS: Order[] = [
 // ── Mock Products ────────────────────────────────────────────────────────────
 
 export const PRODUCTS: Product[] = [
-  { id: 'P001', name: 'عطر العود الملكي', sku: 'OUD-001', price: 340, stock: 24, category: 'عطور', active: true },
-  { id: 'P002', name: 'سماعة JBL', sku: 'JBL-T520', price: 520, stock: 0, category: 'إلكترونيات', active: true },
-  { id: 'P003', name: 'كريم الوجه', sku: 'CREAM-001', price: 90, stock: 8, category: 'عناية', active: true },
-  { id: 'P004', name: 'ساعة سمارت', sku: 'WATCH-X1', price: 290, stock: 15, category: 'إلكترونيات', active: true },
-  { id: 'P005', name: 'حقيبة جلد', sku: 'BAG-L01', price: 430, stock: 6, category: 'أزياء', active: true },
-  { id: 'P006', name: 'عطر صغير', sku: 'OUD-002', price: 105, stock: 42, category: 'عطور', active: true },
-  { id: 'P007', name: 'كيبل شحن', sku: 'CABLE-01', price: 40, stock: 60, category: 'إلكترونيات', active: true },
-  { id: 'P008', name: 'حقيبة جلد صغيرة', sku: 'BAG-S01', price: 260, stock: 3, category: 'أزياء', active: true },
+  { id: 'P001', name: 'عطر العود الملكي', sku: 'OUD-001', price: 340, stock: 24, lowStockThreshold: 10, category: 'عطور', active: true },
+  { id: 'P002', name: 'سماعة JBL', sku: 'JBL-T520', price: 520, stock: 0, lowStockThreshold: 5, category: 'إلكترونيات', active: true },
+  { id: 'P003', name: 'كريم الوجه', sku: 'CREAM-001', price: 90, stock: 8, lowStockThreshold: 15, category: 'عناية', active: true },
+  { id: 'P004', name: 'ساعة سمارت', sku: 'WATCH-X1', price: 290, stock: 15, lowStockThreshold: 8, category: 'إلكترونيات', active: true },
+  { id: 'P005', name: 'حقيبة جلد', sku: 'BAG-L01', price: 430, stock: 6, lowStockThreshold: 5, category: 'أزياء', active: true },
+  { id: 'P006', name: 'عطر صغير', sku: 'OUD-002', price: 105, stock: 42, lowStockThreshold: 10, category: 'عطور', active: true },
+  { id: 'P007', name: 'كيبل شحن', sku: 'CABLE-01', price: 40, stock: 60, lowStockThreshold: 20, category: 'إلكترونيات', active: true },
+  { id: 'P008', name: 'حقيبة جلد صغيرة', sku: 'BAG-S01', price: 260, stock: 3, lowStockThreshold: 5, category: 'أزياء', active: true },
 ]
 
 // ── Mock Analytics ───────────────────────────────────────────────────────────
@@ -187,18 +279,20 @@ export const store = {
   orders: [...ORDERS] as Order[],
   products: [...PRODUCTS] as Product[],
   coupons: [...COUPONS] as Coupon[],
-  activitiesLog: [] as { time: string; action: string; detail: string }[],
+  activitiesLog: [] as { time: string; action: string; detail: string; before?: unknown; after?: unknown }[],
 
   getOrder: (id: string) => store.orders.find(o => o.id === id),
   getPendingOrders: () => store.orders.filter(o => o.status === 'pending'),
   getAcceptedOrders: () => store.orders.filter(o => o.status === 'accepted'),
   getShippedOrders: () => store.orders.filter(o => o.status === 'shipped'),
+  getSuspiciousOrders: () => store.orders.filter(o => o.riskScore && o.riskScore >= 60),
 
   acceptOrder: (id: string) => {
     const o = store.orders.find(o => o.id === id)
     if (o) {
+      const before = o.status
       o.status = 'accepted'
-      store.activitiesLog.unshift({ time: now(), action: `قبول طلب #${id}`, detail: `${o.customer} — ${o.total} ر.س` })
+      store.activitiesLog.unshift({ time: now(), action: `قبول طلب #${id}`, detail: `${o.customer} — ${o.total} ر.س`, before: { status: before }, after: { status: 'accepted' } })
     }
     return o
   },
@@ -206,8 +300,9 @@ export const store = {
   rejectOrder: (id: string, reason = 'بناءً على طلب التاجر') => {
     const o = store.orders.find(o => o.id === id)
     if (o) {
+      const before = o.status
       o.status = 'rejected'
-      store.activitiesLog.unshift({ time: now(), action: `رفض طلب #${id}`, detail: `${o.customer} — السبب: ${reason}` })
+      store.activitiesLog.unshift({ time: now(), action: `رفض طلب #${id}`, detail: `${o.customer} — السبب: ${reason}`, before: { status: before }, after: { status: 'rejected' } })
     }
     return o
   },
@@ -217,7 +312,7 @@ export const store = {
     if (o && o.status === 'accepted') {
       o.status = 'shipped'
       o.shipmentId = `ARX-${Math.floor(800000 + Math.random() * 100000)}`
-      store.activitiesLog.unshift({ time: now(), action: `شحن طلب #${id}`, detail: `بوليصة: ${o.shipmentId}` })
+      store.activitiesLog.unshift({ time: now(), action: `شحن طلب #${id}`, detail: `بوليصة: ${o.shipmentId}`, before: { status: 'accepted' }, after: { status: 'shipped', shipmentId: o.shipmentId } })
     }
     return o
   },
@@ -227,7 +322,7 @@ export const store = {
     if (p) {
       const old = p.price
       p.price = newPrice
-      store.activitiesLog.unshift({ time: now(), action: `تحديث سعر ${p.name}`, detail: `من ${old} → ${newPrice} ر.س` })
+      store.activitiesLog.unshift({ time: now(), action: `تحديث سعر ${p.name}`, detail: `من ${old} → ${newPrice} ر.س`, before: { price: old }, after: { price: newPrice } })
     }
     return p
   },
