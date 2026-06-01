@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
+import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
 
 type Platform = 'salla' | 'zid' | 'shopify' | null
+
+const platforms = [
+  { id: 'salla', name: 'سلة', desc: 'المنصة السعودية الأولى', emoji: '🟣', method: 'api-key' },
+  { id: 'zid', name: 'زد', desc: 'تجارة إلكترونية عربية', emoji: '🟢', method: 'oauth' },
+  { id: 'shopify', name: 'Shopify', desc: 'منصة عالمية', emoji: '🌿', method: 'oauth' },
+]
 
 export default function Onboarding() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -18,79 +24,71 @@ export default function Onboarding() {
     setTimeout(() => {
       setLoading(false)
       setConnected(true)
-      setTimeout(() => navigate('/dashboard'), 1500)
-    }, 2000)
+      setTimeout(() => navigate('/dashboard'), 1600)
+    }, 2200)
   }
 
-  const platforms = [
-    { id: 'salla', name: 'سلة', desc: 'المنصة السعودية الأولى', emoji: '🟣', method: 'api-key' },
-    { id: 'zid', name: 'زد', desc: 'تجارة إلكترونية عربية', emoji: '🟢', method: 'oauth' },
-    { id: 'shopify', name: 'Shopify', desc: 'منصة عالمية', emoji: '🌿', method: 'oauth' },
-  ]
+  const selectedPlatform = platforms.find(p => p.id === platform)
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      {/* Logo */}
-      <div style={{ position: 'absolute', top: 24, right: 48, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>D</span>
+
+      {/* logo */}
+      <div style={{ position: 'absolute', top: 24, right: 30, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: '#000', fontWeight: 700, fontSize: 11 }}>D</span>
         </div>
-        <span style={{ fontFamily: 'Noto Serif Arabic, serif', fontSize: 18, color: 'var(--ink)' }}>Deema</span>
+        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.4px' }}>Deema</span>
       </div>
 
-      {/* Steps indicator */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 40, direction: 'ltr' }}>
+      {/* step indicator — ltr so 1→2→3 reads left to right */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 48, direction: 'ltr' }}>
         {[1, 2, 3].map(s => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              background: s < step ? 'var(--success)' : s === step ? 'var(--primary)' : 'var(--surface-card)',
-              color: s <= step ? '#fff' : 'var(--muted)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 12,
-              fontWeight: 600,
-              transition: 'all 0.2s',
+              width: 30, height: 30, borderRadius: '50%',
+              background: s < step ? 'var(--semantic-success)' : s === step ? 'var(--primary)' : 'var(--surface-1)',
+              color: s <= step ? (s < step ? '#fff' : '#000') : 'var(--ink-muted)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 600,
             }}>
-              {s < step ? <CheckCircle size={14} /> : s}
+              {s < step ? <Check size={14} strokeWidth={2.5} /> : s}
             </div>
-            {s < 3 && <div style={{ width: 40, height: 2, background: s < step ? 'var(--success)' : 'var(--hairline)', borderRadius: 1 }} />}
+            {s < 3 && <div style={{ width: 40, height: 1, background: s < step ? 'var(--semantic-success)' : 'var(--hairline)' }} />}
           </div>
         ))}
       </div>
 
-      {/* Step 1: Choose platform */}
+      {/* ── STEP 1: Choose platform ──────────────────────────────────── */}
       {step === 1 && (
-        <div style={{ width: '100%', maxWidth: 520 }}>
+        <div style={{ width: '100%', maxWidth: 480 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <h1 className="font-display" style={{ fontSize: 32, margin: '0 0 10px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>ربط متجرك</h1>
-            <p style={{ color: 'var(--muted)', fontSize: 15 }}>اختر المنصة التي يعمل عليها متجرك</p>
+            <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1.0, margin: '0 0 12px', color: 'var(--ink)' }}>
+              ربط متجرك
+            </h1>
+            <p style={{ fontSize: 15, color: 'var(--ink-muted)', letterSpacing: '-0.15px' }}>اختر المنصة التي يعمل عليها متجرك</p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {platforms.map(p => (
               <button key={p.id} onClick={() => setPlatform(p.id as Platform)} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
-                padding: '20px 24px',
-                borderRadius: 12,
-                border: `2px solid ${platform === p.id ? 'var(--primary)' : 'var(--hairline)'}`,
-                background: platform === p.id ? 'var(--surface-soft)' : 'var(--canvas)',
-                cursor: 'pointer',
-                textAlign: 'right',
-                width: '100%',
-                transition: 'all 0.15s',
+                display: 'flex', alignItems: 'center', gap: 16,
+                padding: '18px 20px', borderRadius: 15,
+                border: `1px solid ${platform === p.id ? 'rgba(255,255,255,0.3)' : 'var(--hairline)'}`,
+                background: platform === p.id ? 'var(--surface-2)' : 'var(--surface-1)',
+                cursor: 'pointer', textAlign: 'right', width: '100%',
+                boxShadow: platform === p.id ? 'rgba(0,153,255,0.15) 0 0 0 1px' : 'none',
               }}>
-                <span style={{ fontSize: 32 }}>{p.emoji}</span>
+                <span style={{ fontSize: 28 }}>{p.emoji}</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 3 }}>{p.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--muted)' }}>{p.desc}</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 2, letterSpacing: '-0.3px' }}>{p.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--ink-muted)', letterSpacing: '-0.13px' }}>{p.desc}</div>
                 </div>
-                {platform === p.id && <CheckCircle size={20} color="var(--primary)" />}
+                {platform === p.id && (
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--semantic-success)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={12} color="#000" strokeWidth={3} />
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -98,189 +96,140 @@ export default function Onboarding() {
           <button
             disabled={!platform}
             onClick={() => setStep(2)}
+            className="btn-primary"
             style={{
-              marginTop: 24,
-              width: '100%',
-              background: platform ? 'var(--primary)' : 'var(--primary-disabled)',
-              color: platform ? '#fff' : 'var(--muted)',
-              border: 'none',
-              borderRadius: 8,
-              padding: '13px 20px',
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: platform ? 'pointer' : 'default',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
+              marginTop: 20, width: '100%', justifyContent: 'center',
+              padding: '12px 20px', fontSize: 15, borderRadius: 10,
+              opacity: platform ? 1 : 0.4, cursor: platform ? 'pointer' : 'default',
             }}>
-            التالي
-            <ArrowLeft size={16} />
+            التالي <ArrowLeft size={15} />
           </button>
         </div>
       )}
 
-      {/* Step 2: API Key / OAuth */}
+      {/* ── STEP 2: API Key ──────────────────────────────────────────── */}
       {step === 2 && (
-        <div style={{ width: '100%', maxWidth: 520 }}>
+        <div style={{ width: '100%', maxWidth: 480 }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <h1 className="font-display" style={{ fontSize: 30, margin: '0 0 8px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
-              ربط {platforms.find(p => p.id === platform)?.name}
+            <h1 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1.0, margin: '0 0 10px', color: 'var(--ink)' }}>
+              ربط {selectedPlatform?.name}
             </h1>
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>أدخل بيانات المتجر لإتمام الربط</p>
+            <p style={{ fontSize: 14, color: 'var(--ink-muted)', letterSpacing: '-0.14px' }}>أدخل بيانات المتجر لإتمام الربط</p>
           </div>
 
-          {/* Instructions card */}
-          <div style={{ background: 'var(--surface-card)', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 14 }}>
-              كيف تحصل على API Key من {platforms.find(p => p.id === platform)?.name}؟
+          {/* instructions */}
+          <div style={{ background: 'var(--surface-1)', borderRadius: 15, padding: 20, marginBottom: 16, border: '1px solid var(--hairline)' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 14, letterSpacing: '-0.13px' }}>
+              كيف تحصل على API Key من {selectedPlatform?.name}؟
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                `افتح لوحة تحكم ${platforms.find(p => p.id === platform)?.name}`,
-                'اذهب إلى: التطبيقات ← مفاتيح API',
-                'اضغط "إنشاء مفتاح جديد"',
-                'انسخ المفتاح والصقه هنا',
-              ].map((step, i) => (
-                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, color: 'var(--body)' }}>
-                  <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
-                  {step}
-                </div>
-              ))}
-            </div>
-            <button style={{
-              marginTop: 16,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'var(--canvas)',
-              border: '1px solid var(--hairline)',
-              borderRadius: 6,
-              padding: '8px 14px',
-              fontSize: 12,
-              cursor: 'pointer',
-              color: 'var(--primary)',
-              fontWeight: 500,
-            }}>
-              <ExternalLink size={12} />
-              فتح {platforms.find(p => p.id === platform)?.name} في تبويب جديد
+            {[
+              `افتح لوحة تحكم ${selectedPlatform?.name}`,
+              'اذهب إلى: التطبيقات ← مفاتيح API',
+              'اضغط "إنشاء مفتاح جديد"',
+              'انسخ المفتاح والصقه هنا',
+            ].map((s, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, color: 'var(--ink-muted)', marginBottom: 10 }}>
+                <span style={{
+                  width: 20, height: 20, borderRadius: '50%', background: 'var(--surface-2)',
+                  color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11, fontWeight: 700, flexShrink: 0,
+                }}>{i + 1}</span>
+                <span style={{ letterSpacing: '-0.13px' }}>{s}</span>
+              </div>
+            ))}
+            <button className="btn-secondary" style={{ marginTop: 8, fontSize: 12, padding: '7px 13px', borderRadius: 8 }}>
+              <ExternalLink size={11} />
+              فتح {selectedPlatform?.name} في تبويب جديد
             </button>
           </div>
 
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>API Key</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>API Key</label>
             <input
               type="text"
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               placeholder="sk-xxxxxxxxxxxxxxxxxxxx"
               style={{
-                width: '100%',
-                background: 'var(--canvas)',
-                border: '1px solid var(--hairline)',
-                borderRadius: 8,
-                padding: '10px 14px',
-                fontSize: 13,
-                color: 'var(--ink)',
-                outline: 'none',
-                fontFamily: 'JetBrains Mono, monospace',
-                direction: 'ltr',
-                textAlign: 'left',
+                width: '100%', background: 'var(--surface-1)',
+                border: '1px solid var(--hairline)', borderRadius: 10,
+                padding: '11px 14px', fontSize: 13, color: 'var(--ink)',
+                outline: 'none', fontFamily: 'monospace', direction: 'ltr', textAlign: 'left',
               }}
+              onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
+              onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => setStep(1)} style={{ background: 'none', border: '1px solid var(--hairline)', borderRadius: 8, padding: '12px 20px', fontSize: 14, color: 'var(--muted)', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => setStep(1)} className="btn-secondary" style={{ padding: '11px 18px', borderRadius: 10 }}>
               رجوع
             </button>
             <button
               disabled={!apiKey.trim()}
               onClick={() => setStep(3)}
-              style={{
-                flex: 1,
-                background: apiKey.trim() ? 'var(--primary)' : 'var(--primary-disabled)',
-                color: apiKey.trim() ? '#fff' : 'var(--muted)',
-                border: 'none',
-                borderRadius: 8,
-                padding: '12px 20px',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: apiKey.trim() ? 'pointer' : 'default',
-              }}>
+              className="btn-primary"
+              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: apiKey.trim() ? 1 : 0.4 }}>
               التحقق من الـ Key
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Verify & connect */}
+      {/* ── STEP 3: Confirm ─────────────────────────────────────────── */}
       {step === 3 && (
-        <div style={{ width: '100%', maxWidth: 440, textAlign: 'center' }}>
-          <h1 className="font-display" style={{ fontSize: 30, margin: '0 0 8px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>تأكيد الربط</h1>
-          <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 32 }}>سنقوم بالتحقق من بياناتك والاتصال بمتجرك</p>
-
-          <div style={{ background: 'var(--surface-card)', borderRadius: 12, padding: 24, marginBottom: 24, textAlign: 'right' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
-              <span style={{ color: 'var(--muted)' }}>المنصة</span>
-              <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{platforms.find(p => p.id === platform)?.name}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
-              <span style={{ color: 'var(--muted)' }}>API Key</span>
-              <span style={{ fontFamily: 'JetBrains Mono', fontSize: 12, color: 'var(--ink)' }}>{apiKey.slice(0, 8)}••••••••</span>
-            </div>
-            <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 12 }}>
-              <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>الصلاحيات المطلوبة:</div>
-              {['قراءة الطلبات', 'تحديث الطلبات', 'قراءة المنتجات', 'إنشاء الشحنات'].map(p => (
-                <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--body)', marginBottom: 5 }}>
-                  <CheckCircle size={13} color="var(--success)" />
-                  {p}
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
           {connected ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <CheckCircle size={28} color="#fff" />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--semantic-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(34,197,94,0.3)' }}>
+                <Check size={30} color="#000" strokeWidth={3} />
               </div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)' }}>تم الربط بنجاح! 🎉</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)' }}>جاري الانتقال للوحة التحكم...</div>
+              <h2 style={{ fontSize: 28, fontWeight: 500, letterSpacing: '-0.05em', color: 'var(--ink)' }}>تم الربط! 🎉</h2>
+              <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>جاري الانتقال للوحة التحكم...</p>
             </div>
           ) : (
-            <button
-              onClick={handleConnect}
-              disabled={loading}
-              style={{
-                width: '100%',
-                background: 'var(--primary)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 8,
-                padding: '14px 20px',
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: loading ? 'default' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-              }}>
-              {loading ? (
-                <>
-                  <Loader size={15} style={{ animation: 'spin 1s linear infinite' }} />
-                  جارٍ التحقق...
-                </>
-              ) : 'ربط المتجر والبدء'}
-            </button>
+            <>
+              <h1 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 500, letterSpacing: '-0.05em', margin: '0 0 10px', color: 'var(--ink)' }}>تأكيد الربط</h1>
+              <p style={{ fontSize: 14, color: 'var(--ink-muted)', marginBottom: 28, letterSpacing: '-0.14px' }}>تحقق من البيانات قبل الاتصال بمتجرك</p>
+
+              <div style={{ background: 'var(--surface-1)', borderRadius: 15, padding: 20, marginBottom: 16, textAlign: 'right', border: '1px solid var(--hairline)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
+                  <span style={{ color: 'var(--ink-muted)' }}>المنصة</span>
+                  <span style={{ fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{selectedPlatform?.name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, fontSize: 13 }}>
+                  <span style={{ color: 'var(--ink-muted)' }}>API Key</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--ink)' }}>{apiKey.slice(0, 10)}••••••••</span>
+                </div>
+                <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 14 }}>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 10 }}>الصلاحيات المطلوبة:</div>
+                  {['قراءة الطلبات', 'تحديث الطلبات', 'قراءة المنتجات', 'إنشاء الشحنات'].map(p => (
+                    <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--ink-muted)', marginBottom: 7 }}>
+                      <Check size={12} color="var(--semantic-success)" strokeWidth={2.5} />
+                      <span style={{ letterSpacing: '-0.13px' }}>{p}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={handleConnect}
+                disabled={loading}
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15, borderRadius: 10 }}>
+                {loading ? (
+                  <>
+                    <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                    جارٍ التحقق...
+                  </>
+                ) : 'ربط المتجر والبدء'}
+              </button>
+            </>
           )}
         </div>
       )}
 
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

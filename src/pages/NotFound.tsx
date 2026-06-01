@@ -10,38 +10,30 @@ export default function NotFound() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: 24,
       textAlign: 'center',
+      padding: 24,
     }}>
       <div style={{
-        fontFamily: 'Noto Serif Arabic, serif',
-        fontSize: 96,
-        fontWeight: 400,
-        color: 'var(--primary)',
-        lineHeight: 1,
-        marginBottom: 8,
-        letterSpacing: '-0.05em',
+        fontSize: 'clamp(80px, 15vw, 140px)',
+        fontWeight: 500,
+        letterSpacing: '-0.07em',
+        lineHeight: 0.85,
+        color: 'var(--surface-2)',
+        marginBottom: 32,
+        userSelect: 'none',
       }}>
         404
       </div>
-      <h1 style={{ fontSize: 24, fontWeight: 600, margin: '0 0 10px', color: 'var(--ink)' }}>
+
+      <h1 style={{ fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 500, letterSpacing: '-0.04em', margin: '0 0 12px', color: 'var(--ink)' }}>
         الصفحة دي مش موجودة
       </h1>
-      <p style={{ color: 'var(--muted)', fontSize: 15, marginBottom: 32 }}>
+
+      <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 36, letterSpacing: '-0.15px' }}>
         ربما تم نقل الصفحة أو حذفها
       </p>
-      <Link to="/" style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        background: 'var(--primary)',
-        color: '#fff',
-        textDecoration: 'none',
-        borderRadius: 8,
-        padding: '12px 24px',
-        fontSize: 14,
-        fontWeight: 600,
-      }}>
+
+      <Link to="/" className="btn-primary" style={{ padding: '12px 24px', fontSize: 15 }}>
         <ArrowRight size={15} />
         ارجع للرئيسية
       </Link>
