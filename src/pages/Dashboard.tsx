@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Bell, Plus, Send, Mic, ChevronDown, Settings, History, Package, AlertTriangle,
-  Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X,
+  Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain,
 } from 'lucide-react'
 import { detectIntent } from '../engine/intentDetector'
 import { generateResponse } from '../engine/responseEngine'
@@ -57,6 +57,11 @@ function OrderListView({ rows }: { rows: OrderRow[] }) {
               <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>·</span>
               <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{o.customer}</span>
               {o.issue && <span style={{ fontSize: 10, color: 'var(--gradient-orange)', background: 'rgba(255,122,61,0.12)', borderRadius: 4, padding: '1px 6px' }}>⚠️ {o.issue}</span>}
+              {o.riskScore && o.riskScore >= 60 && (
+                <span title={o.suspiciousReason} style={{ fontSize: 10, fontWeight: 700, color: o.riskScore >= 80 ? '#ff5577' : '#ff7a3d', background: o.riskScore >= 80 ? 'rgba(255,85,119,0.12)' : 'rgba(255,122,61,0.12)', borderRadius: 4, padding: '1px 6px', cursor: 'default' }}>
+                  خطر {o.riskScore}
+                </span>
+              )}
             </div>
             <div style={{ display: 'flex', gap: 8, fontSize: 11, color: 'var(--ink-muted)' }}>
               <span>📍 {o.city}</span><span>·</span>
@@ -330,9 +335,10 @@ export default function Dashboard() {
         </div>
 
         {/* bottom nav */}
-        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline-soft)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
+        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline-soft)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
           {[
             { to: '/activity', icon: History, label: 'السجل' },
+            { to: '/insights', icon: Brain, label: 'الذاكرة' },
             { to: '/settings', icon: Settings, label: 'الإعدادات' },
             { to: '/billing', icon: CreditCard, label: 'الاشتراك' },
           ].map(({ to, icon: Icon, label }) => (

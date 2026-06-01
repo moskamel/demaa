@@ -12,6 +12,7 @@ import Notifications from './pages/Notifications'
 import Settings from './pages/Settings'
 import Team from './pages/Team'
 import Billing from './pages/Billing'
+import Insights from './pages/Insights'
 import NotFound from './pages/NotFound'
 
 createRoot(document.getElementById('root')!).render(
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/settings" element={<Settings />} />
         <Route path="/team" element={<Team />} />
         <Route path="/billing" element={<Billing />} />
+        <Route path="/insights" element={<Insights />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
