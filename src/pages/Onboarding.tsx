@@ -7,7 +7,7 @@ type Platform = 'salla' | 'zid' | 'shopify' | null
 export default function Onboarding() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [platform, setPlatform] = useState<Platform>(null)
-  const [apiKey, setApiKey] = useState('')
+  const [apiKey, setApiKey] = useState('sk-test-deema-demo-1234567890abcdef')
   const [loading, setLoading] = useState(false)
   const [connected, setConnected] = useState(false)
   const navigate = useNavigate()
@@ -39,7 +39,7 @@ export default function Onboarding() {
       </div>
 
       {/* Steps indicator */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 40 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 40, direction: 'ltr' }}>
         {[1, 2, 3].map(s => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
