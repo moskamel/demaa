@@ -2,13 +2,16 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Bell, Plus, Send, Mic, ChevronDown, Settings, History, Package, AlertTriangle,
-  Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain,
+  Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain, Search,
+  BarChart2,
 } from 'lucide-react'
 import { detectIntent } from '../engine/intentDetector'
 import { generateResponse } from '../engine/responseEngine'
 import type { PendingConfirm } from '../engine/responseEngine'
 import { store, NOTIFICATIONS, CONNECTORS } from '../store/mockData'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
+import OrderDetailDrawer from '../components/OrderDetailDrawer'
+import SearchModal from '../components/SearchModal'
 
 // ── Status helpers ───────────────────────────────────────────────────────────
 const statusColors: Record<string, string> = {
@@ -46,11 +49,11 @@ const CONVS = [
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function OrderListView({ rows }: { rows: OrderRow[] }) {
+function OrderListView({ rows, onOrderClick }: { rows: OrderRow[]; onOrderClick?: (id: string) => void }) {
   return (
     <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 1, borderRadius: 12, overflow: 'hidden' }}>
       {rows.map((o, i) => (
-        <div key={o.id} style={{ background: 'var(--canvas)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: i < rows.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
+        <div key={o.id} onClick={() => onOrderClick?.(o.id)} style={{ background: 'var(--canvas)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: i < rows.length - 1 ? '1px solid var(--hairline-soft)' : 'none', cursor: onOrderClick ? 'pointer' : 'default', transition: 'background 0.1s' }} onMouseEnter={e => { if (onOrderClick) e.currentTarget.style.background = 'var(--surface-1)' }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.2px' }}>#{o.id}</span>
@@ -100,7 +103,7 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
   )
 }
 
-function DeemaMessage({ msg, onAction }: { msg: Message; onAction: (cmd: string) => void }) {
+function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, maxWidth: '80%' }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: 8 }}>
@@ -120,7 +123,7 @@ function DeemaMessage({ msg, onAction }: { msg: Message; onAction: (cmd: string)
               ))}
             </div>
           )}
-          {msg.orderList && <OrderListView rows={msg.orderList} />}
+          {msg.orderList && <OrderListView rows={msg.orderList} onOrderClick={onOrderClick} />}
           {msg.productList && <ProductListView rows={msg.productList} />}
           {msg.actions && msg.actions.length > 0 && (
             <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginTop: 12 }}>
@@ -203,9 +206,20 @@ export default function Dashboard() {
   const [isTyping, setIsTyping] = useState(false)
   const [showNotifs, setShowNotifs] = useState(false)
   const [activeConv, setActiveConv] = useState(1)
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
+  const [showSearch, setShowSearch] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, isTyping])
+
+  // Ctrl+K / Cmd+K global search shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setShowSearch(true) }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
 
   const unreadNotifs = NOTIFICATIONS.filter(n => !n.readAt).length
   const connectedApps = CONNECTORS.filter(c => c.status === 'connected')
@@ -385,8 +399,16 @@ export default function Dashboard() {
               </div>
             )}
 
+            {/* search */}
+            <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-1)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
+              <Search size={12} />
+              <span>بحث</span>
+              <kbd style={{ fontSize: 9, background: 'var(--surface-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
+            </button>
+
             {/* nav links */}
             {[
+              { to: '/reports', icon: BarChart2, title: 'التقارير' },
               { to: '/stores', icon: Store, title: 'متاجري' },
               { to: '/connectors', icon: Plug, title: 'التطبيقات' },
               { to: '/team', icon: Users, title: 'الفريق' },
@@ -417,7 +439,7 @@ export default function Dashboard() {
           {messages.map(msg => (
             <div key={msg.id}>
               {msg.role === 'deema' ? (
-                <DeemaMessage msg={msg} onAction={handleSend} />
+                <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
               ) : (
                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                   <div style={{ background: 'var(--surface-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: 'rgba(255,255,255,0.04) 0 0.5px 0 inset' }}>
@@ -480,6 +502,12 @@ export default function Dashboard() {
         @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
       `}</style>
+
+      {/* Order detail drawer */}
+      <OrderDetailDrawer orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />
+
+      {/* Global search modal */}
+      {showSearch && <SearchModal onClose={() => setShowSearch(false)} onSelectOrder={id => { setSelectedOrderId(id); setShowSearch(false) }} />}
     </div>
   )
 }

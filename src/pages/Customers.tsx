@@ -1,0 +1,136 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ChevronLeft, Search, Users, TrendingUp, ShoppingBag, Star } from 'lucide-react'
+import { ORDERS } from '../store/mockData'
+
+// ── Build customer list from order data ──────────────────────────────────────
+
+interface Customer {
+  name: string
+  phone: string
+  city: string
+  orderCount: number
+  totalSpent: number
+  lastOrder: string
+  isNew: boolean
+  segment: 'vip' | 'loyal' | 'regular' | 'new'
+}
+
+const customerMap: Record<string, Customer> = {}
+ORDERS.forEach(o => {
+  const key = o.phone || o.customer
+  if (!customerMap[key]) {
+    customerMap[key] = { name: o.customer, phone: o.phone || '', city: o.city, orderCount: 0, totalSpent: 0, lastOrder: o.createdAt, isNew: o.isNewCustomer ?? false, segment: 'new' }
+  }
+  customerMap[key].orderCount++
+  if (['accepted', 'shipped', 'delivered'].includes(o.status)) customerMap[key].totalSpent += o.total
+  if (o.createdAt > customerMap[key].lastOrder) customerMap[key].lastOrder = o.createdAt
+})
+
+const customers: Customer[] = Object.values(customerMap).map(c => {
+  const seg: Customer['segment'] = c.totalSpent >= 1000 ? 'vip' : c.orderCount >= 3 ? 'loyal' : c.orderCount >= 1 ? 'regular' : 'new'
+  return { ...c, segment: seg }
+}).sort((a, b) => b.totalSpent - a.totalSpent)
+
+const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
+const segmentLabels: Record<string, string> = { vip: 'VIP', loyal: 'مخلص', regular: 'عادي', new: 'جديد' }
+const segmentBg: Record<string, string> = { vip: 'rgba(212,77,240,0.1)', loyal: 'rgba(106,76,245,0.1)', regular: 'rgba(0,153,255,0.1)', new: 'rgba(34,197,94,0.1)' }
+
+type SegFilter = 'all' | 'vip' | 'loyal' | 'regular' | 'new'
+
+export default function Customers() {
+  const [search, setSearch] = useState('')
+  const [segFilter, setSegFilter] = useState<SegFilter>('all')
+
+  const filtered = customers.filter(c => {
+    const matchSeg = segFilter === 'all' || c.segment === segFilter
+    const matchSearch = !search || c.name.includes(search) || c.phone.includes(search) || c.city.includes(search)
+    return matchSeg && matchSearch
+  })
+
+  const vipCount = customers.filter(c => c.segment === 'vip').length
+  const loyalCount = customers.filter(c => c.segment === 'loyal').length
+  const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0)
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
+      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
+          <ChevronLeft size={14} /> الرئيسية
+        </Link>
+        <span style={{ color: 'var(--hairline)' }}>/</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>العملاء</span>
+      </div>
+
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 24px' }}>
+
+        {/* KPIs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+          {[
+            { icon: Users, label: 'إجمالي العملاء', value: customers.length, color: '#6a4cf5' },
+            { icon: Star, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
+            { icon: TrendingUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
+            { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-SA')} ر.س`, color: '#22c55e' },
+          ].map(({ icon: Icon, label, value, color }) => (
+            <div key={label} style={{ background: 'var(--surface-1)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <Icon size={15} color={color} />
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 2 }}>{value}</div>
+              <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* filters */}
+        <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+            <Search size={13} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-muted)', pointerEvents: 'none' }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث باسم أو رقم جوال أو مدينة..." style={{ width: '100%', padding: '9px 34px 9px 14px', borderRadius: 10, border: '1px solid var(--hairline)', background: 'var(--surface-1)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+          </div>
+          <div style={{ display: 'flex', gap: 4, background: 'var(--surface-1)', borderRadius: 9, padding: 3 }}>
+            {(['all', 'vip', 'loyal', 'regular', 'new'] as SegFilter[]).map(s => (
+              <button key={s} onClick={() => setSegFilter(s)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: segFilter === s ? 'var(--surface-2)' : 'transparent', color: segFilter === s ? 'var(--ink)' : 'var(--ink-muted)' }}>
+                {s === 'all' ? 'الكل' : segmentLabels[s]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* table */}
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
+            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>لا توجد نتائج</div>
+            <div style={{ fontSize: 12 }}>جرب تغيير كلمة البحث أو الفلتر</div>
+          </div>
+        ) : (
+          <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
+            {filtered.map((c, i) => (
+              <div key={c.phone} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: `${segmentColors[c.segment]}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>
+                  {c.segment === 'vip' ? '⭐' : c.segment === 'loyal' ? '💜' : c.segment === 'new' ? '🆕' : '👤'}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{c.name}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: segmentColors[c.segment], background: segmentBg[c.segment], borderRadius: 5, padding: '2px 7px' }}>{segmentLabels[c.segment]}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{c.phone} · {c.city}</div>
+                </div>
+                <div style={{ textAlign: 'center', minWidth: 60 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{c.orderCount}</div>
+                  <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>طلبات</div>
+                </div>
+                <div style={{ textAlign: 'left', minWidth: 100 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{c.totalSpent.toLocaleString('ar-SA')} ر.س</div>
+                  <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>إجمالي الإنفاق</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
