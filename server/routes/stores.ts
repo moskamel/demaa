@@ -3,6 +3,8 @@ import prisma from '../lib/prisma.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
 import { fetchOrders as fetchFacebookOrders } from '../lib/platforms/facebook.js'
 import { fetchOrders as fetchTikTokOrders } from '../lib/platforms/tiktok.js'
+import { fetchOrders as fetchSallaOrders } from '../lib/platforms/salla.js'
+import { fetchOrders as fetchZidOrders } from '../lib/platforms/zid.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -61,6 +63,24 @@ router.post('/connect', async (req: AuthRequest, res) => {
     }
 
     res.json({ store })
+
+    // Kick off background sync for supported platforms
+    if (['shopify', 'facebook', 'instagram', 'tiktok', 'salla', 'zid'].includes(platform) && store.accessToken) {
+      const domain = store.domain ?? ''
+      const token = store.accessToken
+      const orgId = req.orgId!
+      if (platform === 'shopify' && domain) {
+        syncShopify(store.id, domain, token, orgId).catch(err => console.error('connect sync error (shopify):', err))
+      } else if ((platform === 'facebook' || platform === 'instagram') && domain) {
+        syncFacebook(store.id, domain, token, orgId).catch(err => console.error('connect sync error (facebook):', err))
+      } else if (platform === 'tiktok' && domain) {
+        syncTikTok(store.id, domain, token, orgId).catch(err => console.error('connect sync error (tiktok):', err))
+      } else if (platform === 'salla') {
+        syncSalla(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (salla):', err))
+      } else if (platform === 'zid') {
+        syncZid(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (zid):', err))
+      }
+    }
   } catch (err) {
     console.error('connect error', err)
     res.status(500).json({ error: { code: 'SERVER_ERROR', message: 'خطأ في الخادم' } })
@@ -139,6 +159,34 @@ router.post('/:id/sync', async (req: AuthRequest, res) => {
       res.json({ syncing: true })
       syncTikTok(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
         console.error('TikTok sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'salla') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Salla كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncSalla(store.id, store.domain || store.id, store.accessToken, req.orgId!).catch(err => {
+        console.error('Salla sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'zid') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Zid كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncZid(store.id, store.domain || store.id, store.accessToken, req.orgId!).catch(err => {
+        console.error('Zid sync error:', err)
         prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
       })
       return
@@ -359,6 +407,106 @@ function mapTikTokStatus(status: string): string {
   if (status === 'SHIPPED') return 'shipped'
   if (status === 'DELIVERED') return 'delivered'
   if (status === 'CANCELLED') return 'rejected'
+  return 'pending'
+}
+
+async function syncSalla(storeId: string, sallaStoreId: string, token: string, orgId: string) {
+  const orders = await fetchSallaOrders(sallaStoreId, token)
+
+  for (const o of orders) {
+    const externalRef = String(o.id)
+    const customerName = o.customer?.name || 'عميل غير معروف'
+    const customerPhone = o.customer?.mobile || null
+    const city = o.shipping?.address?.city || 'غير محدد'
+    const total = Math.round((o.total?.amount ?? 0) * 100)
+    const status = mapSallaStatus(o.status?.name)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address: null,
+          status, paymentMethod: 'cod', total, placedAt: new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapSallaStatus(statusName: string | undefined): string {
+  if (!statusName) return 'pending'
+  if (statusName === 'pending' || statusName === 'under_review') return 'pending'
+  if (statusName === 'accepted' || statusName === 'in_progress') return 'accepted'
+  if (statusName === 'shipping') return 'shipped'
+  if (statusName === 'delivered') return 'delivered'
+  if (statusName === 'canceled' || statusName === 'refunded') return 'rejected'
+  return 'pending'
+}
+
+async function syncZid(storeId: string, zidStoreId: string, token: string, orgId: string) {
+  const orders = await fetchZidOrders(zidStoreId, token)
+
+  for (const o of orders) {
+    const externalRef = String(o.id)
+    const customerName = o.customer_name || 'عميل غير معروف'
+    const customerPhone = o.customer_mobile || null
+    const city = o.city_name || 'غير محدد'
+    const total = Math.round((o.total_amount ?? 0) * 100)
+    const paymentMethod = o.payment_method === 'cod' ? 'cod' : 'card'
+    const status = mapZidStatus(o.status)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address: null,
+          status, paymentMethod, total, placedAt: new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapZidStatus(status: string): string {
+  if (status === 'new') return 'pending'
+  if (status === 'preparing' || status === 'ready') return 'accepted'
+  if (status === 'indelivery') return 'shipped'
+  if (status === 'delivered') return 'delivered'
+  if (status === 'cancelled') return 'rejected'
   return 'pending'
 }
 

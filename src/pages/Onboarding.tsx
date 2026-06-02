@@ -3,20 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
 import { storesApi } from '../lib/api'
 
-type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | null
+type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | null
 
 const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
   const [err, setErr] = useState(false)
   const initial = name[0].toUpperCase()
-  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101' }
+  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101', salla: '#5B4FCF', zid: '#E4003B' }
   if (err) return (
     <div style={{ width: 32, height: 32, borderRadius: 8, background: colors[domain] || '#444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{initial}</span>
     </div>
   )
+  const logoDomains: Record<string, string> = { zid: 'zid.sa', salla: 'salla.com' }
+  const logoDomain = logoDomains[domain] ?? `${domain}.com`
   return (
     <img
-      src={`https://logo.clearbit.com/${domain}.com`}
+      src={`https://logo.clearbit.com/${logoDomain}`}
       alt={name}
       width={32} height={32}
       style={{ borderRadius: 8, objectFit: 'contain', background: '#fff', padding: 2 }}
@@ -96,6 +98,34 @@ const platforms = [
       'انسخ الـ Access Token والصقه هنا',
     ],
   },
+  {
+    id: 'salla',
+    name: 'Salla — سلة',
+    desc: 'منصة التجارة الإلكترونية السعودية الرائدة',
+    url: 'https://salla.com',
+    method: 'api-key',
+    steps: [
+      'افتح لوحة تحكم سلة على salla.com',
+      'اذهب إلى: التطبيقات ← مطوري سلة',
+      'اضغط "إنشاء تطبيق جديد" واختر Private App',
+      'فعّل الصلاحيات: الطلبات، المنتجات، الشحن',
+      'انسخ Access Token والصقه هنا',
+    ],
+  },
+  {
+    id: 'zid',
+    name: 'Zid — زد',
+    desc: 'منصة التجارة الإلكترونية السعودية المتكاملة',
+    url: 'https://zid.sa',
+    method: 'api-key',
+    steps: [
+      'افتح لوحة تحكم زد على zid.sa',
+      'اذهب إلى: الإعدادات ← واجهة برمجة التطبيقات',
+      'اضغط "إنشاء رمز وصول جديد"',
+      'فعّل الصلاحيات: إدارة الطلبات، المنتجات',
+      'انسخ Manager Token والصقه هنا',
+    ],
+  },
 ]
 
 export default function Onboarding() {
@@ -117,8 +147,8 @@ export default function Onboarding() {
       const { store } = await storesApi.connect(platform!, apiKey.trim(), storeDomain.trim() || undefined)
       setLoading(false)
       setConnected(true)
-      // Kick off sync in background for Shopify
-      if (platform === 'shopify' && store.id) {
+      // Kick off sync in background for supported platforms
+      if (store.id && (platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'salla' || platform === 'zid')) {
         setSyncing(true)
         try {
           await storesApi.sync(store.id)
@@ -253,6 +283,7 @@ export default function Onboarding() {
           </div>
 
           {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && (
+
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>
                 {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : 'Store Domain'}
@@ -302,7 +333,8 @@ export default function Onboarding() {
               disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
               onClick={() => setStep(3)}
               className="btn-primary"
-              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4 }}>
+              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4 }}
+            >
               التحقق من الـ Key
             </button>
           </div>

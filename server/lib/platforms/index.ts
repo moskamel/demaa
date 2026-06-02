@@ -3,6 +3,8 @@ import * as wuilt from './wuilt.js'
 import * as shantaweb from './shantaweb.js'
 import * as facebook from './facebook.js'
 import * as tiktok from './tiktok.js'
+import * as salla from './salla.js'
+import * as zid from './zid.js'
 
 type PlatformClient = {
   cancelOrder(domain: string, token: string, externalId: string): Promise<void>
@@ -16,6 +18,8 @@ const platforms: Record<string, PlatformClient> = {
   facebook,
   instagram: facebook,
   tiktok,
+  salla,
+  zid,
 }
 
 export interface Store {
