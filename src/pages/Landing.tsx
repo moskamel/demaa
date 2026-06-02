@@ -37,7 +37,7 @@ export default function Landing() {
 
         {/* CTA pair */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Link to="/dashboard" className="btn-secondary">تسجيل الدخول</Link>
+          <Link to="/login" className="btn-secondary">تسجيل الدخول</Link>
           <Link to="/onboarding" className="btn-primary">ابدأ مجاناً</Link>
         </div>
       </nav>
