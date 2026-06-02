@@ -42,7 +42,8 @@ app.use((_req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 Deema API Server running on http://localhost:${PORT}`)
   console.log(`📊 Database: SQLite (server/dev.db)`)
-  console.log(`🤖 Claude AI: ${process.env.ANTHROPIC_API_KEY ? '✅ Connected' : '⚠️  No API key — add ANTHROPIC_API_KEY to .env'}`)
+  const aiMode = process.env.GROQ_API_KEY ? '✅ Groq (Llama 3.3) — مجاناً' : '🔄 Free engine (built-in) — بدون مفتاح'
+  console.log(`🤖 AI: ${aiMode}`)
   console.log(`\nEndpoints:`)
   console.log(`  POST /api/auth/demo     → instant demo login`)
   console.log(`  POST /api/auth/signup   → create account`)
