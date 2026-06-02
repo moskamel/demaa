@@ -5,34 +5,31 @@ import { storesApi } from '../lib/api'
 
 type Platform = 'shopify' | 'wuilt' | 'shantaweb' | null
 
-const ShopifyLogo = () => (
-  <svg viewBox="0 0 109 124" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
-    <path d="M95.3 24.2c-.1-.7-.7-1.1-1.2-1.1s-10.5-.2-10.5-.2-8.3-8.1-9.1-8.9c-.8-.8-2.4-.6-3-.4-.1 0-1.8.6-4.6 1.4-2.7-7.8-7.5-15-16-15-.2 0-.5 0-.7.1C47.6.4 45.3-.4 43.2-.4c-17.4 0-25.7 21.7-28.3 32.7C7.6 34.5.9 36.5.4 36.7c-2.3.7-2.4.8-2.7 3C-2.6 41.7-9 90-9 90l71.3 13.4 38.5-8.3S96 24.9 95.3 24.2zM68.2 16.3c-2.1.7-4.5 1.4-7.1 2.2v-1.6c0-4.8-.7-8.7-1.8-11.8 4.5 1 7.5 5.8 8.9 11.2zm-14-10.8c1.2 3.1 2 7.2 2 13v.8c-4.7 1.5-9.8 3-14.9 4.6C43.8 14.5 50.1 7.3 54.2 5.5zm-6.3-.4c-.6 0-1.2.2-1.8.5 5.3-9.7 14.2-6.2 14.2-6.2-1.3-3.5-4.7-5.6-8.5-5.6C46.2-.2 44 1.5 44 1.5c.6-.8 1.3-1.4 1.9-1.4h.4c-.3 0-.4.1-.4.1s-1.7-.5-4.3.8c0 0 .1-.1.1-.1z" fill="#95BF47"/>
-    <path d="M94.1 23.1c-.5 0-10.5-.2-10.5-.2s-8.3-8.1-9.1-8.9c-.3-.3-.7-.4-1.1-.5l-5.8 118.7 38.5-8.3S96 24.9 95.3 24.2c-.4-.7-1-.8-1.2-1.1z" fill="#5E8E3E"/>
-    <path d="M54.5 43.9l-4.8 14.2s-4.2-2.2-9.4-2.2c-7.5 0-7.9 4.7-7.9 5.9 0 6.5 16.9 9 16.9 24.2 0 12-7.5 19.6-17.7 19.6-12.2 0-18.4-7.6-18.4-7.6l3.3-10.8s6.4 5.5 11.8 5.5c3.5 0 5-2.8 5-4.8 0-8.4-13.9-8.8-13.9-22.7 0-11.6 8.4-22.9 25.2-22.9 6.5 0 9.9 1.6 9.9 1.6z" fill="#fff"/>
-  </svg>
-)
-
-const WuiltLogo = () => (
-  <svg viewBox="0 0 40 40" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#4F46E5"/>
-    <text x="20" y="28" textAnchor="middle" fill="white" fontSize="22" fontWeight="bold" fontFamily="Arial, sans-serif">W</text>
-  </svg>
-)
-
-const ShantawebLogo = () => (
-  <svg viewBox="0 0 40 40" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#E63946"/>
-    <text x="20" y="28" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold" fontFamily="Arial, sans-serif">S</text>
-  </svg>
-)
+const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
+  const [err, setErr] = useState(false)
+  const initial = name[0].toUpperCase()
+  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946' }
+  if (err) return (
+    <div style={{ width: 32, height: 32, borderRadius: 8, background: colors[domain] || '#444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{initial}</span>
+    </div>
+  )
+  return (
+    <img
+      src={`https://logo.clearbit.com/${domain}.com`}
+      alt={name}
+      width={32} height={32}
+      style={{ borderRadius: 8, objectFit: 'contain', background: '#fff', padding: 2 }}
+      onError={() => setErr(true)}
+    />
+  )
+}
 
 const platforms = [
   {
     id: 'shopify',
     name: 'Shopify',
     desc: 'منصة عالمية للتجارة الإلكترونية',
-    logo: <ShopifyLogo />,
     url: 'https://www.shopify.com/',
     method: 'oauth',
     steps: [
@@ -47,7 +44,6 @@ const platforms = [
     id: 'wuilt',
     name: 'Wuilt',
     desc: 'منصة عربية لبناء المتاجر الإلكترونية',
-    logo: <WuiltLogo />,
     url: 'https://wuilt.com/',
     method: 'api-key',
     steps: [
@@ -62,7 +58,6 @@ const platforms = [
     id: 'shantaweb',
     name: 'Shantaweb',
     desc: 'منصة متاجر إلكترونية عربية',
-    logo: <ShantawebLogo />,
     url: 'https://shantaweb.com/',
     method: 'api-key',
     steps: [
@@ -127,7 +122,7 @@ export default function Onboarding() {
       {(() => {
         const steps = ['اختر المنصة', 'بيانات الربط', 'تأكيد']
         return (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0, marginBottom: 48, direction: 'ltr' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0, marginBottom: 48, direction: 'rtl' }}>
             {steps.map((label, i) => {
               const s = i + 1
               const done = s < step
@@ -170,7 +165,7 @@ export default function Onboarding() {
                 cursor: 'pointer', textAlign: 'right', width: '100%',
                 boxShadow: platform === p.id ? 'rgba(0,153,255,0.15) 0 0 0 1px' : 'none',
               }}>
-                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{p.logo}</div>
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PlatformLogo domain={p.id} name={p.name} /></div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 2, letterSpacing: '-0.3px' }}>{p.name}</div>
                   <div style={{ fontSize: 13, color: 'var(--ink-muted)', letterSpacing: '-0.13px' }}>{p.desc}</div>
