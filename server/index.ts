@@ -15,11 +15,16 @@ import teamRouter from './routes/team.js'
 import connectorsRouter from './routes/connectors.js'
 import couponsRouter from './routes/coupons.js'
 import settingsRouter from './routes/settings.js'
+import webhooksRouter from './routes/webhooks.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
 
 app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3000'], credentials: true }))
+
+// Webhooks mounted BEFORE express.json() — need raw body for HMAC verification
+app.use('/webhooks', webhooksRouter)
+
 app.use(express.json({ limit: '10mb' }))
 
 // Routes
@@ -52,6 +57,8 @@ app.listen(PORT, () => {
   console.log(`📊 Database: SQLite (server/dev.db)`)
   const aiMode = process.env.GROQ_API_KEY ? '✅ Groq (Llama 3.3) — مجاناً' : '🔄 Free engine (built-in) — بدون مفتاح'
   console.log(`🤖 AI: ${aiMode}`)
+  const webhookBase = process.env.DEEMA_BASE_URL ? `${process.env.DEEMA_BASE_URL}/webhooks` : '⚠️  set DEEMA_BASE_URL to enable real-time webhooks'
+  console.log(`🔔 Webhooks: ${webhookBase}`)
   console.log(`\nEndpoints:`)
   console.log(`  POST /api/auth/demo     → instant demo login`)
   console.log(`  POST /api/auth/signup   → create account`)
