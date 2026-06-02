@@ -16,6 +16,8 @@ import connectorsRouter from './routes/connectors.js'
 import couponsRouter from './routes/coupons.js'
 import settingsRouter from './routes/settings.js'
 import webhooksRouter from './routes/webhooks.js'
+import webhookAdminRouter from './routes/webhook-admin.js'
+import { startRetryWorker } from './lib/webhooks/processor.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -41,6 +43,7 @@ app.use('/api/team', teamRouter)
 app.use('/api/connectors', connectorsRouter)
 app.use('/api/coupons', couponsRouter)
 app.use('/api/settings', settingsRouter)
+app.use('/api/webhooks', webhookAdminRouter)
 
 // Health check
 app.get('/api/health', (_req, res) => {
@@ -53,6 +56,7 @@ app.use((_req, res) => {
 })
 
 app.listen(PORT, () => {
+  startRetryWorker()
   console.log(`\n🚀 Deema API Server running on http://localhost:${PORT}`)
   console.log(`📊 Database: SQLite (server/dev.db)`)
   const aiMode = process.env.GROQ_API_KEY ? '✅ Groq (Llama 3.3) — مجاناً' : '🔄 Free engine (built-in) — بدون مفتاح'

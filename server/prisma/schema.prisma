@@ -88,9 +88,11 @@ model Store {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  orders       Order[]
-  products     Product[]
+  organization         Organization          @relation(fields: [organizationId], references: [id])
+  orders               Order[]
+  products             Product[]
+  webhookEvents        WebhookEvent[]
+  webhookRegistrations WebhookRegistration[]
 
   @@map("stores")
 }
@@ -334,4 +336,44 @@ model UsageRecord {
 
   @@unique([organizationId, month])
   @@map("usage_records")
+}
+
+model WebhookEvent {
+  id             String    @id @default(cuid())
+  storeId        String?
+  platform       String
+  topic          String
+  idempotencyKey String    @unique
+  status         String    @default("pending")
+  attempts       Int       @default(0)
+  lastAttemptAt  DateTime?
+  nextRetryAt    DateTime?
+  error          String?
+  payload        String
+  processedAt    DateTime?
+  createdAt      DateTime  @default(now())
+
+  store Store? @relation(fields: [storeId], references: [id])
+
+  @@index([status, nextRetryAt])
+  @@index([storeId, createdAt])
+  @@map("webhook_events")
+}
+
+model WebhookRegistration {
+  id          String   @id @default(cuid())
+  storeId     String
+  platform    String
+  externalId  String?
+  topic       String
+  url         String
+  status      String   @default("active")
+  secret      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, platform, topic])
+  @@map("webhook_registrations")
 }

@@ -1,11 +1,7 @@
 import { Router } from 'express'
 import prisma from '../lib/prisma.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
-
-// Base URL for webhook callbacks — set DEEMA_BASE_URL in production
-const WEBHOOK_BASE = process.env.DEEMA_BASE_URL
-  ? `${process.env.DEEMA_BASE_URL.replace(/\/$/, '')}/webhooks`
-  : null
+import { registerStoreWebhooks, deregisterStoreWebhooks } from '../lib/webhooks/registry.js'
 import { fetchOrders as fetchFacebookOrders } from '../lib/platforms/facebook.js'
 import { fetchOrders as fetchTikTokOrders } from '../lib/platforms/tiktok.js'
 import { fetchOrders as fetchSallaOrders } from '../lib/platforms/salla.js'
@@ -107,12 +103,10 @@ router.post('/connect', async (req: AuthRequest, res) => {
         syncEcwid(store.id, domain || '', token, orgId).catch(err => console.error('connect sync error (ecwid):', err))
       }
 
-      // Register webhooks for real-time order sync (only when DEEMA_BASE_URL is set)
-      if (WEBHOOK_BASE) {
-        registerWebhooks(platform, domain || '', token, store.id).catch(err =>
-          console.warn(`[webhooks] registration failed for ${platform}:`, err instanceof Error ? err.message : err)
-        )
-      }
+      // Register webhooks for real-time order sync
+      registerStoreWebhooks(store.id, platform, domain || '', token).catch(err =>
+        console.warn(`[webhooks] registration failed for ${platform}:`, err instanceof Error ? err.message : err)
+      )
     }
   } catch (err) {
     console.error('connect error', err)
@@ -126,6 +120,10 @@ router.post('/:id/disconnect', async (req: AuthRequest, res) => {
     where: { id: req.params.id, organizationId: req.orgId },
   })
   if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  // Deregister webhooks before clearing the token
+  if (store.accessToken && store.domain) {
+    deregisterStoreWebhooks(store.id, store.platform, store.domain, store.accessToken).catch(() => {})
+  }
   await prisma.store.update({
     where: { id: store.id },
     data: { isActive: false, accessToken: null, syncStatus: 'idle' },
@@ -800,125 +798,7 @@ function mapJumiaStatus(status: string): string {
   return 'pending'
 }
 
-// ── Webhook registration ──────────────────────────────────────────────────────
 
-async function registerWebhooks(platform: string, domain: string, token: string, storeId: string) {
-  if (!WEBHOOK_BASE) return
-
-  if (platform === 'shopify' && domain) {
-    await registerShopifyWebhooks(domain, token)
-  } else if (platform === 'woocommerce' && domain) {
-    await registerWooWebhooks(domain, token)
-  } else if (platform === 'bigcommerce') {
-    await registerBigCommerceWebhooks(token)
-  } else if (platform === 'ecwid') {
-    await registerEcwidWebhooks(token, storeId)
-  } else if (platform === 'salla') {
-    // Salla webhooks are registered at the app level in Salla Partner Dashboard — not per-merchant
-    console.log('[webhooks] Salla: register order.created + order.updated in Salla Partner Dashboard → ' + WEBHOOK_BASE + '/salla')
-  } else if (platform === 'zid') {
-    // Zid webhooks are registered at the app level in Zid Developer Dashboard — not per-merchant
-    console.log('[webhooks] Zid: register order.created + order.updated in Zid Developer Dashboard → ' + WEBHOOK_BASE + '/zid')
-  }
-}
-
-async function registerShopifyWebhooks(domain: string, token: string) {
-  const base = `https://${domain}/admin/api/2024-01`
-  const headers = { 'X-Shopify-Access-Token': token, 'Content-Type': 'application/json' }
-
-  const topics = ['orders/create', 'orders/updated', 'orders/cancelled']
-  for (const topic of topics) {
-    const res = await fetch(`${base}/webhooks.json`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ webhook: { topic, address: `${WEBHOOK_BASE}/shopify`, format: 'json' } }),
-    })
-    if (!res.ok) {
-      const body = await res.text()
-      // 422 = webhook already exists — not an error
-      if (!body.includes('already')) {
-        console.warn(`[webhooks] Shopify ${topic} registration failed (${res.status}): ${body}`)
-      }
-    }
-  }
-}
-
-async function registerWooWebhooks(domain: string, token: string) {
-  const base = `https://${domain}/wp-json/wc/v3`
-  const [key, secret] = token.split(':')
-  const auth = 'Basic ' + Buffer.from(`${key}:${secret}`).toString('base64')
-  const headers = { Authorization: auth, 'Content-Type': 'application/json' }
-
-  const events: Array<{ topic: string; name: string }> = [
-    { topic: 'order.created', name: 'Deema — order.created' },
-    { topic: 'order.updated', name: 'Deema — order.updated' },
-  ]
-
-  // Fetch existing webhooks to avoid duplicates
-  const existingRes = await fetch(`${base}/webhooks`, { headers })
-  const existing: Array<{ delivery_url: string }> = existingRes.ok ? await existingRes.json() : []
-  const alreadyRegistered = (existing as Array<{ delivery_url: string }>)
-    .some(w => w.delivery_url?.includes('/webhooks/woocommerce'))
-
-  if (alreadyRegistered) return
-
-  for (const { topic, name } of events) {
-    const res = await fetch(`${base}/webhooks`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ name, topic, delivery_url: `${WEBHOOK_BASE}/woocommerce`, secret }),
-    })
-    if (!res.ok) {
-      const body = await res.text()
-      console.warn(`[webhooks] WooCommerce ${topic} registration failed (${res.status}): ${body}`)
-    }
-  }
-}
-
-async function registerBigCommerceWebhooks(token: string) {
-  const [storeHash, accessToken] = token.split(':')
-  const headers = { 'X-Auth-Token': accessToken, 'Content-Type': 'application/json', Accept: 'application/json' }
-  const base = `https://api.bigcommerce.com/stores/${storeHash}/v3`
-
-  const scopes = ['store/order/created', 'store/order/updated', 'store/order/statusUpdated']
-
-  // Check existing hooks
-  const existingRes = await fetch(`${base}/hooks`, { headers })
-  const existing: Array<{ scope: string }> = existingRes.ok ? ((await existingRes.json()) as { data: Array<{ scope: string }> }).data ?? [] : []
-  const existingScopes = new Set(existing.map(h => h.scope))
-
-  for (const scope of scopes) {
-    if (existingScopes.has(scope)) continue
-    const res = await fetch(`${base}/hooks`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ scope, destination: `${WEBHOOK_BASE}/bigcommerce`, is_active: true }),
-    })
-    if (!res.ok) {
-      const body = await res.text()
-      console.warn(`[webhooks] BigCommerce ${scope} registration failed (${res.status}): ${body}`)
-    }
-  }
-}
-
-async function registerEcwidWebhooks(token: string, storeDbId: string) {
-  const [ecwidStoreId, secretToken] = token.split(':')
-
-  const res = await fetch(`https://app.ecwid.com/api/v3/${ecwidStoreId}/webhooks?token=${secretToken}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      url: `${WEBHOOK_BASE}/ecwid/${ecwidStoreId}`,
-      eventTypes: ['order.created', 'order.updated'],
-    }),
-  })
-  if (!res.ok) {
-    const body = await res.text()
-    if (!body.includes('already')) {
-      console.warn(`[webhooks] Ecwid registration failed (${res.status}): ${body}`)
-    }
-  }
-}
 
 async function syncWoo(storeId: string, domain: string, token: string, orgId: string) {
   const orders = await fetchWooOrders(domain, token)
