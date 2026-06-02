@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, ArrowLeft, Zap } from 'lucide-react'
+import { auth as authApi, setToken } from '../lib/api'
 
 type Mode = 'login' | 'signup' | 'reset'
 
@@ -15,7 +16,7 @@ export default function Login() {
   const [resetSent, setResetSent] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -29,10 +30,19 @@ export default function Login() {
     if (mode === 'signup' && !name) { setError('يرجى إدخال اسمك'); return }
 
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    try {
+      const res = mode === 'login'
+        ? await authApi.login(email, password)
+        : await authApi.signup(name, email, password, name + ' Store')
+      setToken(res.token)
+      localStorage.setItem('deema_user', JSON.stringify(res.user))
+      localStorage.setItem('deema_org', JSON.stringify(res.org))
       navigate('/dashboard')
-    }, 1200)
+    } catch (err) {
+      setError((err as Error).message || 'حدث خطأ، يرجى المحاولة مجدداً')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -136,7 +146,7 @@ export default function Login() {
                   <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>أو</span>
                   <div style={{ flex: 1, height: 1, background: 'var(--hairline)' }} />
                 </div>
-                <button type="button" onClick={() => { setLoading(true); setTimeout(() => navigate('/dashboard'), 800) }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: 'var(--surface-2)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <button type="button" onClick={async () => { setLoading(true); try { const r = await authApi.demo(); setToken(r.token); localStorage.setItem('deema_user', JSON.stringify(r.user)); navigate('/dashboard') } catch { navigate('/dashboard') } finally { setLoading(false) } }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: 'var(--surface-2)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   <span style={{ fontSize: 16 }}>🚀</span> دخول تجريبي (Demo)
                 </button>
               </>

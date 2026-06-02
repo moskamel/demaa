@@ -1,0 +1,336 @@
+// This is your Prisma schema file
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../node_modules/.prisma/client"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  timezone  String   @default("Asia/Riyadh")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships   TeamMembership[]
+  stores        Store[]
+  conversations Conversation[]
+  notifications Notification[]
+  activityLogs  ActivityLog[]
+  customers     Customer[]
+  coupons       Coupon[]
+  aiMemory      AiMemory[]
+  subscription  Subscription?
+  usageRecords  UsageRecord[]
+
+  @@map("organizations")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  avatarUrl     String?
+  phone         String?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships TeamMembership[]
+  sessions    Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model TeamMembership {
+  id             String     @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String     @default("ORDER_MANAGER")
+  createdAt      DateTime   @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@map("team_memberships")
+}
+
+model Store {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  platform       String
+  domain         String?
+  isActive       Boolean  @default(true)
+  lastSyncAt     DateTime?
+  syncStatus     String   @default("idle")
+  accessToken    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  orders       Order[]
+  products     Product[]
+
+  @@map("stores")
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  storeId         String
+  externalRef     String?
+  customerId      String?
+  customerName    String
+  customerPhone   String?
+  city            String
+  address         String?
+  status          String   @default("pending")
+  paymentMethod   String   @default("card")
+  paymentStatus   String   @default("pending")
+  subtotal        Int      @default(0)
+  shippingFee     Int      @default(0)
+  discount        Int      @default(0)
+  total           Int
+  currency        String   @default("SAR")
+  notes           String?
+  riskScore       Int      @default(0)
+  riskFactors     String   @default("[]")
+  isNewCustomer   Boolean  @default(false)
+  rejectionReason String?
+  shipmentId      String?
+  placedAt        DateTime @default(now())
+  acceptedAt      DateTime?
+  rejectedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  store    Store       @relation(fields: [storeId], references: [id])
+  customer Customer?   @relation(fields: [customerId], references: [id])
+  items    OrderItem[]
+  shipments Shipment[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  productId  String?
+  name       String
+  sku        String?
+  qty        Int
+  unitPrice  Int
+  totalPrice Int
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  storeId       String
+  name          String
+  description   String?
+  sku           String?
+  price         Int
+  comparePrice  Int?
+  stock         Int      @default(0)
+  lowStockAlert Int      @default(5)
+  category      String?
+  imageUrl      String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  store Store       @relation(fields: [storeId], references: [id])
+  items OrderItem[]
+
+  @@map("products")
+}
+
+model Customer {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  phone          String?
+  email          String?
+  city           String?
+  segment        String   @default("new")
+  totalOrders    Int      @default(0)
+  totalSpent     Int      @default(0)
+  lastOrderAt    DateTime?
+  isBlocked      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  orders       Order[]
+
+  @@map("customers")
+}
+
+model Shipment {
+  id             String   @id @default(cuid())
+  orderId        String
+  carrier        String
+  trackingNumber String?
+  trackingUrl    String?
+  status         String   @default("created")
+  cost           Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("shipments")
+}
+
+model Coupon {
+  id             String   @id @default(cuid())
+  organizationId String
+  code           String
+  type           String   @default("percentage")
+  value          Int
+  minOrder       Int?
+  maxUsage       Int?
+  usageCount     Int      @default(0)
+  isActive       Boolean  @default(true)
+  expiresAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, code])
+  @@map("coupons")
+}
+
+model Conversation {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  title          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  toolCalls      String?
+  toolResults    String?
+  metadata       String   @default("{}")
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model AiMemory {
+  id             String   @id @default(cuid())
+  organizationId String
+  key            String
+  value          String
+  confidence     Float    @default(0.5)
+  label          String?
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, key])
+  @@map("ai_memory")
+}
+
+model Notification {
+  id             String   @id @default(cuid())
+  organizationId String
+  type           String
+  priority       String   @default("info")
+  title          String
+  body           String?
+  isRead         Boolean  @default(false)
+  readAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("notifications")
+}
+
+model ActivityLog {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String?
+  action         String
+  entity         String?
+  entityId       String?
+  summary        String
+  before         String?
+  after          String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("activity_logs")
+}
+
+model Subscription {
+  id             String   @id @default(cuid())
+  organizationId String   @unique
+  planId         String   @default("growth")
+  status         String   @default("active")
+  ordersUsed     Int      @default(0)
+  ordersLimit    Int      @default(1000)
+  currentPeriodEnd DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("subscriptions")
+}
+
+model UsageRecord {
+  id             String   @id @default(cuid())
+  organizationId String
+  month          String
+  ordersProcessed Int     @default(0)
+  messagesUsed   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, month])
+  @@map("usage_records")
+}

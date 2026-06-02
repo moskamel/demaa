@@ -5,9 +5,7 @@ import {
   Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain, Search,
   BarChart2,
 } from 'lucide-react'
-import { detectIntent } from '../engine/intentDetector'
-import { generateResponse } from '../engine/responseEngine'
-import type { PendingConfirm } from '../engine/responseEngine'
+import { conversations as convApi, orders as ordersApi, notifications as notifApi, type Notification as ApiNotif } from '../lib/api'
 import { store, NOTIFICATIONS, CONNECTORS } from '../store/mockData'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
@@ -143,25 +141,24 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
 }
 
 // ── Notification flyout ───────────────────────────────────────────────────────
-function NotifFlyout({ onClose }: { onClose: () => void }) {
-  const unread = NOTIFICATIONS.filter(n => !n.readAt)
-  const priorityColor = { urgent: '#ff5577', important: '#ff7a3d', info: '#555' }
+function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; notifs: { id: string; title: string; body?: string; priority: string; isRead: boolean; createdAt: string }[]; unreadCount: number }) {
+  const priorityColor: Record<string, string> = { urgent: '#ff5577', important: '#ff7a3d', info: '#555' }
   return (
     <div style={{ position: 'absolute', top: 44, left: 0, width: 320, background: 'var(--surface-1)', border: '1px solid var(--hairline)', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', zIndex: 200 }}>
       <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid var(--hairline-soft)' }}>
         <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإشعارات</span>
-        {unread.length > 0 && <span style={{ fontSize: 10, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 4, padding: '2px 6px', marginLeft: 8 }}>{unread.length} جديد</span>}
+        {unreadCount > 0 && <span style={{ fontSize: 10, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 4, padding: '2px 6px', marginLeft: 8 }}>{unreadCount} جديد</span>}
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 4 }}><X size={13} /></button>
       </div>
       <div style={{ maxHeight: 340, overflowY: 'auto' }}>
-        {NOTIFICATIONS.slice(0, 5).map(n => (
-          <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline-soft)', background: n.readAt ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
+        {(notifs.length > 0 ? notifs : NOTIFICATIONS).slice(0, 5).map(n => (
+          <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline-soft)', background: (n as { readAt?: string | null; isRead?: boolean }).readAt || (n as { isRead?: boolean }).isRead ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: priorityColor[n.priority], marginTop: 5, flexShrink: 0 }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: priorityColor[n.priority] || '#555', marginTop: 5, flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: n.readAt ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
-                <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{n.body}</div>
-                <div style={{ fontSize: 10, color: '#444', marginTop: 3 }}>{n.createdAt}</div>
+                <div style={{ fontSize: 12, fontWeight: (n as { readAt?: string | null; isRead?: boolean }).isRead ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{(n as { body?: string }).body}</div>
+                <div style={{ fontSize: 10, color: '#444', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
               </div>
             </div>
           </div>
@@ -180,39 +177,60 @@ const SUGGESTION = 'لديك 5 طلبات من الرياض جاهزة للشح�
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const pending = store.getPendingOrders()
-  const lowStock = store.products.filter(p => p.stock === 0)
-
   const initialMessage: Message = {
     id: 1, role: 'deema', type: 'summary',
-    content: 'صباح الخير! 🌅 ملخص متجرك لهذا الصباح:',
-    stats: [
-      { n: String(pending.length), l: 'طلب معلق', c: 'var(--gradient-orange)' },
-      { n: String(store.getAcceptedOrders().length), l: 'مقبول', c: 'var(--ink)' },
-      { n: String(store.getShippedOrders().length), l: 'مشحون', c: 'var(--semantic-success)' },
-      { n: String(lowStock.length), l: 'مخزون نافد', c: 'var(--gradient-coral)' },
-    ],
+    content: 'صباح الخير! 🌅 أنا ديما — جاهز لمساعدتك في إدارة متجرك.',
     actions: [
-      { label: `اقبل الجاهزة (${pending.filter(o => o.payment !== 'cash').length})`, variant: 'primary', cmd: 'اقبل الطلبات السليمة' },
-      { label: 'وريني المشاكل', variant: 'secondary', cmd: 'وريني الطلبات المعلقة' },
-      { label: 'مبيعات اليوم', variant: 'translucent', cmd: 'مبيعات اليوم' },
+      { label: 'وريني الطلبات المعلقة', variant: 'primary', cmd: 'وريني الطلبات المعلقة' },
+      { label: 'مبيعات اليوم', variant: 'secondary', cmd: 'تقرير مبيعات اليوم' },
+      { label: 'المنتجات المنخفضة', variant: 'translucent', cmd: 'وريني المنتجات المنخفضة' },
     ],
   }
 
   const [messages, setMessages] = useState<Message[]>([initialMessage])
   const [input, setInput] = useState('')
   const [counter, setCounter] = useState(2)
-  const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm | null>(null)
   const [isTyping, setIsTyping] = useState(false)
   const [showNotifs, setShowNotifs] = useState(false)
-  const [activeConv, setActiveConv] = useState(1)
+  const [activeConv, setActiveConv] = useState<string | null>(null)
+  const [convList, setConvList] = useState<{ id: string; title?: string; updatedAt: string }[]>([])
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [showSearch, setShowSearch] = useState(false)
+  const [orderStats, setOrderStats] = useState({ pending: 0, accepted: 0, shipped: 0, delivered: 0, rejected: 0 })
+  const [apiNotifs, setApiNotifs] = useState<ApiNotif[]>([])
+  const [unreadNotifs, setUnreadNotifs] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const connectedApps = CONNECTORS.filter(c => c.status === 'connected')
+
+  // Init: load conversation + stats from API
+  useEffect(() => {
+    // Load order stats
+    ordersApi.stats().then(s => setOrderStats(s)).catch(() => {
+      setOrderStats({ pending: orderStats.pending, accepted: store.getAcceptedOrders().length, shipped: store.getShippedOrders().length, delivered: 0, rejected: 0 })
+    })
+    // Load notifications
+    notifApi.list().then(r => { setApiNotifs(r.notifications); setUnreadNotifs(r.unreadCount) }).catch(() => {
+      setApiNotifs([]); setUnreadNotifs(NOTIFICATIONS.filter(n => !n.readAt).length)
+    })
+    // Load conversations or create one
+    convApi.list().then(async r => {
+      setConvList(r.conversations)
+      if (r.conversations.length > 0) {
+        setActiveConv(r.conversations[0].id)
+      } else {
+        const { conversation } = await convApi.create('طلبات اليوم')
+        setActiveConv(conversation.id)
+        setConvList([conversation])
+      }
+    }).catch(async () => {
+      // No backend — create mock conv ID
+      setActiveConv('offline-conv')
+    })
+  }, [])
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, isTyping])
 
-  // Ctrl+K / Cmd+K global search shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setShowSearch(true) }
@@ -221,10 +239,7 @@ export default function Dashboard() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  const unreadNotifs = NOTIFICATIONS.filter(n => !n.readAt).length
-  const connectedApps = CONNECTORS.filter(c => c.status === 'connected')
-
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string) => {
     const trimmed = text.trim()
     if (!trimmed || isTyping) return
     const userMsg: Message = { id: counter, role: 'user', content: trimmed }
@@ -232,20 +247,46 @@ export default function Dashboard() {
     setCounter(c => c + 1)
     setInput('')
     setIsTyping(true)
-    setTimeout(() => {
+
+    try {
+      let convId = activeConv
+      if (!convId || convId === 'offline-conv') {
+        const { conversation } = await convApi.create(trimmed.slice(0, 40))
+        convId = conversation.id
+        setActiveConv(convId)
+        setConvList(prev => [conversation, ...prev])
+      }
+
+      const result = await convApi.send(convId, trimmed)
+      const deemaMsg: Message = { id: counter + 1, role: 'deema', content: result.response }
+      setMessages(prev => [...prev, deemaMsg])
+      setCounter(c => c + 1)
+
+      // Refresh stats after action
+      ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
+    } catch (err) {
+      // Fallback to mock engine if API unavailable
+      const { detectIntent } = await import('../engine/intentDetector')
+      const { generateResponse } = await import('../engine/responseEngine')
       const parsed = detectIntent(trimmed)
-      const response = generateResponse(parsed, pendingConfirm, setPendingConfirm)
+      const response = generateResponse(parsed, null, () => {})
       setMessages(prev => [...prev, { ...response, id: counter + 1 }])
       setCounter(c => c + 1)
+    } finally {
       setIsTyping(false)
-    }, 600)
+    }
   }
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
     setMessages([initialMessage])
     setCounter(2)
-    setPendingConfirm(null)
-    setActiveConv(0)
+    try {
+      const { conversation } = await convApi.create()
+      setActiveConv(conversation.id)
+      setConvList(prev => [conversation, ...prev])
+    } catch {
+      setActiveConv('offline-conv')
+    }
   }
 
   return (
@@ -273,10 +314,10 @@ export default function Dashboard() {
         {/* conversations */}
         <div style={{ padding: '10px 8px 6px' }}>
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', padding: '0 8px', marginBottom: 4 }}>المحادثات</div>
-          {CONVS.map(c => (
+          {(convList.length > 0 ? convList : CONVS.map(c => ({ id: String(c.id), title: c.title, updatedAt: c.time }))).map(c => (
             <button key={c.id} onClick={() => setActiveConv(c.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 8, border: 'none', background: c.id === activeConv ? 'var(--surface-1)' : 'transparent', color: c.id === activeConv ? 'var(--ink)' : 'var(--ink-muted)', cursor: 'pointer', fontSize: 12, marginBottom: 1, textAlign: 'right', fontFamily: 'inherit' }}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</span>
-              <span style={{ fontSize: 10, color: 'var(--ink-muted)', flexShrink: 0, marginRight: 6 }}>{c.time}</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title || 'محادثة'}</span>
+              <span style={{ fontSize: 10, color: 'var(--ink-muted)', flexShrink: 0, marginRight: 6 }}>{c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('ar-SA') : ''}</span>
             </button>
           ))}
         </div>
@@ -382,17 +423,17 @@ export default function Dashboard() {
           <div style={{ display: 'flex', gap: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
               <Package size={12} />
-              <span style={{ color: 'var(--gradient-orange)', fontWeight: 600 }}>{store.getPendingOrders().length}</span> معلق
+              <span style={{ color: 'var(--gradient-orange)', fontWeight: 600 }}>{orderStats.pending}</span> معلق
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
               <AlertTriangle size={12} color="var(--gradient-coral)" />
-              <span style={{ color: 'var(--gradient-coral)', fontWeight: 600 }}>{store.products.filter(p => p.stock === 0).length}</span> نافد
+              <span style={{ color: 'var(--gradient-coral)', fontWeight: 600 }}>—</span> نافد
             </div>
           </div>
 
           {/* top-right actions */}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {pendingConfirm && (
+            {false && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,122,61,0.12)', borderRadius: 100, padding: '4px 12px' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gradient-orange)', animation: 'pulse 1.5s infinite' }} />
                 <span style={{ fontSize: 11, color: 'var(--gradient-orange)' }}>في انتظار تأكيدك</span>
@@ -427,7 +468,7 @@ export default function Dashboard() {
                 <Bell size={15} />
               </button>
               {unreadNotifs > 0 && <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, background: 'var(--gradient-coral)', borderRadius: '50%', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadNotifs}</span>}
-              {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} />}
+              {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} notifs={apiNotifs} unreadCount={unreadNotifs} />}
             </div>
 
             <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: 'var(--ink)' }}>م</div>
@@ -484,11 +525,11 @@ export default function Dashboard() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
-              placeholder={pendingConfirm ? 'اكتب "نعم" للتأكيد أو "لا" للإلغاء...' : 'اكتب أمرك... مثال: "اقبل الطلبات" أو "مبيعات الأسبوع"'}
+              placeholder='اكتب أمرك... مثال: "اقبل الطلبات" أو "مبيعات الأسبوع"'
               disabled={isTyping}
-              style={{ flex: 1, background: 'var(--surface-1)', border: `1px solid ${pendingConfirm ? 'rgba(255,122,61,0.4)' : 'var(--hairline)'}`, borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
+              style={{ flex: 1, background: 'var(--surface-1)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
               onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
-              onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = pendingConfirm ? 'rgba(255,122,61,0.4)' : 'var(--hairline)' }}
+              onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
             />
             <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
               style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
