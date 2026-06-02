@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Search, ShoppingCart, Package, Users, BarChart2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { orders as ordersApi, products as productsApi } from '../lib/api'
 
 interface Props {
@@ -34,6 +35,7 @@ const typeColors: Record<ResultType, string> = { order: '#6a4cf5', product: '#22
 const typeLabels: Record<ResultType, string> = { order: 'طلب', product: 'منتج', customer: 'عميل', page: 'صفحة' }
 
 export default function SearchModal({ onClose, onSelectOrder }: Props) {
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState(0)
   const [results, setResults] = useState<Result[]>(PAGES)
@@ -89,7 +91,7 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
 
   const handleSelect = (r: Result) => {
     if (r.type === 'order' && onSelectOrder && r.value) { onSelectOrder(r.value); onClose() }
-    else if (r.type === 'page' && r.value) { window.location.href = r.value; onClose() }
+    else if (r.type === 'page' && r.value) { navigate(r.value); onClose() }
     else onClose()
   }
 

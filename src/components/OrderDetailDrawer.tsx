@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { X, Package, MapPin, Phone, CreditCard, Clock, Truck, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { X, Package, MapPin, Phone, CreditCard, Clock, Truck, AlertTriangle, CheckCircle, XCircle, Loader } from 'lucide-react'
 import { orders as ordersApi, type Order } from '../lib/api'
-
+import { useToast } from './Toast'
 
 interface Props {
   orderId: string | null
@@ -21,6 +21,9 @@ const paymentLabels: Record<string, string> = { card: 'بطاقة ائتماني
 export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(false)
+  const [actionLoading, setActionLoading] = useState<'accept' | 'reject' | 'ship' | null>(null)
+  const [confirmReject, setConfirmReject] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (!orderId) { setOrder(null); return }
@@ -31,13 +34,24 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
     }).catch(() => setLoading(false))
   }, [orderId])
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { if (confirmReject) setConfirmReject(false); else onClose() }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose, confirmReject])
+
   if (!orderId) return null
 
   if (loading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.12)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
       <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 380, background: 'var(--canvas-soft)', borderRight: '1px solid var(--hairline)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <Loader size={22} color="var(--ink-muted)" style={{ animation: 'spin 1s linear infinite' }} />
+          <span style={{ color: 'var(--ink-muted)', fontSize: 13 }}>جاري التحميل</span>
+        </div>
       </div>
     </>
   )
@@ -47,21 +61,42 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   const statusColor = statusColors[order.status] || '#999'
 
   const handleAccept = async () => {
-    await ordersApi.accept(order.id)
-    setOrder(prev => prev ? { ...prev, status: 'accepted' } : prev)
+    setActionLoading('accept')
+    try {
+      await ordersApi.accept(order.id)
+      setOrder(prev => prev ? { ...prev, status: 'accepted' } : prev)
+      toast('تم قبول الطلب بنجاح', 'success')
+    } catch {
+      toast('حدث خطأ أثناء قبول الطلب', 'error')
+    } finally {
+      setActionLoading(null)
+    }
   }
 
   const handleReject = async () => {
-    await ordersApi.reject(order.id)
-    setOrder(prev => prev ? { ...prev, status: 'rejected' } : prev)
+    setConfirmReject(false)
+    setActionLoading('reject')
+    try {
+      await ordersApi.reject(order.id)
+      setOrder(prev => prev ? { ...prev, status: 'rejected' } : prev)
+      toast('تم رفض الطلب', 'warning')
+    } catch {
+      toast('حدث خطأ أثناء رفض الطلب', 'error')
+    } finally {
+      setActionLoading(null)
+    }
   }
 
   const handleShip = async () => {
+    setActionLoading('ship')
     try {
       const result = await ordersApi.ship(order.id, 'smsa')
       setOrder(prev => prev ? { ...prev, status: 'shipped', shipmentId: result.trackingNumber } : prev)
-    } catch (err) {
-      console.error('Ship error:', err)
+      toast('تم إنشاء الشحنة بنجاح', 'success')
+    } catch {
+      toast('حدث خطأ أثناء إنشاء الشحنة', 'error')
+    } finally {
+      setActionLoading(null)
     }
   }
 
@@ -143,22 +178,80 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
           {/* actions */}
           {order.status === 'pending' && (
             <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-              <button onClick={handleAccept} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: '#22c55e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <CheckCircle size={14} /> قبول
-              </button>
-              <button onClick={handleReject} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid rgba(255,85,119,0.3)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: 'rgba(255,85,119,0.08)', color: '#ff5577', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <XCircle size={14} /> رفض
-              </button>
+              <ActionBtn
+                onClick={handleAccept}
+                loading={actionLoading === 'accept'}
+                disabled={!!actionLoading}
+                bg="#22c55e" color="#fff"
+                icon={<CheckCircle size={14} />}
+                label="قبول"
+              />
+              <ActionBtn
+                onClick={() => setConfirmReject(true)}
+                loading={actionLoading === 'reject'}
+                disabled={!!actionLoading}
+                bg="rgba(255,85,119,0.08)" color="#ff5577"
+                border="1px solid rgba(255,85,119,0.3)"
+                icon={<XCircle size={14} />}
+                label="رفض"
+              />
             </div>
           )}
           {order.status === 'accepted' && (
-            <button onClick={handleShip} style={{ width: '100%', padding: '10px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: '#0099ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <Truck size={14} /> إنشاء شحنة
-            </button>
+            <ActionBtn
+              onClick={handleShip}
+              loading={actionLoading === 'ship'}
+              disabled={!!actionLoading}
+              bg="#0099ff" color="#fff"
+              icon={<Truck size={14} />}
+              label="إنشاء شحنة"
+              fullWidth
+            />
           )}
         </div>
       </div>
+
+      {/* reject confirmation dialog */}
+      {confirmReject && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 300 }} onClick={() => setConfirmReject(false)} />
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--canvas)', borderRadius: 14, border: '1px solid var(--hairline)', padding: 24, zIndex: 301, width: 300, boxShadow: '0 16px 48px rgba(0,0,0,0.12)' }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 8 }}>تأكيد رفض الطلب</div>
+            <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20, lineHeight: 1.6 }}>
+              هل أنت متأكد من رفض طلب #{order.externalRef || order.id}؟ لا يمكن التراجع عن هذا الإجراء.
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={handleReject} style={{ flex: 1, padding: '9px', borderRadius: 9, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: '#ff5577', color: '#fff' }}>
+                نعم، ارفض
+              </button>
+              <button onClick={() => setConfirmReject(false)} style={{ flex: 1, padding: '9px', borderRadius: 9, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, background: 'var(--canvas-soft)', color: 'var(--ink)' }}>
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
+  )
+}
+
+function ActionBtn({ onClick, loading, disabled, bg, color, border, icon, label, fullWidth }: {
+  onClick: () => void; loading: boolean; disabled: boolean
+  bg: string; color: string; border?: string
+  icon: React.ReactNode; label: string; fullWidth?: boolean
+}) {
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      flex: fullWidth ? undefined : 1, width: fullWidth ? '100%' : undefined,
+      padding: '10px', borderRadius: 10, border: border || 'none',
+      cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+      fontSize: 13, fontWeight: 600, background: bg, color,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+      opacity: disabled ? 0.7 : 1, transition: 'opacity 0.15s',
+    }}>
+      {loading ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : icon}
+      {label}
+    </button>
   )
 }
 

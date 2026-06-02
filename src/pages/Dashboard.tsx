@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Bell, Plus, Send, Mic, ChevronDown, Settings, History, Package, AlertTriangle,
+  Bell, Plus, Send, ChevronDown, Settings, History, Package, AlertTriangle,
   Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain, Search,
   BarChart2,
 } from 'lucide-react'
@@ -229,7 +229,7 @@ export default function Dashboard() {
   const handleSend = async (text: string) => {
     const trimmed = text.trim()
     if (!trimmed || isTyping) return
-    const userMsg: Message = { id: counter, role: 'user', content: trimmed }
+    const userMsg: Message = { id: counter, role: 'user', content: trimmed, createdAt: new Date().toISOString() }
     setMessages(prev => [...prev, userMsg])
     setCounter(c => c + 1)
     setInput('')
@@ -283,9 +283,6 @@ export default function Dashboard() {
               <MessageSquarePlus size={12} />
             </button>
           </div>
-          <button className="btn-secondary" style={{ width: '100%', justifyContent: 'center', borderRadius: 9, padding: '8px 14px', fontSize: 12 }} onClick={handleNewChat}>
-            <Plus size={12} /> محادثة جديدة
-          </button>
         </div>
 
         {/* conversations */}
@@ -454,10 +451,11 @@ export default function Dashboard() {
               {msg.role === 'deema' ? (
                 <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
               ) : (
-                <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
                   <div style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
                     {msg.content}
                   </div>
+                  {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingRight: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
                 </div>
               )}
             </div>
@@ -480,24 +478,26 @@ export default function Dashboard() {
 
         {/* input area */}
         <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 20px 14px', flexShrink: 0 }}>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 10, overflowX: 'auto', paddingBottom: 2 }}>
-            {QUICK.map(q => (
-              <button key={q.label} onClick={() => handleSend(q.cmd)} style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
-              >{q.label}</button>
-            ))}
+          <div style={{ position: 'relative', marginBottom: 10 }}>
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}
+              // @ts-ignore
+              onScroll={() => {}}>
+              {QUICK.map(q => (
+                <button key={q.label} onClick={() => handleSend(q.cmd)} style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
+                >{q.label}</button>
+              ))}
+            </div>
+            <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 32, background: 'linear-gradient(to left, transparent, var(--canvas))', pointerEvents: 'none' }} />
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--canvas-soft)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-              <Mic size={14} color="var(--ink-muted)" />
-            </button>
             <input
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
-              placeholder='اكتب أمرك... مثال: "اقبل الطلبات" أو "مبيعات الأسبوع"'
+              placeholder='اكتب أمرك...'
               disabled={isTyping}
               style={{ flex: 1, background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
               onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}

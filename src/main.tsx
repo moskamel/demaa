@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
+import { ToastProvider } from './components/Toast'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -32,6 +33,7 @@ import Cookies from './pages/Cookies'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -64,5 +66,6 @@ createRoot(document.getElementById('root')!).render(
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   </StrictMode>,
 )

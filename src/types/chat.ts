@@ -34,4 +34,5 @@ export interface Message {
   actions?: ActionButton[]
   orderList?: OrderRow[]
   productList?: ProductRow[]
+  createdAt?: string
 }
