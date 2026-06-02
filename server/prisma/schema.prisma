@@ -167,6 +167,7 @@ model Product {
   store Store       @relation(fields: [storeId], references: [id])
   items OrderItem[]
 
+  @@unique([storeId, name])
   @@map("products")
 }
 

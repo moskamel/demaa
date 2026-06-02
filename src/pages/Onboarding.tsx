@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
+import { storesApi } from '../lib/api'
 
 type Platform = 'shopify' | 'wuilt' | 'shantaweb' | null
 
@@ -56,18 +57,35 @@ export default function Onboarding() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [platform, setPlatform] = useState<Platform>(null)
   const [apiKey, setApiKey] = useState('')
+  const [storeDomain, setStoreDomain] = useState('')
   const [loading, setLoading] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   const [connected, setConnected] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     if (!apiKey.trim()) return
     setLoading(true)
-    setTimeout(() => {
+    setError('')
+    try {
+      const { store } = await storesApi.connect(platform!, apiKey.trim(), storeDomain.trim() || undefined)
       setLoading(false)
       setConnected(true)
-      setTimeout(() => navigate('/dashboard'), 1600)
-    }, 2200)
+      // Kick off sync in background for Shopify
+      if (platform === 'shopify' && store.id) {
+        setSyncing(true)
+        try {
+          await storesApi.sync(store.id)
+        } catch {
+          // Sync errors are non-blocking
+        }
+      }
+      setTimeout(() => navigate('/dashboard'), 1800)
+    } catch (err: unknown) {
+      setLoading(false)
+      setError(err instanceof Error ? err.message : 'فشل الاتصال، تحقق من المفتاح')
+    }
   }
 
   const selectedPlatform = platforms.find(p => p.id === platform)
@@ -180,6 +198,27 @@ export default function Onboarding() {
             </a>
           </div>
 
+          {platform === 'shopify' && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>Store Domain</label>
+              <input
+                type="text"
+                value={storeDomain}
+                onChange={e => setStoreDomain(e.target.value)}
+                placeholder="mystore.myshopify.com"
+                style={{
+                  width: '100%', background: 'var(--surface-1)',
+                  border: '1px solid var(--hairline)', borderRadius: 10,
+                  padding: '11px 14px', fontSize: 13, color: 'var(--ink)',
+                  outline: 'none', fontFamily: 'monospace', direction: 'ltr', textAlign: 'left',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
+                onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
+              />
+            </div>
+          )}
+
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>API Key</label>
             <input
@@ -204,10 +243,10 @@ export default function Onboarding() {
               رجوع
             </button>
             <button
-              disabled={!apiKey.trim()}
+              disabled={!apiKey.trim() || (platform === 'shopify' && !storeDomain.trim())}
               onClick={() => setStep(3)}
               className="btn-primary"
-              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: apiKey.trim() ? 1 : 0.4 }}>
+              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' || storeDomain.trim())) ? 1 : 0.4 }}>
               التحقق من الـ Key
             </button>
           </div>
@@ -223,7 +262,12 @@ export default function Onboarding() {
                 <Check size={30} color="#000" strokeWidth={3} />
               </div>
               <h2 style={{ fontSize: 28, fontWeight: 500, letterSpacing: '-0.05em', color: 'var(--ink)' }}>تم الربط! 🎉</h2>
-              <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>جاري الانتقال للوحة التحكم...</p>
+              <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>
+                {syncing ? 'جاري مزامنة البيانات...' : 'جاري الانتقال للوحة التحكم...'}
+              </p>
+              {syncing && (
+                <Loader size={18} style={{ animation: 'spin 1s linear infinite', color: 'var(--ink-muted)' }} />
+              )}
             </div>
           ) : (
             <>

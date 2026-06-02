@@ -170,8 +170,14 @@ export const storesApi = {
   async list() {
     return request<{ stores: StoreData[] }>('/stores')
   },
+  async connect(platform: string, apiKey: string, storeDomain?: string) {
+    return request<{ store: StoreData }>('/stores/connect', {
+      method: 'POST',
+      body: JSON.stringify({ platform, apiKey, storeDomain }),
+    })
+  },
   async sync(id: string) {
-    return request(`/stores/${id}/sync`, { method: 'POST' })
+    return request<{ syncing: boolean }>(`/stores/${id}/sync`, { method: 'POST' })
   },
 }
 
