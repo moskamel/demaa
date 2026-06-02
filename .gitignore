@@ -27,3 +27,9 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+server/dev.db
