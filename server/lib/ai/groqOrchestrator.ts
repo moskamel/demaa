@@ -3,7 +3,11 @@ import Groq from 'groq-sdk'
 import { executeTool } from './executor.js'
 import prisma from '../prisma.js'
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+let groq: Groq | null = null
+function getGroq(): Groq {
+  if (!groq) groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+  return groq
+}
 
 export interface ChatContext {
   orgId: string
@@ -250,7 +254,7 @@ export async function groqChat(
   const MAX_ITERATIONS = 8
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    const response = await groq.chat.completions.create({
+    const response = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       max_tokens: 1024,
       system: systemPrompt,
