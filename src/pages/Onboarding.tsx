@@ -61,7 +61,7 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [connected, setConnected] = useState(false)
-  const [error, setError] = useState('')
+  const [_error, setError] = useState('')
   const navigate = useNavigate()
 
   const handleConnect = async () => {

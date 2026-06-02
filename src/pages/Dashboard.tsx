@@ -5,8 +5,7 @@ import {
   Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain, Search,
   BarChart2,
 } from 'lucide-react'
-import { conversations as convApi, orders as ordersApi, notifications as notifApi, type Notification as ApiNotif } from '../lib/api'
-import { store, NOTIFICATIONS, CONNECTORS } from '../store/mockData'
+import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, type Notification as ApiNotif, type StoreData } from '../lib/api'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
 import SearchModal from '../components/SearchModal'
@@ -151,7 +150,7 @@ function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; no
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 4 }}><X size={13} /></button>
       </div>
       <div style={{ maxHeight: 340, overflowY: 'auto' }}>
-        {(notifs.length > 0 ? notifs : NOTIFICATIONS).slice(0, 5).map(n => (
+        {notifs.slice(0, 5).map(n => (
           <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline-soft)', background: (n as { readAt?: string | null; isRead?: boolean }).readAt || (n as { isRead?: boolean }).isRead ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: priorityColor[n.priority] || '#555', marginTop: 5, flexShrink: 0 }} />
@@ -199,20 +198,15 @@ export default function Dashboard() {
   const [orderStats, setOrderStats] = useState({ pending: 0, accepted: 0, shipped: 0, delivered: 0, rejected: 0 })
   const [apiNotifs, setApiNotifs] = useState<ApiNotif[]>([])
   const [unreadNotifs, setUnreadNotifs] = useState(0)
+  const [stores, setStores] = useState<StoreData[]>([])
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const connectedApps = CONNECTORS.filter(c => c.status === 'connected')
 
   // Init: load conversation + stats from API
   useEffect(() => {
-    // Load order stats
-    ordersApi.stats().then(s => setOrderStats(s)).catch(() => {
-      setOrderStats({ pending: orderStats.pending, accepted: store.getAcceptedOrders().length, shipped: store.getShippedOrders().length, delivered: 0, rejected: 0 })
-    })
-    // Load notifications
-    notifApi.list().then(r => { setApiNotifs(r.notifications); setUnreadNotifs(r.unreadCount) }).catch(() => {
-      setApiNotifs([]); setUnreadNotifs(NOTIFICATIONS.filter(n => !n.readAt).length)
-    })
+    ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
+    notifApi.list().then(r => { setApiNotifs(r.notifications); setUnreadNotifs(r.unreadCount) }).catch(() => {})
+    storesApi.list().then(r => setStores(r.stores)).catch(() => {})
     // Load conversations
     convApi.list().then(r => {
       setConvList(r.conversations)
@@ -315,15 +309,11 @@ export default function Dashboard() {
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>متاجري</div>
             <Link to="/stores" style={{ color: 'var(--ink-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}><Plus size={11} /></Link>
           </div>
-          {[
-            { name: 'متجر النور', platform: 'Shopify', active: true, dot: '#22c55e' },
-            { name: 'متجر العود', platform: 'Wuilt', active: false, dot: '#22c55e' },
-            { name: 'الأناقة', platform: 'Shantaweb', active: false, dot: '#ff7a3d' },
-          ].map(s => (
-            <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: s.active ? 'var(--surface-1)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: s.active ? 'var(--ink)' : 'var(--ink-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
-              <span style={{ fontSize: 10, color: 'var(--ink-muted)' }}>{s.platform}</span>
+          {stores.map((s, i) => (
+            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: i === 0 ? 'var(--surface-1)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.isActive ? '#22c55e' : '#ff7a3d', flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: i === 0 ? 'var(--ink)' : 'var(--ink-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
+              <span style={{ fontSize: 10, color: 'var(--ink-muted)', textTransform: 'capitalize' }}>{s.platform}</span>
             </div>
           ))}
         </div>
@@ -335,12 +325,11 @@ export default function Dashboard() {
             <Link to="/connectors" style={{ color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 10 }}>إدارة</Link>
           </div>
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            {connectedApps.slice(0, 4).map(app => (
-              <span key={app.type} style={{ fontSize: 10, background: 'var(--surface-1)', color: 'var(--ink-muted)', borderRadius: 100, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 3 }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e', flexShrink: 0 }} />{app.nameAr}
+            {stores.map(s => (
+              <span key={s.id} style={{ fontSize: 10, background: 'var(--surface-1)', color: 'var(--ink-muted)', borderRadius: 100, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 3 }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: s.isActive ? '#22c55e' : '#999', flexShrink: 0 }} />{s.platform}
               </span>
             ))}
-            {connectedApps.length > 4 && <span style={{ fontSize: 10, color: 'var(--ink-muted)', padding: '3px 4px' }}>+{connectedApps.length - 4}</span>}
           </div>
         </div>
 
@@ -350,12 +339,12 @@ export default function Dashboard() {
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>الإشعارات</div>
             {unreadNotifs > 0 && <span style={{ fontSize: 9, color: '#ff5577', background: 'rgba(255,85,119,0.12)', borderRadius: 100, padding: '2px 6px', fontWeight: 700 }}>{unreadNotifs}</span>}
           </div>
-          {NOTIFICATIONS.slice(0, 3).map(n => (
-            <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 6px', borderRadius: 7, marginBottom: 2, background: n.readAt ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
+          {apiNotifs.slice(0, 3).map(n => (
+            <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 6px', borderRadius: 7, marginBottom: 2, background: n.isRead ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: n.priority === 'urgent' ? '#ff5577' : n.priority === 'important' ? '#ff7a3d' : '#555', marginTop: 5, flexShrink: 0 }} />
               <div>
-                <div style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.35, fontWeight: n.readAt ? 400 : 500 }}>{n.title}</div>
-                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 1 }}>{n.createdAt}</div>
+                <div style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.35, fontWeight: n.isRead ? 400 : 500 }}>{n.title}</div>
+                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 1 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
               </div>
             </div>
           ))}
@@ -401,8 +390,8 @@ export default function Dashboard() {
         {/* top bar */}
         <div style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 10, flexShrink: 0 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>متجر النور</span>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-1)', borderRadius: 4, padding: '2px 8px' }}>Shopify</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{stores[0]?.name ?? '...'}</span>
+            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-1)', borderRadius: 4, padding: '2px 8px', textTransform: 'capitalize' }}>{stores[0]?.platform ?? ''}</span>
             <ChevronDown size={13} color="var(--ink-muted)" />
           </div>
 
