@@ -5,6 +5,9 @@ import { fetchOrders as fetchFacebookOrders } from '../lib/platforms/facebook.js
 import { fetchOrders as fetchTikTokOrders } from '../lib/platforms/tiktok.js'
 import { fetchOrders as fetchSallaOrders } from '../lib/platforms/salla.js'
 import { fetchOrders as fetchZidOrders } from '../lib/platforms/zid.js'
+import { fetchOrders as fetchAmazonOrders } from '../lib/platforms/amazon.js'
+import { fetchOrders as fetchNoonOrders } from '../lib/platforms/noon.js'
+import { fetchOrders as fetchJumiaOrders } from '../lib/platforms/jumia.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -79,6 +82,12 @@ router.post('/connect', async (req: AuthRequest, res) => {
         syncSalla(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (salla):', err))
       } else if (platform === 'zid') {
         syncZid(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (zid):', err))
+      } else if (platform === 'amazon' && domain) {
+        syncAmazon(store.id, domain, token, orgId).catch(err => console.error('connect sync error (amazon):', err))
+      } else if (platform === 'noon') {
+        syncNoon(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (noon):', err))
+      } else if (platform === 'jumia') {
+        syncJumia(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (jumia):', err))
       }
     }
   } catch (err) {
@@ -187,6 +196,48 @@ router.post('/:id/sync', async (req: AuthRequest, res) => {
       res.json({ syncing: true })
       syncZid(store.id, store.domain || store.id, store.accessToken, req.orgId!).catch(err => {
         console.error('Zid sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'amazon') {
+      if (!store.accessToken || !store.domain) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Amazon كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncAmazon(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
+        console.error('Amazon sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'noon') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Noon كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncNoon(store.id, store.domain || store.id, store.accessToken, req.orgId!).catch(err => {
+        console.error('Noon sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'jumia') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Jumia كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncJumia(store.id, store.domain || store.id, store.accessToken, req.orgId!).catch(err => {
+        console.error('Jumia sync error:', err)
         prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
       })
       return
@@ -507,6 +558,165 @@ function mapZidStatus(status: string): string {
   if (status === 'indelivery') return 'shipped'
   if (status === 'delivered') return 'delivered'
   if (status === 'cancelled') return 'rejected'
+  return 'pending'
+}
+
+async function syncAmazon(storeId: string, marketplaceId: string, token: string, orgId: string) {
+  const orders = await fetchAmazonOrders(marketplaceId, token)
+
+  for (const o of orders) {
+    const externalRef = o.AmazonOrderId
+    const customerName = o.BuyerInfo?.BuyerName || o.ShippingAddress?.Name || 'عميل غير معروف'
+    const customerPhone = o.ShippingAddress?.Phone || null
+    const city = o.ShippingAddress?.City || 'غير محدد'
+    const address = o.ShippingAddress?.AddressLine1 || null
+    const total = o.OrderTotal?.Amount ? Math.round(parseFloat(o.OrderTotal.Amount) * 100) : 0
+    const paymentMethod = o.PaymentMethod === 'COD' ? 'cod' : 'card'
+    const status = mapAmazonStatus(o.OrderStatus)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.PurchaseDate ? new Date(o.PurchaseDate) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapAmazonStatus(status: string): string {
+  if (status === 'Pending' || status === 'PendingAvailability') return 'pending'
+  if (status === 'Unshipped' || status === 'PartiallyShipped') return 'accepted'
+  if (status === 'Shipped') return 'shipped'
+  if (status === 'InvoiceUnconfirmed') return 'accepted'
+  if (status === 'Canceled') return 'rejected'
+  if (status === 'Unfulfillable') return 'rejected'
+  return 'pending'
+}
+
+async function syncNoon(storeId: string, sellerId: string, token: string, orgId: string) {
+  const orders = await fetchNoonOrders(sellerId, token)
+
+  for (const o of orders) {
+    const externalRef = o.orderNumber
+    const customerName = o.customer?.name || o.shippingAddress?.address || 'عميل غير معروف'
+    const customerPhone = o.customer?.phone || null
+    const city = o.shippingAddress?.city || 'غير محدد'
+    const address = o.shippingAddress?.address || null
+    const total = o.grandTotal ? Math.round(o.grandTotal * 100) : 0
+    const paymentMethod = o.paymentMethod === 'COD' ? 'cod' : 'card'
+    const status = mapNoonStatus(o.status)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.createdAt ? new Date(o.createdAt) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapNoonStatus(status: string): string {
+  if (status === 'created' || status === 'CREATED') return 'pending'
+  if (status === 'processing' || status === 'PROCESSING') return 'accepted'
+  if (status === 'shipped' || status === 'SHIPPED' || status === 'dispatched') return 'shipped'
+  if (status === 'delivered' || status === 'DELIVERED') return 'delivered'
+  if (status === 'cancelled' || status === 'CANCELLED' || status === 'canceled') return 'rejected'
+  return 'pending'
+}
+
+async function syncJumia(storeId: string, sellerId: string, token: string, orgId: string) {
+  const orders = await fetchJumiaOrders(sellerId, token)
+
+  for (const o of orders) {
+    const externalRef = o.OrderId
+    const firstName = o.CustomerFirstName || ''
+    const lastName = o.CustomerLastName || ''
+    const customerName = [firstName, lastName].filter(Boolean).join(' ') || 'عميل غير معروف'
+    const customerPhone = o.Phone || null
+    const city = o.AddressCity || 'غير محدد'
+    const address = o.Address || null
+    const total = o.Price ? Math.round(parseFloat(o.Price) * 100) : 0
+    const paymentMethod = o.PaymentMethod === 'CashOnDelivery' ? 'cod' : 'card'
+    const status = mapJumiaStatus(o.Status)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.CreatedAt ? new Date(o.CreatedAt) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapJumiaStatus(status: string): string {
+  if (status === 'pending' || status === 'processing') return 'pending'
+  if (status === 'ready_to_ship' || status === 'handover') return 'accepted'
+  if (status === 'shipped' || status === 'in_transit') return 'shipped'
+  if (status === 'delivered') return 'delivered'
+  if (status === 'canceled' || status === 'returned' || status === 'failed_delivery') return 'rejected'
   return 'pending'
 }
 

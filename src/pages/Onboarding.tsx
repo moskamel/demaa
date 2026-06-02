@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
 import { storesApi } from '../lib/api'
 
-type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | null
+type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | null
 
 const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
   const [err, setErr] = useState(false)
   const initial = name[0].toUpperCase()
-  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101', salla: '#5B4FCF', zid: '#E4003B' }
+  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101', salla: '#5B4FCF', zid: '#E4003B', amazon: '#FF9900', noon: '#FEEE00', jumia: '#F68B1E' }
   if (err) return (
     <div style={{ width: 32, height: 32, borderRadius: 8, background: colors[domain] || '#444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{initial}</span>
     </div>
   )
-  const logoDomains: Record<string, string> = { zid: 'zid.sa', salla: 'salla.com' }
+  const logoDomains: Record<string, string> = { zid: 'zid.sa', salla: 'salla.com', amazon: 'amazon.com', noon: 'noon.com', jumia: 'jumia.com' }
   const logoDomain = logoDomains[domain] ?? `${domain}.com`
   return (
     <img
@@ -126,6 +126,48 @@ const platforms = [
       'انسخ Manager Token والصقه هنا',
     ],
   },
+  {
+    id: 'amazon',
+    name: 'Amazon',
+    desc: 'أكبر سوق إلكتروني في العالم',
+    url: 'https://sellercentral.amazon.com',
+    method: 'api-key',
+    steps: [
+      'افتح Seller Central على sellercentral.amazon.com',
+      'اذهب إلى: Apps & Services ← Develop Apps',
+      'أنشئ تطبيقاً جديداً واحصل على Client ID و Client Secret',
+      'من صفحة Authorize، احصل على Refresh Token',
+      'أدخل البيانات بالصيغة: clientId:clientSecret:refreshToken',
+    ],
+  },
+  {
+    id: 'noon',
+    name: 'Noon',
+    desc: 'أكبر سوق إلكتروني في الشرق الأوسط',
+    url: 'https://sell.noon.com',
+    method: 'api-key',
+    steps: [
+      'افتح Noon Seller Lab على sell.noon.com',
+      'اذهب إلى: الإعدادات ← API & Integrations',
+      'اضغط "Generate New API Token"',
+      'امنح الصلاحيات: Orders Management, Shipments',
+      'انسخ الـ Bearer Token والصقه هنا',
+    ],
+  },
+  {
+    id: 'jumia',
+    name: 'Jumia',
+    desc: 'أكبر سوق إلكتروني في أفريقيا ومصر',
+    url: 'https://seller.jumia.com.eg',
+    method: 'api-key',
+    steps: [
+      'افتح Jumia Seller Center على seller.jumia.com.eg',
+      'اذهب إلى: الإعدادات ← API Access',
+      'اطلب رمز الوصول من فريق الدعم أو من لوحة Developer',
+      'بعد الحصول على الرمز أدخل رمز البلد أولاً (eg لمصر)',
+      'أدخل البيانات بالصيغة: eg:accessToken',
+    ],
+  },
 ]
 
 export default function Onboarding() {
@@ -148,7 +190,7 @@ export default function Onboarding() {
       setLoading(false)
       setConnected(true)
       // Kick off sync in background for supported platforms
-      if (store.id && (platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'salla' || platform === 'zid')) {
+      if (store.id && (platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'salla' || platform === 'zid' || platform === 'amazon' || platform === 'noon' || platform === 'jumia')) {
         setSyncing(true)
         try {
           await storesApi.sync(store.id)
@@ -282,17 +324,17 @@ export default function Onboarding() {
             </a>
           </div>
 
-          {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && (
+          {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'amazon') && (
 
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>
-                {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : 'Store Domain'}
+                {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : platform === 'amazon' ? 'Marketplace ID' : 'Store Domain'}
               </label>
               <input
                 type="text"
                 value={storeDomain}
                 onChange={e => setStoreDomain(e.target.value)}
-                placeholder={platform === 'facebook' ? '123456789012345' : platform === 'tiktok' ? '7123456789012345678' : 'mystore.myshopify.com'}
+                placeholder={platform === 'facebook' ? '123456789012345' : platform === 'tiktok' ? '7123456789012345678' : platform === 'amazon' ? 'A2VIGQ35RCS4UG' : 'mystore.myshopify.com'}
                 style={{
                   width: '100%', background: 'var(--canvas-soft)',
                   border: '1px solid var(--hairline)', borderRadius: 10,

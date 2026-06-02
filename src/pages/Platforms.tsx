@@ -82,6 +82,48 @@ const platforms = [
     ],
     features: ['مزامنة طلبات زد تلقائياً', 'تتبع الشحنات', 'إلغاء الطلبات من Deema', 'دعم متجر زد الكامل'],
   },
+  {
+    emoji: '📦',
+    name: 'Amazon',
+    tagline: 'أكبر سوق إلكتروني في العالم',
+    desc: 'Amazon SP-API (Selling Partner API) يتيح ربط حساب بائع Amazon بـ Deema. ادر طلباتك على أمازون مصر والسعودية والإمارات من لوحة واحدة.',
+    steps: [
+      'افتح Seller Central على sellercentral.amazon.com',
+      'اذهب إلى: Apps & Services ← Develop Apps',
+      'أنشئ تطبيقاً جديداً واحصل على Client ID و Client Secret',
+      'من صفحة Authorize، احصل على Refresh Token',
+      'أدخل البيانات بالصيغة: clientId:clientSecret:refreshToken',
+    ],
+    features: ['إدارة طلبات Amazon', 'تأكيد الشحنات تلقائياً', 'إلغاء الطلبات من Deema', 'دعم Amazon Egypt/KSA/UAE'],
+  },
+  {
+    emoji: '🌙',
+    name: 'Noon',
+    tagline: 'أكبر سوق إلكتروني في الشرق الأوسط',
+    desc: 'Noon أكبر سوق إلكتروني في منطقة الشرق الأوسط ويخدم مصر والسعودية والإمارات. اربط حساب البائع بـ Deema وادر كل طلباتك من مكان واحد.',
+    steps: [
+      'افتح Noon Seller Lab على sell.noon.com',
+      'اذهب إلى: الإعدادات ← API & Integrations',
+      'اضغط "Generate New API Token"',
+      'امنح الصلاحيات: Orders Management, Shipments',
+      'انسخ الـ Bearer Token والصقه في Deema',
+    ],
+    features: ['إدارة طلبات Noon', 'شحن وتتبع تلقائي', 'إلغاء الطلبات من Deema', 'دعم مصر والسعودية والإمارات'],
+  },
+  {
+    emoji: '🛍️',
+    name: 'Jumia',
+    tagline: 'أكبر سوق إلكتروني في أفريقيا ومصر',
+    desc: 'Jumia يمتلك 3.7 مليون زائر شهري في مصر وحدها ويخدم 11 دولة أفريقية. اربط متجرك بـ Deema وادر طلبات Jumia مع باقي متاجرك بسهولة.',
+    steps: [
+      'افتح Jumia Seller Center على seller.jumia.com.eg',
+      'اذهب إلى: الإعدادات ← API Access',
+      'اطلب رمز الوصول من فريق الدعم أو من لوحة Developer',
+      'بعد الحصول على الرمز، أدخل رمز البلد (eg لمصر)',
+      'أدخل البيانات بالصيغة: eg:accessToken',
+    ],
+    features: ['إدارة طلبات Jumia', 'تحديث حالة الشحن', 'إلغاء الطلبات من Deema', 'دعم مصر وأفريقيا'],
+  },
 ]
 
 export default function Platforms() {

@@ -5,6 +5,9 @@ import * as facebook from './facebook.js'
 import * as tiktok from './tiktok.js'
 import * as salla from './salla.js'
 import * as zid from './zid.js'
+import * as amazon from './amazon.js'
+import * as noon from './noon.js'
+import * as jumia from './jumia.js'
 
 type PlatformClient = {
   cancelOrder(domain: string, token: string, externalId: string): Promise<void>
@@ -20,6 +23,9 @@ const platforms: Record<string, PlatformClient> = {
   tiktok,
   salla,
   zid,
+  amazon,
+  noon,
+  jumia,
 }
 
 export interface Store {
