@@ -30,8 +30,13 @@ export default function Landing() {
 
         {/* Nav links */}
         <div style={{ display: 'flex', gap: 24, flex: 1, justifyContent: 'center' }}>
-          {['المميزات', 'الأسعار', 'المنصات', 'التحديثات'].map(l => (
-            <a key={l} href="#" style={{ color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500, letterSpacing: '-0.14px' }}>{l}</a>
+          {[
+            { label: 'المميزات', to: '/features' },
+            { label: 'الأسعار', to: '/pricing' },
+            { label: 'المنصات', to: '/platforms' },
+            { label: 'التحديثات', to: '/changelog' },
+          ].map(l => (
+            <Link key={l.label} to={l.to} style={{ color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500, letterSpacing: '-0.14px' }}>{l.label}</Link>
           ))}
         </div>
 
@@ -410,15 +415,39 @@ export default function Landing() {
             </p>
           </div>
           {[
-            { title: 'المنتج', links: ['المميزات', 'الأسعار', 'المنصات', 'التحديثات'] },
-            { title: 'الشركة', links: ['من نحن', 'تواصل معنا', 'المدونة', 'الوظائف'] },
-            { title: 'القانوني', links: ['الخصوصية', 'الشروط', 'الأمان', 'ملفات تعريف الارتباط'] },
+            {
+              title: 'المنتج',
+              links: [
+                { label: 'المميزات', to: '/features' },
+                { label: 'الأسعار', to: '/pricing' },
+                { label: 'المنصات', to: '/platforms' },
+                { label: 'التحديثات', to: '/changelog' },
+              ],
+            },
+            {
+              title: 'الشركة',
+              links: [
+                { label: 'من نحن', to: '/about' },
+                { label: 'تواصل معنا', to: '/contact' },
+                { label: 'المدونة', to: '/blog' },
+                { label: 'الوظائف', to: '/careers' },
+              ],
+            },
+            {
+              title: 'القانوني',
+              links: [
+                { label: 'الخصوصية', to: '/privacy' },
+                { label: 'الشروط', to: '/terms' },
+                { label: 'الأمان', to: '/security' },
+                { label: 'ملفات تعريف الارتباط', to: '/cookies' },
+              ],
+            },
           ].map(col => (
             <div key={col.title}>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 16, letterSpacing: '-0.13px' }}>{col.title}</div>
               {col.links.map(l => (
-                <div key={l} style={{ marginBottom: 10 }}>
-                  <a href="#" style={{ fontSize: 13, color: 'var(--ink-muted)', textDecoration: 'none', letterSpacing: '-0.13px' }}>{l}</a>
+                <div key={l.label} style={{ marginBottom: 10 }}>
+                  <Link to={l.to} style={{ fontSize: 13, color: 'var(--ink-muted)', textDecoration: 'none', letterSpacing: '-0.13px' }}>{l.label}</Link>
                 </div>
               ))}
             </div>

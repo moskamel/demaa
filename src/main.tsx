@@ -17,6 +17,18 @@ import Insights from './pages/Insights'
 import Reports from './pages/Reports'
 import Customers from './pages/Customers'
 import NotFound from './pages/NotFound'
+import Features from './pages/Features'
+import Pricing from './pages/Pricing'
+import Platforms from './pages/Platforms'
+import Changelog from './pages/Changelog'
+import About from './pages/About'
+import Contact from './pages/Contact'
+import Blog from './pages/Blog'
+import Careers from './pages/Careers'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
+import Security from './pages/Security'
+import Cookies from './pages/Cookies'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -37,6 +49,18 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/insights" element={<Insights />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/customers" element={<Customers />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/platforms" element={<Platforms />} />
+        <Route path="/changelog" element={<Changelog />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/security" element={<Security />} />
+        <Route path="/cookies" element={<Cookies />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
