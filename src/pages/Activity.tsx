@@ -1,16 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Download, Check, X, Package, ArrowRight, Zap } from 'lucide-react'
-import { store } from '../store/mockData'
-
-const STATIC_ACTIVITIES = [
-  { id: 's1', time: '09:15', icon: 'check', color: 'var(--semantic-success)', title: 'قبول ٢٣ طلب بالجملة', by: 'أنت (عبر Deema)', detail: 'المجموع: ١٤,٥٠٠ ر.س', tag: 'orders', date: 'today' },
-  { id: 's2', time: '09:32', icon: 'package', color: '#0099ff', title: 'إنشاء ٢٣ بوليصة شحن', by: 'Deema تلقائياً', detail: 'شركة الشحن: أرامكس', tag: 'shipping', date: 'today' },
-  { id: 's3', time: '10:05', icon: 'x', color: 'var(--gradient-coral)', title: 'رفض طلب #١٠٢٢٥', by: 'أنت (عبر Deema)', detail: 'السبب: نفاد المخزون', tag: 'orders', date: 'today' },
-  { id: 's4', time: '11:20', icon: 'package', color: 'var(--gradient-orange)', title: 'تحديث سعر منتج — سماعة JBL', by: 'أنت (عبر Deema)', detail: 'من ٢٥٠ ر.س → ٢٢٠ ر.س', tag: 'products', date: 'today' },
-  { id: 's5', time: '08:30', icon: 'check', color: 'var(--semantic-success)', title: 'قبول ١٥ طلب', by: 'سارة (عبر Deema)', detail: 'المجموع: ٨,٧٥٠ ر.س', tag: 'orders', date: 'yesterday' },
-  { id: 's6', time: '13:10', icon: 'x', color: 'var(--gradient-coral)', title: 'رفض طلبين — بيانات خاطئة', by: 'أنت (عبر Deema)', detail: 'طلب #١٠٢١٨ و #١٠٢١٥', tag: 'orders', date: 'yesterday' },
-]
+import { analytics, type ActivityLog } from '../lib/api'
 
 const filters = [
   { id: 'all', label: 'الكل' },
@@ -18,6 +9,28 @@ const filters = [
   { id: 'products', label: 'المنتجات' },
   { id: 'shipping', label: 'الشحن' },
 ]
+
+function getIcon(action: string) {
+  if (action.includes('accept') || action.includes('قبول')) return 'check'
+  if (action.includes('reject') || action.includes('رفض')) return 'x'
+  if (action.includes('ship') || action.includes('شحن')) return 'package'
+  return 'zap'
+}
+
+function getColor(action: string) {
+  if (action.includes('accept') || action.includes('قبول')) return 'var(--semantic-success)'
+  if (action.includes('reject') || action.includes('رفض')) return 'var(--gradient-coral)'
+  if (action.includes('ship') || action.includes('شحن')) return '#0099ff'
+  return 'var(--gradient-orange)'
+}
+
+function getTag(action: string, entity?: string) {
+  const e = (entity || '').toLowerCase()
+  if (e === 'order' || action.includes('طلب')) return 'orders'
+  if (e === 'shipment' || action.includes('شحن')) return 'shipping'
+  if (e === 'product' || action.includes('منتج') || action.includes('سعر')) return 'products'
+  return 'orders'
+}
 
 function ActionIcon({ type, color }: { type: string; color: string }) {
   if (type === 'check') return <Check size={14} color={color} strokeWidth={2.5} />
@@ -53,23 +66,38 @@ function ActivityRow({ item, index, total }: { item: { id: string; time: string;
 
 export default function Activity() {
   const [active, setActive] = useState('all')
+  const [logs, setLogs] = useState<ActivityLog[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Live log from store (chat actions) merged with static history
-  const liveLog = store.activitiesLog.map((entry, i) => ({
-    id: `live-${i}`,
-    time: entry.time,
-    icon: entry.action.includes('قبول') ? 'check' : entry.action.includes('رفض') ? 'x' : entry.action.includes('شحن') ? 'package' : 'zap',
-    color: entry.action.includes('قبول') ? 'var(--semantic-success)' : entry.action.includes('رفض') ? 'var(--gradient-coral)' : entry.action.includes('شحن') ? '#0099ff' : 'var(--gradient-orange)',
-    title: entry.action,
-    by: 'أنت (عبر Deema)',
-    detail: entry.detail,
-    tag: entry.action.includes('طلب') ? 'orders' : entry.action.includes('شحن') ? 'shipping' : entry.action.includes('منتج') || entry.action.includes('سعر') ? 'products' : 'orders',
-    date: 'today' as const,
-  }))
+  useEffect(() => {
+    analytics.activity().then(data => {
+      setLogs(data.logs)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
 
-  const all = [...liveLog, ...STATIC_ACTIVITIES]
+  const mapped = logs.map(log => {
+    const action = log.action
+    return {
+      id: log.id,
+      time: new Date(log.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
+      icon: getIcon(action),
+      color: getColor(action),
+      title: log.summary || action,
+      by: 'أنت (عبر Deema)',
+      detail: log.summary,
+      tag: getTag(action, log.entity),
+      date: isToday(log.createdAt) ? 'today' : 'yesterday',
+    }
+  })
 
-  const filtered = (date: string) => all.filter(a => a.date === date && (active === 'all' || a.tag === active))
+  function isToday(dateStr: string) {
+    const d = new Date(dateStr)
+    const now = new Date()
+    return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+  }
+
+  const filtered = (date: string) => mapped.filter(a => a.date === date && (active === 'all' || a.tag === active))
   const today = filtered('today')
   const yesterday = filtered('yesterday')
 
@@ -81,9 +109,9 @@ export default function Activity() {
         </Link>
         <span style={{ width: 1, height: 14, background: 'var(--hairline)' }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>سجل الأنشطة</span>
-        {liveLog.length > 0 && (
+        {logs.length > 0 && (
           <span style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e', borderRadius: 100, fontSize: 10, padding: '2px 8px', fontWeight: 600 }}>
-            {liveLog.length} جديد
+            {logs.length}
           </span>
         )}
       </nav>
@@ -106,33 +134,39 @@ export default function Activity() {
           ))}
         </div>
 
-        {today.length > 0 && (
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
-              اليوم — {liveLog.length > 0 ? `${today.length} أنشطة` : '١٥ يناير ٢٠٢٥'}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {today.map((a, i) => <ActivityRow key={a.id} item={a} index={i} total={today.length} />)}
-            </div>
-          </div>
-        )}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
+        ) : (
+          <>
+            {today.length > 0 && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
+                  اليوم
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {today.map((a, i) => <ActivityRow key={a.id} item={a} index={i} total={today.length} />)}
+                </div>
+              </div>
+            )}
 
-        {yesterday.length > 0 && (
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
-              أمس — ١٤ يناير ٢٠٢٥
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {yesterday.map((a, i) => <ActivityRow key={a.id} item={a} index={i} total={yesterday.length} />)}
-            </div>
-          </div>
-        )}
+            {yesterday.length > 0 && (
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
+                  أمس
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {yesterday.map((a, i) => <ActivityRow key={a.id} item={a} index={i} total={yesterday.length} />)}
+                </div>
+              </div>
+            )}
 
-        {today.length === 0 && yesterday.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)' }}>
-            <Package size={36} style={{ marginBottom: 14, opacity: 0.3 }} />
-            <div style={{ fontSize: 15 }}>لا توجد أنشطة في هذه الفئة</div>
-          </div>
+            {today.length === 0 && yesterday.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)' }}>
+                <Package size={36} style={{ marginBottom: 14, opacity: 0.3 }} />
+                <div style={{ fontSize: 15 }}>لا توجد أنشطة في هذه الفئة</div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

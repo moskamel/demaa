@@ -11,6 +11,9 @@ import notificationsRouter from './routes/notifications.js'
 import customersRouter from './routes/customers.js'
 import storesRouter from './routes/stores.js'
 import aiRouter from './routes/ai.js'
+import teamRouter from './routes/team.js'
+import connectorsRouter from './routes/connectors.js'
+import couponsRouter from './routes/coupons.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -28,6 +31,9 @@ app.use('/api/notifications', notificationsRouter)
 app.use('/api/customers', customersRouter)
 app.use('/api/stores', storesRouter)
 app.use('/api/ai', aiRouter)
+app.use('/api/team', teamRouter)
+app.use('/api/connectors', connectorsRouter)
+app.use('/api/coupons', couponsRouter)
 
 // Health check
 app.get('/api/health', (_req, res) => {

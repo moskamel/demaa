@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, CheckCircle, AlertCircle, Clock, Plus, ExternalLink } from 'lucide-react'
-import { CONNECTORS, type Connector } from '../store/mockData'
+import { connectorsApi, type ConnectorData as Connector } from '../lib/api'
 
 const categoryLabels = {
   shipping: 'شركات الشحن',
@@ -27,7 +27,7 @@ const connectorColors: Record<string, string> = {
 }
 
 function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string) => void }) {
-  const st = statusConfig[c.status]
+  const st = statusConfig[c.status as keyof typeof statusConfig] || statusConfig.disconnected
   const StatusIcon = st.icon
   const color = connectorColors[c.type] || '#666'
 
@@ -83,23 +83,37 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
 }
 
 export default function Connectors() {
-  const [connectors, setConnectors] = useState([...CONNECTORS])
+  const [connectors, setConnectors] = useState<Connector[]>([])
+  const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState<string | null>(null)
 
-  const handleToggle = (type: string) => {
+  useEffect(() => {
+    connectorsApi.list().then(data => {
+      setConnectors(data.connectors)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  const handleToggle = async (type: string) => {
     const c = connectors.find(x => x.type === type)!
     if (c.status === 'connected') {
-      setConnectors(prev => prev.map(x => x.type === type ? { ...x, status: 'disconnected' as const, lastUsed: undefined } : x))
+      await connectorsApi.disconnect(type).catch(() => {})
+      setConnectors(prev => prev.map(x => x.type === type ? { ...x, status: 'disconnected', lastUsed: undefined } : x))
     } else {
       setConnecting(type)
-      setTimeout(() => {
-        setConnectors(prev => prev.map(x => x.type === type ? { ...x, status: 'connected' as const, lastUsed: 'الآن' } : x))
+      try {
+        await connectorsApi.connect(type)
+        setConnectors(prev => prev.map(x => x.type === type ? { ...x, status: 'connected', lastUsed: 'الآن' } : x))
+      } catch {
+        // ignore
+      } finally {
         setConnecting(null)
-      }, 1800)
+      }
     }
   }
 
   const connected = connectors.filter(c => c.status === 'connected').length
+  if (loading) return <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>

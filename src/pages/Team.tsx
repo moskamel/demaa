@@ -1,49 +1,63 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, Plus, Trash2, Shield, ClipboardList, Headphones } from 'lucide-react'
-import { TEAM_MEMBERS, type TeamMember, type TeamRole } from '../store/mockData'
+import { teamApi, type TeamMember } from '../lib/api'
 
-const roleConfig: Record<TeamRole, { label: string; desc: string; icon: typeof Shield; color: string }> = {
+type NormRole = 'admin' | 'order_manager' | 'customer_service'
+
+function normalizeRole(role: string): NormRole {
+  const r = role.toLowerCase()
+  if (r === 'admin') return 'admin'
+  if (r === 'order_manager') return 'order_manager'
+  return 'customer_service'
+}
+
+const roleConfig: Record<NormRole, { label: string; desc: string; icon: typeof Shield; color: string }> = {
   admin: { label: 'مدير', desc: 'صلاحيات كاملة', icon: Shield, color: '#6a4cf5' },
   order_manager: { label: 'مدير طلبات', desc: 'إدارة الطلبات والشحن', icon: ClipboardList, color: '#0099ff' },
   customer_service: { label: 'خدمة عملاء', desc: 'المراسلة والكوبونات', icon: Headphones, color: '#22c55e' },
 }
 
-const PERMISSIONS: Record<TeamRole, string[]> = {
+const PERMISSIONS: Record<NormRole, string[]> = {
   admin: ['قبول / رفض الطلبات', 'إنشاء بوالص الشحن', 'إدارة المنتجات', 'التقارير الكاملة', 'إدارة الفريق', 'إعدادات المتجر'],
   order_manager: ['قبول / رفض الطلبات', 'إنشاء بوالص الشحن', 'تقارير الطلبات'],
   customer_service: ['مراسلة العملاء', 'إنشاء كوبونات', 'عرض الطلبات فقط'],
 }
 
 export default function Team() {
-  const [members, setMembers] = useState<TeamMember[]>([...TEAM_MEMBERS])
+  const [members, setMembers] = useState<TeamMember[]>([])
+  const [loading, setLoading] = useState(true)
   const [showInvite, setShowInvite] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState<TeamRole>('order_manager')
+  const [inviteRole, setInviteRole] = useState<NormRole>('order_manager')
   const [inviting, setInviting] = useState(false)
+
+  useEffect(() => {
+    teamApi.list().then(data => {
+      setMembers(data.members)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
 
   const handleInvite = () => {
     if (!inviteEmail.trim()) return
     setInviting(true)
+    // Invite is a future feature — for now just close
     setTimeout(() => {
-      const newMember: TeamMember = {
-        id: `T${members.length + 1}`,
-        name: inviteEmail.split('@')[0],
-        email: inviteEmail,
-        role: inviteRole,
-        avatar: inviteEmail[0].toUpperCase(),
-        joinedAt: new Date().toISOString().split('T')[0],
-        lastActive: 'لم يسجل دخول بعد',
-      }
-      setMembers(prev => [...prev, newMember])
       setInviteEmail('')
       setShowInvite(false)
       setInviting(false)
     }, 1200)
   }
 
-  const handleRemove = (id: string) => {
+  const handleRemove = async (id: string) => {
+    await teamApi.remove(id).catch(() => {})
     setMembers(prev => prev.filter(m => m.id !== id))
+  }
+
+  const handleRoleChange = async (id: string, role: NormRole) => {
+    await teamApi.updateRole(id, role).catch(() => {})
+    setMembers(prev => prev.map(m => m.id === id ? { ...m, role } : m))
   }
 
   return (
@@ -69,7 +83,7 @@ export default function Team() {
 
         {/* roles reference */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 28 }}>
-          {(Object.entries(roleConfig) as [TeamRole, typeof roleConfig[TeamRole]][]).map(([role, cfg]) => {
+          {(Object.entries(roleConfig) as [NormRole, typeof roleConfig[NormRole]][]).map(([role, cfg]) => {
             const Icon = cfg.icon
             return (
               <div key={role} style={{ background: 'var(--surface-1)', borderRadius: 12, padding: '14px' }}>
@@ -88,9 +102,11 @@ export default function Team() {
         </div>
 
         {/* members */}
+        {loading && <div style={{ color: 'var(--ink-muted)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>جاري التحميل...</div>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {members.map(m => {
-            const cfg = roleConfig[m.role]
+            const normRole = normalizeRole(m.role)
+            const cfg = roleConfig[normRole]
             const Icon = cfg.icon
             return (
               <div key={m.id} style={{ background: 'var(--surface-1)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)' }}>
@@ -114,8 +130,8 @@ export default function Team() {
 
                 {/* role selector */}
                 <select
-                  value={m.role}
-                  onChange={e => setMembers(prev => prev.map(x => x.id === m.id ? { ...x, role: e.target.value as TeamRole } : x))}
+                  value={normRole}
+                  onChange={e => handleRoleChange(m.id, e.target.value as NormRole)}
                   style={{ background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer' }}
                 >
                   <option value="admin">مدير</option>
@@ -123,7 +139,7 @@ export default function Team() {
                   <option value="customer_service">خدمة عملاء</option>
                 </select>
 
-                {m.role !== 'admin' && (
+                {normRole !== 'admin' && (
                   <button onClick={() => handleRemove(m.id)} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,85,119,0.08)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
                     <Trash2 size={13} color="var(--gradient-coral)" />
                   </button>
@@ -156,7 +172,7 @@ export default function Team() {
                 <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6 }}>الصلاحية</div>
                 <select
                   value={inviteRole}
-                  onChange={e => setInviteRole(e.target.value as TeamRole)}
+                  onChange={e => setInviteRole(e.target.value as NormRole)}
                   style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit' }}
                 >
                   <option value="order_manager">مدير طلبات</option>

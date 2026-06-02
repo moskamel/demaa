@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, AlertCircle, AlertTriangle, Clock, CheckCircle, BarChart2, Plug, Package, Truck, Bell } from 'lucide-react'
-import { NOTIFICATIONS, type Notification } from '../store/mockData'
+import { notifications as notifApi, type Notification } from '../lib/api'
 
 const typeConfig: Record<string, { icon: typeof Bell; color: string; bg: string }> = {
   low_stock: { icon: Package, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
@@ -14,23 +14,37 @@ const typeConfig: Record<string, { icon: typeof Bell; color: string; bg: string 
   shipment_created: { icon: Truck, color: '#0099ff', bg: 'rgba(0,153,255,0.12)' },
 }
 
-const priorityLabel = { urgent: 'عاجل', important: 'مهم', info: 'معلومة' }
-const priorityColor = { urgent: '#ff5577', important: '#ff7a3d', info: 'var(--ink-muted)' }
+const priorityLabel: Record<string, string> = { urgent: 'عاجل', important: 'مهم', info: 'معلومة' }
+const priorityColor: Record<string, string> = { urgent: '#ff5577', important: '#ff7a3d', info: 'var(--ink-muted)' }
 
 export default function Notifications() {
-  const [notifs, setNotifs] = useState<Notification[]>([...NOTIFICATIONS])
+  const [notifs, setNotifs] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'unread' | 'urgent'>('all')
 
-  const markAllRead = () => setNotifs(prev => prev.map(n => ({ ...n, readAt: n.readAt || 'الآن' })))
-  const markRead = (id: string) => setNotifs(prev => prev.map(n => n.id === id ? { ...n, readAt: 'الآن' } : n))
+  useEffect(() => {
+    notifApi.list().then(data => {
+      setNotifs(data.notifications)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  const markAllRead = async () => {
+    await notifApi.markAllRead().catch(() => {})
+    setNotifs(prev => prev.map(n => ({ ...n, isRead: true })))
+  }
+  const markRead = async (id: string) => {
+    await notifApi.markRead(id).catch(() => {})
+    setNotifs(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n))
+  }
 
   const filtered = notifs.filter(n => {
-    if (filter === 'unread') return !n.readAt
+    if (filter === 'unread') return !n.isRead
     if (filter === 'urgent') return n.priority === 'urgent'
     return true
   })
 
-  const unreadCount = notifs.filter(n => !n.readAt).length
+  const unreadCount = notifs.filter(n => !n.isRead).length
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
@@ -68,16 +82,20 @@ export default function Notifications() {
         </div>
 
         {/* list */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>
+            جاري التحميل...
+          </div>
+        ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>
             لا توجد إشعارات
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {filtered.map((n, i) => {
-              const cfg = typeConfig[n.type]
+              const cfg = typeConfig[n.type] || { icon: Bell, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' }
               const Icon = cfg.icon
-              const isRead = !!n.readAt
+              const isRead = n.isRead
               return (
                 <div
                   key={n.id}
@@ -110,3 +128,4 @@ export default function Notifications() {
     </div>
   )
 }
+

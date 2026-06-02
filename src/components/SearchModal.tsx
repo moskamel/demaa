@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Search, ShoppingCart, Package, Users, BarChart2 } from 'lucide-react'
-import { ORDERS, PRODUCTS } from '../store/mockData'
+import { orders as ordersApi, products as productsApi } from '../lib/api'
 
 interface Props {
   onClose: () => void
@@ -33,39 +33,48 @@ const typeIcons: Record<ResultType, React.ElementType> = { order: ShoppingCart, 
 const typeColors: Record<ResultType, string> = { order: '#6a4cf5', product: '#22c55e', customer: '#0099ff', page: '#ff7a3d' }
 const typeLabels: Record<ResultType, string> = { order: 'طلب', product: 'منتج', customer: 'عميل', page: 'صفحة' }
 
-function buildResults(q: string): Result[] {
-  if (!q.trim()) return PAGES
-  const ql = q.toLowerCase()
-
-  const results: Result[] = []
-
-  ORDERS.filter(o =>
-    o.id.includes(q) || o.customer.includes(q) || o.city.includes(q)
-  ).slice(0, 4).forEach(o => {
-    results.push({ type: 'order', id: o.id, title: `طلب #${o.id}`, subtitle: `${o.customer} · ${o.city}`, value: o.id })
-  })
-
-  PRODUCTS.filter(p =>
-    p.name.includes(q) || p.category.includes(q)
-  ).slice(0, 3).forEach(p => {
-    results.push({ type: 'product', id: p.id, title: p.name, subtitle: `${p.category} · ${p.price.toLocaleString('ar-SA')} ر.س`, value: p.id })
-  })
-
-  PAGES.filter(pg =>
-    pg.title.includes(q) || pg.subtitle.includes(q) || pg.id.includes(ql)
-  ).slice(0, 3).forEach(pg => results.push(pg))
-
-  return results
-}
-
 export default function SearchModal({ onClose, onSelectOrder }: Props) {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState(0)
+  const [results, setResults] = useState<Result[]>(PAGES)
   const inputRef = useRef<HTMLInputElement>(null)
-  const results = buildResults(query)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => { inputRef.current?.focus() }, [])
-  useEffect(() => { setSelected(0) }, [query])
+  useEffect(() => { setSelected(0) }, [results])
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults(PAGES)
+      return
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(async () => {
+      const q = query.trim()
+      const newResults: Result[] = []
+
+      try {
+        const [ordersData, productsData] = await Promise.all([
+          ordersApi.list({ search: q, limit: '4' }),
+          productsApi.list({ search: q }),
+        ])
+        ordersData.orders.slice(0, 4).forEach(o => {
+          newResults.push({ type: 'order', id: o.id, title: `طلب #${o.externalRef || o.id}`, subtitle: `${o.customerName} · ${o.city}`, value: o.id })
+        })
+        productsData.products.slice(0, 3).forEach(p => {
+          newResults.push({ type: 'product', id: p.id, title: p.name, subtitle: `${p.category || '—'} · ${p.price.toLocaleString('ar-SA')} ر.س`, value: p.id })
+        })
+      } catch {
+        // ignore API errors during search
+      }
+
+      PAGES.filter(pg =>
+        pg.title.includes(q) || pg.subtitle.includes(q) || pg.id.includes(q.toLowerCase())
+      ).slice(0, 3).forEach(pg => newResults.push(pg))
+
+      setResults(newResults.length > 0 ? newResults : [])
+    }, 300)
+  }, [query])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -118,7 +127,7 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{r.title}</div>
                       <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 1 }}>{r.subtitle}</div>
                     </div>
-                    <div style={{ fontSize: 10, color: color, background: `${color}18`, borderRadius: 5, padding: '2px 8px', flexShrink: 0 }}>{typeLabels[r.type]}</div>
+                    <div style={{ fontSize: 10, color, background: `${color}18`, borderRadius: 5, padding: '2px 8px', flexShrink: 0 }}>{typeLabels[r.type]}</div>
                   </div>
                 )
               })}

@@ -250,3 +250,63 @@ export interface AiMemory { id: string; key: string; value: string; confidence: 
 export interface UsageRecord { id: string; month: string; ordersProcessed: number; messagesUsed: number }
 export interface Subscription { planId: string; ordersLimit: number; ordersUsed: number; status: string }
 export interface StoreData { id: string; name: string; platform: string; isActive: boolean; syncStatus: string; lastSyncAt?: string; _count: { orders: number; products: number } }
+
+// ── Team ─────────────────────────────────────────────────────
+
+export const teamApi = {
+  async list() {
+    return request<{ members: TeamMember[] }>('/team')
+  },
+  async updateRole(id: string, role: string) {
+    return request(`/team/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role }) })
+  },
+  async remove(id: string) {
+    return request(`/team/${id}`, { method: 'DELETE' })
+  },
+}
+
+// ── Connectors ───────────────────────────────────────────────
+
+export const connectorsApi = {
+  async list() {
+    return request<{ connectors: ConnectorData[] }>('/connectors')
+  },
+  async connect(type: string) {
+    return request(`/connectors/${type}/connect`, { method: 'POST' })
+  },
+  async disconnect(type: string) {
+    return request(`/connectors/${type}/disconnect`, { method: 'POST' })
+  },
+}
+
+// ── Coupons ──────────────────────────────────────────────────
+
+export const couponsApi = {
+  async list() {
+    return request<{ coupons: CouponData[] }>('/coupons')
+  },
+  async create(data: { code: string; type: string; value: number; maxUsage?: number }) {
+    return request<{ coupon: CouponData }>('/coupons', { method: 'POST', body: JSON.stringify(data) })
+  },
+  async update(id: string, data: Partial<CouponData>) {
+    return request(`/coupons/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+  },
+  async delete(id: string) {
+    return request(`/coupons/${id}`, { method: 'DELETE' })
+  },
+}
+
+export interface TeamMember {
+  id: string; userId: string; name: string; email: string; role: string;
+  avatar: string; joinedAt: string; lastActive: string | null
+}
+
+export interface ConnectorData {
+  type: string; name: string; nameAr: string; status: string;
+  category: string; lastUsed?: string; logo: string
+}
+
+export interface CouponData {
+  id: string; code: string; type: string; value: number;
+  usageCount: number; maxUsage: number | null; isActive: boolean; expiresAt: string | null
+}

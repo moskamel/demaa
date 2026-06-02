@@ -1,36 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, Search, Users, TrendingUp, ShoppingBag, Star } from 'lucide-react'
-import { ORDERS } from '../store/mockData'
-
-// ── Build customer list from order data ──────────────────────────────────────
-
-interface Customer {
-  name: string
-  phone: string
-  city: string
-  orderCount: number
-  totalSpent: number
-  lastOrder: string
-  isNew: boolean
-  segment: 'vip' | 'loyal' | 'regular' | 'new'
-}
-
-const customerMap: Record<string, Customer> = {}
-ORDERS.forEach(o => {
-  const key = o.phone || o.customer
-  if (!customerMap[key]) {
-    customerMap[key] = { name: o.customer, phone: o.phone || '', city: o.city, orderCount: 0, totalSpent: 0, lastOrder: o.createdAt, isNew: o.isNewCustomer ?? false, segment: 'new' }
-  }
-  customerMap[key].orderCount++
-  if (['accepted', 'shipped', 'delivered'].includes(o.status)) customerMap[key].totalSpent += o.total
-  if (o.createdAt > customerMap[key].lastOrder) customerMap[key].lastOrder = o.createdAt
-})
-
-const customers: Customer[] = Object.values(customerMap).map(c => {
-  const seg: Customer['segment'] = c.totalSpent >= 1000 ? 'vip' : c.orderCount >= 3 ? 'loyal' : c.orderCount >= 1 ? 'regular' : 'new'
-  return { ...c, segment: seg }
-}).sort((a, b) => b.totalSpent - a.totalSpent)
+import { customers as customersApi, type Customer } from '../lib/api'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
 const segmentLabels: Record<string, string> = { vip: 'VIP', loyal: 'مخلص', regular: 'عادي', new: 'جديد' }
@@ -39,18 +10,27 @@ const segmentBg: Record<string, string> = { vip: 'rgba(212,77,240,0.1)', loyal: 
 type SegFilter = 'all' | 'vip' | 'loyal' | 'regular' | 'new'
 
 export default function Customers() {
+  const [allCustomers, setAllCustomers] = useState<Customer[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [segFilter, setSegFilter] = useState<SegFilter>('all')
 
-  const filtered = customers.filter(c => {
+  useEffect(() => {
+    customersApi.list().then(data => {
+      setAllCustomers(data.customers)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  const filtered = allCustomers.filter(c => {
     const matchSeg = segFilter === 'all' || c.segment === segFilter
-    const matchSearch = !search || c.name.includes(search) || c.phone.includes(search) || c.city.includes(search)
+    const matchSearch = !search || c.name.includes(search) || (c.phone || '').includes(search) || (c.city || '').includes(search)
     return matchSeg && matchSearch
   })
 
-  const vipCount = customers.filter(c => c.segment === 'vip').length
-  const loyalCount = customers.filter(c => c.segment === 'loyal').length
-  const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0)
+  const vipCount = allCustomers.filter(c => c.segment === 'vip').length
+  const loyalCount = allCustomers.filter(c => c.segment === 'loyal').length
+  const totalSpent = allCustomers.reduce((s, c) => s + c.totalSpent, 0)
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
@@ -67,7 +47,7 @@ export default function Customers() {
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
           {[
-            { icon: Users, label: 'إجمالي العملاء', value: customers.length, color: '#6a4cf5' },
+            { icon: Users, label: 'إجمالي العملاء', value: allCustomers.length, color: '#6a4cf5' },
             { icon: Star, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
             { icon: TrendingUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
             { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-SA')} ر.س`, color: '#22c55e' },
@@ -98,7 +78,11 @@ export default function Customers() {
         </div>
 
         {/* table */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>
+            <div style={{ fontSize: 14 }}>جاري التحميل...</div>
+          </div>
+        ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
             <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>لا توجد نتائج</div>
@@ -107,19 +91,19 @@ export default function Customers() {
         ) : (
           <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
             {filtered.map((c, i) => (
-              <div key={c.phone} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: `${segmentColors[c.segment]}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>
+              <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: `${segmentColors[c.segment] || '#6a4cf5'}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>
                   {c.segment === 'vip' ? '⭐' : c.segment === 'loyal' ? '💜' : c.segment === 'new' ? '🆕' : '👤'}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{c.name}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: segmentColors[c.segment], background: segmentBg[c.segment], borderRadius: 5, padding: '2px 7px' }}>{segmentLabels[c.segment]}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: segmentColors[c.segment] || '#6a4cf5', background: segmentBg[c.segment] || 'rgba(106,76,245,0.1)', borderRadius: 5, padding: '2px 7px' }}>{segmentLabels[c.segment] || c.segment}</span>
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{c.phone} · {c.city}</div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{c.phone || '—'} · {c.city || '—'}</div>
                 </div>
                 <div style={{ textAlign: 'center', minWidth: 60 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{c.orderCount}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{c.totalOrders}</div>
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>طلبات</div>
                 </div>
                 <div style={{ textAlign: 'left', minWidth: 100 }}>
