@@ -139,13 +139,16 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const where: Record<string, unknown> = { isActive: true }
       if (storeId) where.storeId = storeId
       if (category) where.category = category
-      if (lowStock) where.stock = { lt: prisma.product.fields.lowStockAlert ?? 5 }
-
       let products
       if (lowStock) {
-        products = await prisma.$queryRawUnsafe(
-          `SELECT * FROM products WHERE ${storeId ? `store_id = '${storeId}' AND ` : ''}is_active = 1 AND stock < low_stock_alert LIMIT ${Number(limit)}`
-        )
+        products = await prisma.product.findMany({
+          where: { ...(storeId && { storeId }), isActive: true, stock: { lt: 5 } },
+          orderBy: { stock: 'asc' },
+          take: Number(limit),
+        })
+        // refine: stock < lowStockAlert per product
+        const all = await prisma.product.findMany({ where: { ...(storeId && { storeId }), isActive: true }, take: 200 })
+        products = all.filter((p: any) => p.stock < p.lowStockAlert).slice(0, Number(limit))
       } else {
         products = await prisma.product.findMany({
           where,

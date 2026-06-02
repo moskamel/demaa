@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import prisma from '../lib/prisma.js'
 import { chat } from '../lib/ai/orchestrator.js'
+import { freeChat } from '../lib/ai/freeEngine.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
 
 const router = Router()
@@ -54,20 +55,37 @@ router.post('/:id/messages', async (req: AuthRequest, res) => {
     return
   }
 
-  try {
-    const result = await chat(message, {
-      orgId: req.orgId!,
-      userId: req.userId,
-      conversationId: req.params.id,
-    })
-    res.json({ response: result.response, toolsUsed: result.toolsUsed })
-  } catch (err) {
-    console.error('AI error:', err)
-    // Fallback when no API key
-    const fallback = generateFallback(message)
-    res.json({ response: fallback, toolsUsed: [], fallback: true })
+  const ctx = { orgId: req.orgId!, userId: req.userId, conversationId: req.params.id }
+
+  let result: { response: string; toolsUsed: string[] }
+
+  if (process.env.ANTHROPIC_API_KEY) {
+    // orchestrator handles message persistence internally
+    try {
+      result = await chat(message, ctx)
+    } catch (err) {
+      console.error('Claude API error:', err)
+      result = await freeChat(message, ctx)
+      await saveMessages(req.params.id, message, result)
+    }
+  } else {
+    result = await freeChat(message, ctx)
+    await saveMessages(req.params.id, message, result)
   }
+
+  await prisma.conversation.update({ where: { id: req.params.id }, data: { updatedAt: new Date() } })
+
+  res.json({ response: result.response, toolsUsed: result.toolsUsed })
 })
+
+async function saveMessages(convId: string, userMsg: string, result: { response: string; toolsUsed: string[] }) {
+  await prisma.message.createMany({
+    data: [
+      { conversationId: convId, role: 'user', content: userMsg },
+      { conversationId: convId, role: 'assistant', content: result.response, toolCalls: JSON.stringify(result.toolsUsed) },
+    ],
+  })
+}
 
 // DELETE /conversations/:id
 router.delete('/:id', async (req: AuthRequest, res) => {
@@ -76,14 +94,5 @@ router.delete('/:id', async (req: AuthRequest, res) => {
   })
   res.json({ deleted: true })
 })
-
-function generateFallback(msg: string): string {
-  const lower = msg.toLowerCase()
-  if (lower.includes('مرحب') || lower.includes('هلا') || lower.includes('أهلاً'))
-    return 'أهلاً وسهلاً! أنا ديما. يبدو أن مفتاح Claude API غير مضبوط حالياً. يرجى إضافة ANTHROPIC_API_KEY في ملف .env لتفعيل الذكاء الاصطناعي الكامل.'
-  if (lower.includes('طلب'))
-    return 'لاستعراض الطلبات بشكل كامل، يحتاج النظام لمفتاح Claude API. يمكنك الاطلاع على الطلبات مباشرة من صفحة الطلبات.'
-  return 'للاستفادة من قدرات ديما الكاملة، يرجى إضافة ANTHROPIC_API_KEY في ملف .env'
-}
 
 export default router
