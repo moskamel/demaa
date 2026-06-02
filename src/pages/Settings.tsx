@@ -7,7 +7,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <button
       onClick={() => onChange(!checked)}
-      style={{ width: 40, height: 22, borderRadius: 100, background: checked ? 'var(--semantic-success)' : 'var(--surface-2)', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
+      style={{ width: 40, height: 22, borderRadius: 100, background: checked ? 'var(--semantic-success)' : 'var(--canvas-soft-2)', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
     >
       <div style={{ position: 'absolute', top: 3, right: checked ? 3 : 19, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'right 0.2s' }} />
     </button>
@@ -16,7 +16,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 
 function SettingRow({ label, desc, checked, onChange }: { label: string; desc?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderBottom: '1px solid var(--hairline-soft)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderBottom: '1px solid var(--hairline)' }}>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: desc ? 2 : 0 }}>{label}</div>
         {desc && <div style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{desc}</div>}
@@ -28,7 +28,7 @@ function SettingRow({ label, desc, checked, onChange }: { label: string; desc?: 
 
 function Section({ icon: Icon, title, children }: { icon: typeof Sun; title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px 22px', marginBottom: 16, border: '1px solid var(--hairline)' }}>
+    <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', marginBottom: 16, border: '1px solid var(--hairline)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <Icon size={14} color="var(--ink-muted)" />
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</span>
@@ -106,7 +106,7 @@ export default function Settings() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid var(--hairline)',
-    background: 'var(--surface-2)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit',
+    background: 'var(--canvas-soft-2)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit',
     outline: 'none', boxSizing: 'border-box',
   }
 
@@ -185,17 +185,17 @@ export default function Settings() {
               onChange={v => set('morningBrief', v)}
             />
             {settings.morningBrief && (
-              <div style={{ padding: '10px 0', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--hairline-soft)' }}>
+              <div style={{ padding: '10px 0', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--hairline)' }}>
                 <span style={{ fontSize: 13, color: 'var(--ink-muted)', flex: 1 }}>وقت الملخص</span>
                 <input
                   type="time"
                   value={settings.morningTime}
                   onChange={e => set('morningTime', e.target.value)}
-                  style={{ background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 13, direction: 'ltr', fontFamily: 'inherit' }}
+                  style={{ background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 13, direction: 'ltr', fontFamily: 'inherit' }}
                 />
               </div>
             )}
-            <div style={{ padding: '14px 0', borderBottom: '1px solid var(--hairline-soft)' }}>
+            <div style={{ padding: '14px 0', borderBottom: '1px solid var(--hairline)' }}>
               <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: 8 }}>شخصية Deema</div>
               <div style={{ display: 'flex', gap: 8 }}>
                 {([['friendly', 'ودية وعفوية'], ['formal', 'رسمية ومهنية']] as const).map(([v, l]) => (
@@ -240,7 +240,7 @@ export default function Settings() {
             <SettingRow label="طلبات جديدة" checked={settings.notifOrders} onChange={v => set('notifOrders', v)} />
             <SettingRow label="تقارير أسبوعية" checked={settings.notifWeekly} onChange={v => set('notifWeekly', v)} />
             {settings.notifStock && (
-              <div style={{ padding: '12px 0', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--hairline-soft)' }}>
+              <div style={{ padding: '12px 0', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--hairline)' }}>
                 <span style={{ fontSize: 13, color: 'var(--ink-muted)', flex: 1 }}>حد تنبيه المخزون</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <input
@@ -248,7 +248,7 @@ export default function Settings() {
                     value={settings.stockThreshold}
                     onChange={e => set('stockThreshold', parseInt(e.target.value))}
                     min={1} max={100}
-                    style={{ width: 60, background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 13, textAlign: 'center', direction: 'ltr', fontFamily: 'inherit' }}
+                    style={{ width: 60, background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 13, textAlign: 'center', direction: 'ltr', fontFamily: 'inherit' }}
                   />
                   <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>قطعة</span>
                 </div>

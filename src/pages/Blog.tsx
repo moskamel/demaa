@@ -35,10 +35,10 @@ export default function Blog() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -62,10 +62,10 @@ export default function Blog() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {posts.map(post => (
             <article key={post.slug} style={{
-              background: 'var(--surface-1)',
+              background: 'var(--canvas-soft)',
               borderRadius: 20,
               padding: '32px',
-              border: '1px solid var(--hairline-soft)',
+              border: '1px solid var(--hairline)',
               cursor: 'pointer',
               transition: 'border-color 0.2s',
             }}>
@@ -91,7 +91,7 @@ export default function Blog() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

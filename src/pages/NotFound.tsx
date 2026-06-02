@@ -18,7 +18,7 @@ export default function NotFound() {
         fontWeight: 500,
         letterSpacing: '-0.07em',
         lineHeight: 0.85,
-        color: 'var(--surface-2)',
+        color: 'var(--canvas-soft-2)',
         marginBottom: 32,
         userSelect: 'none',
       }}>

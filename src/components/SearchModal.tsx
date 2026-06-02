@@ -96,14 +96,14 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 300, backdropFilter: 'blur(4px)' }} />
-      <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: 560, background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', zIndex: 301, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.4)' }}>
+      <div style={{ position: 'fixed', top: '15%', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: 560, background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', zIndex: 301, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.08)' }}>
 
         {/* input */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderBottom: '1px solid var(--hairline)' }}>
           <Search size={16} color="var(--ink-muted)" />
           <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder="ابحث عن طلب، منتج، عميل، أو صفحة..." style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: 'var(--ink)', fontFamily: 'inherit' }} />
           {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 0 }}><X size={14} /></button>}
-          <kbd style={{ fontSize: 10, color: 'var(--ink-muted)', background: 'var(--surface-2)', borderRadius: 5, padding: '3px 7px', border: '1px solid var(--hairline)', cursor: 'pointer', flexShrink: 0 }} onClick={onClose}>Esc</kbd>
+          <kbd style={{ fontSize: 10, color: 'var(--ink-muted)', background: 'var(--canvas-soft-2)', borderRadius: 5, padding: '3px 7px', border: '1px solid var(--hairline)', cursor: 'pointer', flexShrink: 0 }} onClick={onClose}>Esc</kbd>
         </div>
 
         {/* results */}
@@ -119,7 +119,7 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
                 const Icon = typeIcons[r.type]
                 const color = typeColors[r.type]
                 return (
-                  <div key={r.id} onClick={() => handleSelect(r)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 20px', cursor: 'pointer', background: selected === i ? 'var(--surface-2)' : 'transparent', transition: 'background 0.1s' }} onMouseEnter={() => setSelected(i)}>
+                  <div key={r.id} onClick={() => handleSelect(r)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 20px', cursor: 'pointer', background: selected === i ? 'var(--canvas-soft-2)' : 'transparent', transition: 'background 0.1s' }} onMouseEnter={() => setSelected(i)}>
                     <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <Icon size={14} color={color} />
                     </div>

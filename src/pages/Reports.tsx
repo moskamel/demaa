@@ -42,7 +42,7 @@ export default function Reports() {
   const KPI = ({ icon: Icon, label, value, sub, color, trend }: {
     icon: React.ElementType; label: string; value: string; sub?: string; color: string; trend?: 'up' | 'down'
   }) => (
-    <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
+    <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ width: 38, height: 38, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Icon size={17} color={color} />
@@ -70,17 +70,17 @@ export default function Reports() {
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>التقارير</span>
         <div style={{ marginRight: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           {/* period selector */}
-          <div style={{ display: 'flex', gap: 3, background: 'var(--surface-1)', borderRadius: 8, padding: 3 }}>
+          <div style={{ display: 'flex', gap: 3, background: 'var(--canvas-soft)', borderRadius: 8, padding: 3 }}>
             {(['7d', '30d', '90d'] as Period[]).map(p => (
-              <button key={p} onClick={() => setPeriod(p)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: period === p ? 'var(--surface-2)' : 'transparent', color: period === p ? 'var(--ink)' : 'var(--ink-muted)' }}>
+              <button key={p} onClick={() => setPeriod(p)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: period === p ? 'var(--canvas-soft-2)' : 'transparent', color: period === p ? 'var(--ink)' : 'var(--ink-muted)' }}>
                 {p === '7d' ? '٧ أيام' : p === '30d' ? '٣٠ يوم' : '٩٠ يوم'}
               </button>
             ))}
           </div>
-          <button onClick={handleRefresh} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)' }}>
+          <button onClick={handleRefresh} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)' }}>
             <RefreshCw size={13} style={{ animation: refreshing ? 'spin 0.8s linear' : 'none' }} />
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-1)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, color: 'var(--ink-muted)' }}>
+          <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, color: 'var(--ink-muted)' }}>
             <Download size={12} /> تصدير
           </button>
         </div>
@@ -104,14 +104,14 @@ export default function Reports() {
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
 
               {/* cities breakdown */}
-              <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>أعلى المدن</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {overview.topCities.slice(0, 6).map(([city, data], i) => (
                     <div key={city} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: 6, background: i === 0 ? 'rgba(106,76,245,0.15)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#6a4cf5' : 'var(--ink-muted)', flexShrink: 0 }}>{i + 1}</div>
+                      <div style={{ width: 20, height: 20, borderRadius: 6, background: i === 0 ? 'rgba(106,76,245,0.15)' : 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#6a4cf5' : 'var(--ink-muted)', flexShrink: 0 }}>{i + 1}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 12, color: 'var(--ink)', fontWeight: 500 }}>{city}</div>
                         <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{data.orders} طلب</div>
@@ -126,7 +126,7 @@ export default function Reports() {
               </div>
 
               {/* payment breakdown */}
-              <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 20 }}>طرق الدفع</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {Object.entries(overview.paymentBreakdown).map(([method, count]) => {
@@ -149,7 +149,7 @@ export default function Reports() {
             </div>
 
             {/* low stock */}
-            <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px', marginBottom: 16 }}>
+            <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px', marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>تحذيرات المخزون</div>
                 {lowStockProducts.length > 0 && (
@@ -179,27 +179,27 @@ export default function Reports() {
             </div>
 
             {/* products table */}
-            <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
+            <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
               <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>أداء المنتجات</div>
                 <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>مرتب حسب المخزون</div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: 0 }}>
-                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline-soft)', fontWeight: 600 }}>المنتج</div>
-                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline-soft)', fontWeight: 600 }}>السعر</div>
-                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline-soft)', fontWeight: 600 }}>المخزون</div>
-                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline-soft)', fontWeight: 600 }}>الحالة</div>
+                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)', fontWeight: 600 }}>المنتج</div>
+                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)', fontWeight: 600 }}>السعر</div>
+                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)', fontWeight: 600 }}>المخزون</div>
+                <div style={{ padding: '10px 20px', fontSize: 11, color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)', fontWeight: 600 }}>الحالة</div>
                 {allProducts.map(p => (
                   <>
-                    <div key={`${p.id}-name`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline-soft)' }}>
+                    <div key={`${p.id}-name`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{p.name}</div>
                       <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{p.category || '—'} · {p.sku || p.id}</div>
                     </div>
-                    <div key={`${p.id}-price`} style={{ padding: '12px 20px', fontSize: 13, fontWeight: 600, color: 'var(--ink)', borderBottom: '1px solid var(--hairline-soft)', display: 'flex', alignItems: 'center' }}>{(p.price / 100).toLocaleString('ar-EG')} ج.م</div>
-                    <div key={`${p.id}-stock`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline-soft)', display: 'flex', alignItems: 'center' }}>
+                    <div key={`${p.id}-price`} style={{ padding: '12px 20px', fontSize: 13, fontWeight: 600, color: 'var(--ink)', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center' }}>{(p.price / 100).toLocaleString('ar-EG')} ج.م</div>
+                    <div key={`${p.id}-stock`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center' }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: p.stock === 0 ? '#ff5577' : p.stock < 5 ? '#ff7a3d' : 'var(--ink)' }}>{p.stock}</span>
                     </div>
-                    <div key={`${p.id}-status`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline-soft)', display: 'flex', alignItems: 'center' }}>
+                    <div key={`${p.id}-status`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center' }}>
                       <span style={{ fontSize: 11, fontWeight: 600, color: p.stock === 0 ? '#ff5577' : p.stock < 5 ? '#ff7a3d' : '#22c55e', background: p.stock === 0 ? 'rgba(255,85,119,0.1)' : p.stock < 5 ? 'rgba(255,122,61,0.1)' : 'rgba(34,197,94,0.1)', borderRadius: 6, padding: '3px 8px' }}>
                         {p.stock === 0 ? 'نافد' : p.stock < 5 ? 'منخفض' : 'متوفر'}
                       </span>

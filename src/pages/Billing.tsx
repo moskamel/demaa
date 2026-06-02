@@ -31,7 +31,7 @@ export default function Billing() {
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '40px 24px' }}>
 
         {/* hero banner */}
-        <div style={{ background: 'linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)', borderRadius: 20, padding: '32px 28px', marginBottom: 32, textAlign: 'center' }}>
+        <div style={{ background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', borderRadius: 20, padding: '32px 28px', marginBottom: 32, textAlign: 'center' }}>
           <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
             <Zap size={24} color="#fff" />
           </div>
@@ -48,7 +48,7 @@ export default function Billing() {
         </div>
 
         {/* plan card */}
-        <div style={{ background: 'var(--surface-1)', borderRadius: 20, border: '2px solid #6a4cf5', padding: '28px', marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, border: '2px solid #6a4cf5', padding: '28px', marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, left: 0, height: 3, background: 'linear-gradient(90deg, #6a4cf5, #d44df0)' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -84,7 +84,7 @@ export default function Billing() {
             { label: 'المنصات', value: 'غير محدود', icon: '🛍️' },
             { label: 'أعضاء الفريق', value: 'غير محدود', icon: '👥' },
           ].map(s => (
-            <div key={s.label} style={{ background: 'var(--surface-1)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px', textAlign: 'center' }}>
+            <div key={s.label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: 22, marginBottom: 6 }}>{s.icon}</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)', marginBottom: 2 }}>{s.value}</div>
               <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{s.label}</div>

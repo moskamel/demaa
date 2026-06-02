@@ -42,13 +42,13 @@ function ActionIcon({ type, color }: { type: string; color: string }) {
 function ActivityRow({ item, index, total }: { item: { id: string; time: string; icon: string; color: string; title: string; by: string; detail: string }; index: number; total: number }) {
   return (
     <div style={{
-      background: 'var(--surface-1)',
+      background: 'var(--canvas-soft)',
       padding: '14px 18px',
       borderRadius: index === 0 ? '15px 15px 4px 4px' : index === total - 1 ? '4px 4px 15px 15px' : 4,
       display: 'flex', alignItems: 'center', gap: 14,
-      borderBottom: index < total - 1 ? '1px solid var(--hairline-soft)' : 'none',
+      borderBottom: index < total - 1 ? '1px solid var(--hairline)' : 'none',
     }}>
-      <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <ActionIcon type={item.icon} color={item.color} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -126,9 +126,9 @@ export default function Activity() {
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: 4, marginBottom: 32, background: 'var(--surface-1)', borderRadius: 100, padding: 4, width: 'fit-content' }}>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 32, background: 'var(--canvas-soft)', borderRadius: 100, padding: 4, width: 'fit-content' }}>
           {filters.map(f => (
-            <button key={f.id} onClick={() => setActive(f.id)} style={{ background: active === f.id ? 'var(--surface-2)' : 'transparent', color: active === f.id ? 'var(--ink)' : 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '7px 16px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <button key={f.id} onClick={() => setActive(f.id)} style={{ background: active === f.id ? 'var(--canvas-soft-2)' : 'transparent', color: active === f.id ? 'var(--ink)' : 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '7px 16px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
               {f.label}
             </button>
           ))}

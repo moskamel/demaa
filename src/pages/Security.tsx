@@ -75,10 +75,10 @@ export default function Security() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -102,7 +102,7 @@ export default function Security() {
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>بياناتك أمانة عندنا — إليك كيف نحميها</p>
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px 24px', marginBottom: 48, border: '1px solid rgba(34,197,94,0.3)', display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 24px', marginBottom: 48, border: '1px solid rgba(34,197,94,0.3)', display: 'flex', gap: 12, alignItems: 'center' }}>
           <span style={{ fontSize: 20 }}>✅</span>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.6 }}>
             لم نتعرض لأي اختراق أمني منذ إطلاق Deema. نفخر بسجلنا الأمني النظيف ونلتزم بالشفافية الكاملة.
@@ -111,7 +111,7 @@ export default function Security() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 20, marginBottom: 48 }}>
           {practices.map(({ icon: Icon, title, color, items }) => (
-            <div key={title} style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline-soft)' }}>
+            <div key={title} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Icon size={18} color={color} />
@@ -127,7 +127,7 @@ export default function Security() {
           ))}
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '28px', border: '1px solid var(--hairline-soft)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '28px', border: '1px solid var(--hairline)', textAlign: 'center' }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12 }}>اكتشفت ثغرة أمنية؟</h2>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)', marginBottom: 16, lineHeight: 1.6 }}>
             نقدّر الباحثين الأمنيين الذين يساعدوننا. أبلغنا بطريقة مسؤولة وسنستجيب خلال ٤٨ ساعة.
@@ -136,7 +136,7 @@ export default function Security() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

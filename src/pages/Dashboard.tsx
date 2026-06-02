@@ -50,7 +50,7 @@ function OrderListView({ rows, onOrderClick }: { rows: OrderRow[]; onOrderClick?
   return (
     <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 1, borderRadius: 12, overflow: 'hidden' }}>
       {rows.map((o, i) => (
-        <div key={o.id} onClick={() => onOrderClick?.(o.id)} style={{ background: 'var(--canvas)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: i < rows.length - 1 ? '1px solid var(--hairline-soft)' : 'none', cursor: onOrderClick ? 'pointer' : 'default', transition: 'background 0.1s' }} onMouseEnter={e => { if (onOrderClick) e.currentTarget.style.background = 'var(--surface-1)' }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas)' }}>
+        <div key={o.id} onClick={() => onOrderClick?.(o.id)} style={{ background: 'var(--canvas)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: i < rows.length - 1 ? '1px solid var(--hairline)' : 'none', cursor: onOrderClick ? 'pointer' : 'default', transition: 'background 0.1s' }} onMouseEnter={e => { if (onOrderClick) e.currentTarget.style.background = 'var(--canvas-soft)' }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.2px' }}>#{o.id}</span>
@@ -83,7 +83,7 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
   return (
     <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 1, borderRadius: 12, overflow: 'hidden' }}>
       {rows.map((p, i) => (
-        <div key={p.id} style={{ background: 'var(--canvas)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: i < rows.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
+        <div key={p.id} style={{ background: 'var(--canvas)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: i < rows.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>{p.name}</div>
             <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{p.category} · {p.id}</div>
@@ -103,12 +103,12 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, maxWidth: '80%' }}>
-      <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: 8 }}>
+      <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: 8 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink)' }}>D</span>
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 5 }}>Deema</div>
-        <div style={{ background: 'var(--surface-1)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: 'rgba(255,255,255,0.04) 0 0.5px 0 inset' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
           <p style={{ whiteSpace: 'pre-line', color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{msg.content}</p>
           {msg.stats && (
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(msg.stats.length, 4)}, 1fr)`, gap: 8, marginBottom: msg.actions ? 12 : 0 }}>
@@ -143,27 +143,27 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
 function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; notifs: { id: string; title: string; body?: string; priority: string; isRead: boolean; createdAt: string }[]; unreadCount: number }) {
   const priorityColor: Record<string, string> = { urgent: '#ff5577', important: '#ff7a3d', info: '#555' }
   return (
-    <div style={{ position: 'absolute', top: 44, left: 0, width: 320, background: 'var(--surface-1)', border: '1px solid var(--hairline)', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', zIndex: 200 }}>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid var(--hairline-soft)' }}>
+    <div style={{ position: 'absolute', top: 44, left: 0, width: 320, background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 200 }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid var(--hairline)' }}>
         <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإشعارات</span>
         {unreadCount > 0 && <span style={{ fontSize: 10, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 4, padding: '2px 6px', marginLeft: 8 }}>{unreadCount} جديد</span>}
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 4 }}><X size={13} /></button>
       </div>
       <div style={{ maxHeight: 340, overflowY: 'auto' }}>
         {notifs.slice(0, 5).map(n => (
-          <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline-soft)', background: (n as { readAt?: string | null; isRead?: boolean }).readAt || (n as { isRead?: boolean }).isRead ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
+          <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline)', background: (n as { readAt?: string | null; isRead?: boolean }).readAt || (n as { isRead?: boolean }).isRead ? 'transparent' : 'rgba(0,0,0,0.02)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: priorityColor[n.priority] || '#555', marginTop: 5, flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: (n as { readAt?: string | null; isRead?: boolean }).isRead ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
                 <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{(n as { body?: string }).body}</div>
-                <div style={{ fontSize: 10, color: '#444', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
+                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <div style={{ padding: '10px 16px', borderTop: '1px solid var(--hairline-soft)' }}>
+      <div style={{ padding: '10px 16px', borderTop: '1px solid var(--hairline)' }}>
         <Link to="/notifications" onClick={onClose} style={{ fontSize: 12, color: 'var(--accent-blue)', textDecoration: 'none' }}>عرض كل الإشعارات ←</Link>
       </div>
     </div>
@@ -273,13 +273,13 @@ export default function Dashboard() {
       <aside style={{ width: 240, background: 'var(--canvas)', borderLeft: '1px solid var(--hairline)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
 
         {/* logo + new chat */}
-        <div style={{ padding: '14px 12px 10px', borderBottom: '1px solid var(--hairline-soft)' }}>
+        <div style={{ padding: '14px 12px 10px', borderBottom: '1px solid var(--hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, padding: '0 4px' }}>
             <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <span style={{ color: '#000', fontWeight: 700, fontSize: 11 }}>D</span>
             </div>
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.4px', flex: 1 }}>Deema</span>
-            <button onClick={handleNewChat} style={{ width: 26, height: 26, borderRadius: 7, background: 'var(--surface-1)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }} title="محادثة جديدة">
+            <button onClick={handleNewChat} style={{ width: 26, height: 26, borderRadius: 7, background: 'var(--canvas-soft)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }} title="محادثة جديدة">
               <MessageSquarePlus size={12} />
             </button>
           </div>
@@ -292,7 +292,7 @@ export default function Dashboard() {
         <div style={{ padding: '10px 8px 6px' }}>
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', padding: '0 8px', marginBottom: 4 }}>المحادثات</div>
           {(convList.length > 0 ? convList : CONVS.map(c => ({ id: String(c.id), title: c.title, updatedAt: c.time }))).map(c => (
-            <button key={c.id} onClick={() => setActiveConv(c.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 8, border: 'none', background: c.id === activeConv ? 'var(--surface-1)' : 'transparent', color: c.id === activeConv ? 'var(--ink)' : 'var(--ink-muted)', cursor: 'pointer', fontSize: 12, marginBottom: 1, textAlign: 'right', fontFamily: 'inherit' }}>
+            <button key={c.id} onClick={() => setActiveConv(c.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 8, border: 'none', background: c.id === activeConv ? 'var(--canvas-soft)' : 'transparent', color: c.id === activeConv ? 'var(--ink)' : 'var(--ink-muted)', cursor: 'pointer', fontSize: 12, marginBottom: 1, textAlign: 'right', fontFamily: 'inherit' }}>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title || 'محادثة'}</span>
               <span style={{ fontSize: 10, color: 'var(--ink-muted)', flexShrink: 0, marginRight: 6 }}>{c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('ar-SA') : ''}</span>
             </button>
@@ -300,13 +300,13 @@ export default function Dashboard() {
         </div>
 
         {/* stores */}
-        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline-soft)', marginTop: 4 }}>
+        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>متاجري</div>
             <Link to="/stores" style={{ color: 'var(--ink-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}><Plus size={11} /></Link>
           </div>
           {stores.map((s, i) => (
-            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: i === 0 ? 'var(--surface-1)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
+            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: i === 0 ? 'var(--canvas-soft)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.isActive ? '#22c55e' : '#ff7a3d', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: i === 0 ? 'var(--ink)' : 'var(--ink-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
               <span style={{ fontSize: 10, color: 'var(--ink-muted)', textTransform: 'capitalize' }}>{s.platform}</span>
@@ -315,14 +315,14 @@ export default function Dashboard() {
         </div>
 
         {/* connectors */}
-        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline-soft)' }}>
+        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>التطبيقات</div>
             <Link to="/connectors" style={{ color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 10 }}>إدارة</Link>
           </div>
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {stores.map(s => (
-              <span key={s.id} style={{ fontSize: 10, background: 'var(--surface-1)', color: 'var(--ink-muted)', borderRadius: 100, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span key={s.id} style={{ fontSize: 10, background: 'var(--canvas-soft)', color: 'var(--ink-muted)', borderRadius: 100, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 3 }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: s.isActive ? '#22c55e' : '#999', flexShrink: 0 }} />{s.platform}
               </span>
             ))}
@@ -330,13 +330,13 @@ export default function Dashboard() {
         </div>
 
         {/* notifications */}
-        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline-soft)' }}>
+        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>الإشعارات</div>
             {unreadNotifs > 0 && <span style={{ fontSize: 9, color: '#ff5577', background: 'rgba(255,85,119,0.12)', borderRadius: 100, padding: '2px 6px', fontWeight: 700 }}>{unreadNotifs}</span>}
           </div>
           {apiNotifs.slice(0, 3).map(n => (
-            <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 6px', borderRadius: 7, marginBottom: 2, background: n.isRead ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
+            <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 6px', borderRadius: 7, marginBottom: 2, background: n.isRead ? 'transparent' : 'rgba(0,0,0,0.02)' }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: n.priority === 'urgent' ? '#ff5577' : n.priority === 'important' ? '#ff7a3d' : '#555', marginTop: 5, flexShrink: 0 }} />
               <div>
                 <div style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.35, fontWeight: n.isRead ? 400 : 500 }}>{n.title}</div>
@@ -348,21 +348,21 @@ export default function Dashboard() {
         </div>
 
         {/* daily suggestion */}
-        <div style={{ padding: '10px 12px', borderTop: '1px solid var(--hairline-soft)' }}>
-          <div style={{ background: 'rgba(106,76,245,0.08)', border: '1px solid rgba(106,76,245,0.2)', borderRadius: 10, padding: '10px 11px' }}>
+        <div style={{ padding: '10px 12px', borderTop: '1px solid var(--hairline)' }}>
+          <div style={{ background: 'rgba(0,112,243,0.06)', border: '1px solid rgba(0,112,243,0.15)', borderRadius: 10, padding: '10px 11px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
               <Lightbulb size={11} color="#6a4cf5" />
-              <span style={{ fontSize: 10, fontWeight: 600, color: '#6a4cf5', letterSpacing: '0.04em' }}>اقتراح اليوم</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: '#0070f3', letterSpacing: '0.04em' }}>اقتراح اليوم</span>
             </div>
             <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{SUGGESTION}</div>
-            <button onClick={() => handleSend('اشحن الطلبات المقبولة')} style={{ marginTop: 7, fontSize: 11, color: '#6a4cf5', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', textDecoration: 'underline' }}>
+            <button onClick={() => handleSend('اشحن الطلبات المقبولة')} style={{ marginTop: 7, fontSize: 11, color: '#0070f3', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', textDecoration: 'underline' }}>
               اشحن الآن
             </button>
           </div>
         </div>
 
         {/* bottom nav */}
-        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline-soft)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
+        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
           {[
             { to: '/activity', icon: History, label: 'السجل' },
             { to: '/insights', icon: Brain, label: 'الذاكرة' },
@@ -387,7 +387,7 @@ export default function Dashboard() {
         <div style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 10, flexShrink: 0 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{stores[0]?.name ?? '...'}</span>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-1)', borderRadius: 4, padding: '2px 8px', textTransform: 'capitalize' }}>{stores[0]?.platform ?? ''}</span>
+            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--canvas-soft)', borderRadius: 4, padding: '2px 8px', textTransform: 'capitalize' }}>{stores[0]?.platform ?? ''}</span>
             <ChevronDown size={13} color="var(--ink-muted)" />
           </div>
 
@@ -413,10 +413,10 @@ export default function Dashboard() {
             )}
 
             {/* search */}
-            <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-1)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
+            <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
               <Search size={12} />
               <span>بحث</span>
-              <kbd style={{ fontSize: 9, background: 'var(--surface-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
+              <kbd style={{ fontSize: 9, background: 'var(--canvas-soft-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
             </button>
 
             {/* nav links */}
@@ -427,7 +427,7 @@ export default function Dashboard() {
               { to: '/team', icon: Users, title: 'الفريق' },
             ].map(({ to, icon: Icon, title }) => (
               <Link key={to} to={to} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)', textDecoration: 'none', background: 'transparent' }} title={title}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-1)')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--canvas-soft)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <Icon size={14} />
@@ -436,14 +436,14 @@ export default function Dashboard() {
 
             {/* notifications bell */}
             <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--surface-1)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
+              <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--canvas-soft)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
                 <Bell size={15} />
               </button>
               {unreadNotifs > 0 && <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, background: 'var(--gradient-coral)', borderRadius: '50%', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadNotifs}</span>}
               {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} notifs={apiNotifs} unreadCount={unreadNotifs} />}
             </div>
 
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: 'var(--ink)' }}>م</div>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: 'var(--ink)' }}>م</div>
           </div>
         </div>
 
@@ -455,7 +455,7 @@ export default function Dashboard() {
                 <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
               ) : (
                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <div style={{ background: 'var(--surface-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: 'rgba(255,255,255,0.04) 0 0.5px 0 inset' }}>
+                  <div style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
                     {msg.content}
                   </div>
                 </div>
@@ -465,10 +465,10 @@ export default function Dashboard() {
 
           {isTyping && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: 11, fontWeight: 700 }}>D</span>
               </div>
-              <div style={{ background: 'var(--surface-1)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5 }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5 }}>
                 {[0, 1, 2].map(i => (
                   <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ink-muted)', animation: `bounce 1s ${i * 0.15}s infinite` }} />
                 ))}
@@ -482,14 +482,14 @@ export default function Dashboard() {
         <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 20px 14px', flexShrink: 0 }}>
           <div style={{ display: 'flex', gap: 6, marginBottom: 10, overflowX: 'auto', paddingBottom: 2 }}>
             {QUICK.map(q => (
-              <button key={q.label} onClick={() => handleSend(q.cmd)} style={{ background: 'var(--surface-1)', color: 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
+              <button key={q.label} onClick={() => handleSend(q.cmd)} style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
               >{q.label}</button>
             ))}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-1)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+            <button style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--canvas-soft)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
               <Mic size={14} color="var(--ink-muted)" />
             </button>
             <input
@@ -499,12 +499,12 @@ export default function Dashboard() {
               onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
               placeholder='اكتب أمرك... مثال: "اقبل الطلبات" أو "مبيعات الأسبوع"'
               disabled={isTyping}
-              style={{ flex: 1, background: 'var(--surface-1)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
+              style={{ flex: 1, background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
               onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
               onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
             />
             <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
-              style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
+              style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
               <Send size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} style={{ transform: 'scaleX(-1)' }} />
             </button>
           </div>

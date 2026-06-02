@@ -86,7 +86,7 @@ export default function Team() {
           {(Object.entries(roleConfig) as [NormRole, typeof roleConfig[NormRole]][]).map(([role, cfg]) => {
             const Icon = cfg.icon
             return (
-              <div key={role} style={{ background: 'var(--surface-1)', borderRadius: 12, padding: '14px' }}>
+              <div key={role} style={{ background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                   <Icon size={13} color={cfg.color} />
                   <span style={{ fontSize: 12, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
@@ -109,7 +109,7 @@ export default function Team() {
             const cfg = roleConfig[normRole]
             const Icon = cfg.icon
             return (
-              <div key={m.id} style={{ background: 'var(--surface-1)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)' }}>
+              <div key={m.id} style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)' }}>
                 {/* avatar */}
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: cfg.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 16, fontWeight: 700, color: cfg.color }}>{m.avatar}</span>
@@ -132,7 +132,7 @@ export default function Team() {
                 <select
                   value={normRole}
                   onChange={e => handleRoleChange(m.id, e.target.value as NormRole)}
-                  style={{ background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer' }}
+                  style={{ background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '6px 10px', color: 'var(--ink)', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer' }}
                 >
                   <option value="admin">مدير</option>
                   <option value="order_manager">مدير طلبات</option>
@@ -154,7 +154,7 @@ export default function Team() {
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
             onClick={e => e.target === e.currentTarget && setShowInvite(false)}
           >
-            <div style={{ background: 'var(--surface-1)', borderRadius: 20, padding: '28px', width: 380, border: '1px solid var(--hairline)' }}>
+            <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '28px', width: 380, border: '1px solid var(--hairline)' }}>
               <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)', marginBottom: 20, letterSpacing: '-0.3px' }}>دعوة عضو جديد</h2>
 
               <label style={{ display: 'block', marginBottom: 12 }}>
@@ -164,7 +164,7 @@ export default function Team() {
                   value={inviteEmail}
                   onChange={e => setInviteEmail(e.target.value)}
                   placeholder="name@company.sa"
-                  style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, direction: 'ltr', fontFamily: 'inherit' }}
+                  style={{ width: '100%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, direction: 'ltr', fontFamily: 'inherit' }}
                 />
               </label>
 
@@ -173,7 +173,7 @@ export default function Team() {
                 <select
                   value={inviteRole}
                   onChange={e => setInviteRole(e.target.value as NormRole)}
-                  style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit' }}
+                  style={{ width: '100%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit' }}
                 >
                   <option value="order_manager">مدير طلبات</option>
                   <option value="customer_service">خدمة عملاء</option>

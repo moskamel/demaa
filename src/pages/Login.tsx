@@ -48,7 +48,7 @@ export default function Login() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '11px 14px', borderRadius: 10, border: '1px solid var(--hairline)',
-    background: 'var(--surface-1)', color: 'var(--ink)', fontSize: 14, fontFamily: 'inherit',
+    background: 'var(--canvas-soft)', color: 'var(--ink)', fontSize: 14, fontFamily: 'inherit',
     outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s',
   }
 
@@ -62,19 +62,19 @@ export default function Login() {
 
       {/* logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36 }}>
-        <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Zap size={18} color="#fff" />
         </div>
         <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>ديما</span>
       </div>
 
-      <div style={{ width: '100%', maxWidth: 400, background: 'var(--surface-1)', borderRadius: 20, border: '1px solid var(--hairline)', padding: '32px 28px' }}>
+      <div style={{ width: '100%', maxWidth: 400, background: 'var(--canvas-soft)', borderRadius: 20, border: '1px solid var(--hairline)', padding: '32px 28px' }}>
 
         {/* tabs */}
         {mode !== 'reset' && (
           <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'var(--canvas)', borderRadius: 10, padding: 3 }}>
             {(['login', 'signup'] as const).map(m => (
-              <button key={m} onClick={() => { setMode(m); setError('') }} style={{ flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: mode === m ? 'var(--surface-2)' : 'transparent', color: mode === m ? 'var(--ink)' : 'var(--ink-muted)', transition: 'all 0.15s' }}>
+              <button key={m} onClick={() => { setMode(m); setError('') }} style={{ flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: mode === m ? 'var(--canvas-soft-2)' : 'transparent', color: mode === m ? 'var(--ink)' : 'var(--ink-muted)', transition: 'all 0.15s' }}>
                 {m === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب'}
               </button>
             ))}
@@ -136,7 +136,7 @@ export default function Login() {
               </div>
             )}
 
-            <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', borderRadius: 10, border: 'none', cursor: loading ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, background: 'linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)', color: '#fff', marginTop: 4, opacity: loading ? 0.7 : 1, transition: 'opacity 0.15s' }}>
+            <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', borderRadius: 10, border: 'none', cursor: loading ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 600, background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', color: '#fff', marginTop: 4, opacity: loading ? 0.7 : 1, transition: 'opacity 0.15s' }}>
               {loading ? '...' : mode === 'login' ? 'تسجيل الدخول' : mode === 'signup' ? 'إنشاء الحساب' : 'إرسال الرابط'}
             </button>
 
@@ -147,7 +147,7 @@ export default function Login() {
                   <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>أو</span>
                   <div style={{ flex: 1, height: 1, background: 'var(--hairline)' }} />
                 </div>
-                <button type="button" onClick={async () => { setLoading(true); try { const r = await authApi.demo(); setToken(r.token); localStorage.setItem('deema_user', JSON.stringify(r.user)); localStorage.setItem('deema_org', JSON.stringify(r.org)); navigate('/dashboard') } catch { navigate('/dashboard') } finally { setLoading(false) } }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: 'var(--surface-2)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <button type="button" onClick={async () => { setLoading(true); try { const r = await authApi.demo(); setToken(r.token); localStorage.setItem('deema_user', JSON.stringify(r.user)); localStorage.setItem('deema_org', JSON.stringify(r.org)); navigate('/dashboard') } catch { navigate('/dashboard') } finally { setLoading(false) } }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: 'var(--canvas-soft-2)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   <span style={{ fontSize: 16 }}>🚀</span> دخول تجريبي (Demo)
                 </button>
               </>

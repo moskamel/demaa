@@ -35,8 +35,8 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
 
   if (loading) return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
-      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 380, background: 'var(--surface-1)', borderRight: '1px solid var(--hairline)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.12)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 380, background: 'var(--canvas-soft)', borderRight: '1px solid var(--hairline)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</span>
       </div>
     </>
@@ -68,10 +68,10 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   return (
     <>
       {/* overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.12)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
 
       {/* drawer */}
-      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 380, background: 'var(--surface-1)', borderRight: '1px solid var(--hairline)', zIndex: 201, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 380, background: 'var(--canvas-soft)', borderRight: '1px solid var(--hairline)', zIndex: 201, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
 
         {/* header */}
         <div style={{ padding: '18px 20px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
@@ -82,7 +82,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
               <span style={{ fontSize: 11, fontWeight: 600, color: statusColor }}>{statusLabels[order.status] || order.status}</span>
             </div>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }}>
             <X size={14} />
           </button>
         </div>
@@ -116,8 +116,8 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
           {/* order items */}
           <Section title="المنتجات">
             {order.items.map((item, i) => (
-              <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < order.items.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < order.items.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Package size={13} color="var(--ink-muted)" />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -165,7 +165,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{ background: 'var(--canvas)', borderRadius: 12, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
-      <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--hairline-soft)', fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</div>
+      <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--hairline)', fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{title}</div>
       <div style={{ padding: '8px 14px' }}>{children}</div>
     </div>
   )

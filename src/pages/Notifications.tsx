@@ -68,12 +68,12 @@ export default function Notifications() {
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 24px' }}>
         {/* filter tabs */}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 24, background: 'var(--surface-1)', borderRadius: 10, padding: 4 }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 24, background: 'var(--canvas-soft)', borderRadius: 10, padding: 4 }}>
           {([['all', 'الكل'], ['unread', 'غير مقروء'], ['urgent', 'عاجل']] as const).map(([v, l]) => (
             <button
               key={v}
               onClick={() => setFilter(v)}
-              style={{ flex: 1, padding: '7px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, fontFamily: 'inherit', background: filter === v ? 'var(--surface-2)' : 'transparent', color: filter === v ? 'var(--ink)' : 'var(--ink-muted)', transition: 'all 0.15s' }}
+              style={{ flex: 1, padding: '7px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, fontFamily: 'inherit', background: filter === v ? 'var(--canvas-soft-2)' : 'transparent', color: filter === v ? 'var(--ink)' : 'var(--ink-muted)', transition: 'all 0.15s' }}
             >
               {l}
               {v === 'unread' && unreadCount > 0 && <span style={{ marginRight: 5, background: 'var(--gradient-coral)', color: '#fff', borderRadius: 100, fontSize: 9, padding: '1px 5px' }}>{unreadCount}</span>}
@@ -100,7 +100,7 @@ export default function Notifications() {
                 <div
                   key={n.id}
                   onClick={() => markRead(n.id)}
-                  style={{ background: isRead ? 'transparent' : 'var(--surface-1)', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', border: '1px solid', borderColor: isRead ? 'transparent' : 'var(--hairline)', marginBottom: i < filtered.length - 1 ? 2 : 0 }}
+                  style={{ background: isRead ? 'transparent' : 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', border: '1px solid', borderColor: isRead ? 'transparent' : 'var(--hairline)', marginBottom: i < filtered.length - 1 ? 2 : 0 }}
                 >
                   {/* icon */}
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

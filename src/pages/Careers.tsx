@@ -35,10 +35,10 @@ export default function Careers() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -59,7 +59,7 @@ export default function Careers() {
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>ابنِ مستقبل التجارة الإلكترونية العربية معنا</p>
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px 24px', marginBottom: 40, border: '1px solid var(--hairline-soft)', display: 'flex', gap: 16, alignItems: 'center' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 24px', marginBottom: 40, border: '1px solid var(--hairline)', display: 'flex', gap: 16, alignItems: 'center' }}>
           <span style={{ fontSize: 24 }}>🌍</span>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Remote-first من مصر</div>
@@ -69,14 +69,14 @@ export default function Careers() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {positions.map(pos => (
-            <div key={pos.title} style={{ background: 'var(--surface-1)', borderRadius: 20, padding: '32px', border: '1px solid var(--hairline-soft)' }}>
+            <div key={pos.title} style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '32px', border: '1px solid var(--hairline)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
                 <div>
                   <h2 style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.4px', marginBottom: 8 }}>{pos.title}</h2>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ background: pos.color + '22', color: pos.color, borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600 }}>{pos.dept}</span>
-                    <span style={{ background: 'var(--surface-2)', color: 'var(--ink-muted)', borderRadius: 6, padding: '3px 10px', fontSize: 12 }}>{pos.type}</span>
-                    <span style={{ background: 'var(--surface-2)', color: 'var(--ink-muted)', borderRadius: 6, padding: '3px 10px', fontSize: 12 }}>📍 {pos.location}</span>
+                    <span style={{ background: 'var(--canvas-soft-2)', color: 'var(--ink-muted)', borderRadius: 6, padding: '3px 10px', fontSize: 12 }}>{pos.type}</span>
+                    <span style={{ background: 'var(--canvas-soft-2)', color: 'var(--ink-muted)', borderRadius: 6, padding: '3px 10px', fontSize: 12 }}>📍 {pos.location}</span>
                   </div>
                 </div>
                 <a
@@ -100,13 +100,13 @@ export default function Careers() {
           ))}
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '24px', marginTop: 32, border: '1px solid var(--hairline-soft)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', marginTop: 32, border: '1px solid var(--hairline)', textAlign: 'center' }}>
           <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 12 }}>ما لقيتش وظيفتك؟ راسلنا على أي حال.</p>
           <a href="mailto:careers@deema.ai" className="btn-secondary" style={{ textDecoration: 'none' }}>careers@deema.ai</a>
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

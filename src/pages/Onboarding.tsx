@@ -132,7 +132,7 @@ export default function Onboarding() {
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                     <div style={{
                       width: 8, height: 8, borderRadius: '50%',
-                      background: done ? 'var(--semantic-success)' : active ? '#fff' : 'var(--surface-3)',
+                      background: done ? 'var(--semantic-success)' : active ? '#fff' : 'var(--hairline)',
                       transition: 'background 0.2s',
                     }} />
                     <span style={{ fontSize: 11, color: done ? 'var(--semantic-success)' : active ? 'var(--ink)' : 'var(--ink-disabled)', whiteSpace: 'nowrap', letterSpacing: '-0.1px', transition: 'color 0.2s' }}>{label}</span>
@@ -161,7 +161,7 @@ export default function Onboarding() {
                 display: 'flex', alignItems: 'center', gap: 16,
                 padding: '18px 20px', borderRadius: 15,
                 border: `1px solid ${platform === p.id ? 'rgba(255,255,255,0.3)' : 'var(--hairline)'}`,
-                background: platform === p.id ? 'var(--surface-2)' : 'var(--surface-1)',
+                background: platform === p.id ? 'var(--canvas-soft-2)' : 'var(--canvas-soft)',
                 cursor: 'pointer', textAlign: 'right', width: '100%',
                 boxShadow: platform === p.id ? 'rgba(0,153,255,0.15) 0 0 0 1px' : 'none',
               }}>
@@ -203,14 +203,14 @@ export default function Onboarding() {
             <p style={{ fontSize: 14, color: 'var(--ink-muted)', letterSpacing: '-0.14px' }}>أدخل بيانات المتجر لإتمام الربط</p>
           </div>
 
-          <div style={{ background: 'var(--surface-1)', borderRadius: 15, padding: 20, marginBottom: 16, border: '1px solid var(--hairline)' }}>
+          <div style={{ background: 'var(--canvas-soft)', borderRadius: 15, padding: 20, marginBottom: 16, border: '1px solid var(--hairline)' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 14, letterSpacing: '-0.13px' }}>
               كيف تحصل على API Key من {selectedPlatform?.name}؟
             </div>
             {selectedPlatform?.steps.map((s, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, color: 'var(--ink-muted)', marginBottom: 10 }}>
                 <span style={{
-                  width: 20, height: 20, borderRadius: '50%', background: 'var(--surface-2)',
+                  width: 20, height: 20, borderRadius: '50%', background: 'var(--canvas-soft-2)',
                   color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 11, fontWeight: 700, flexShrink: 0,
                 }}>{i + 1}</span>
@@ -233,7 +233,7 @@ export default function Onboarding() {
                 onChange={e => setStoreDomain(e.target.value)}
                 placeholder="mystore.myshopify.com"
                 style={{
-                  width: '100%', background: 'var(--surface-1)',
+                  width: '100%', background: 'var(--canvas-soft)',
                   border: '1px solid var(--hairline)', borderRadius: 10,
                   padding: '11px 14px', fontSize: 13, color: 'var(--ink)',
                   outline: 'none', fontFamily: 'monospace', direction: 'ltr', textAlign: 'left',
@@ -253,7 +253,7 @@ export default function Onboarding() {
               onChange={e => setApiKey(e.target.value)}
               placeholder={selectedPlatform?.id === 'shopify' ? 'shpat_xxxxxxxxxxxxxxxxxxxx' : 'sk-xxxxxxxxxxxxxxxxxxxx'}
               style={{
-                width: '100%', background: 'var(--surface-1)',
+                width: '100%', background: 'var(--canvas-soft)',
                 border: '1px solid var(--hairline)', borderRadius: 10,
                 padding: '11px 14px', fontSize: 13, color: 'var(--ink)',
                 outline: 'none', fontFamily: 'monospace', direction: 'ltr', textAlign: 'left',
@@ -300,7 +300,7 @@ export default function Onboarding() {
               <h1 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 500, letterSpacing: '-0.05em', margin: '0 0 10px', color: 'var(--ink)' }}>تأكيد الربط</h1>
               <p style={{ fontSize: 14, color: 'var(--ink-muted)', marginBottom: 28, letterSpacing: '-0.14px' }}>تحقق من البيانات قبل الاتصال بمتجرك</p>
 
-              <div style={{ background: 'var(--surface-1)', borderRadius: 15, padding: 20, marginBottom: 16, textAlign: 'right', border: '1px solid var(--hairline)' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 15, padding: 20, marginBottom: 16, textAlign: 'right', border: '1px solid var(--hairline)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
                   <span style={{ color: 'var(--ink-muted)' }}>المنصة</span>
                   <span style={{ fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{selectedPlatform?.name}</span>

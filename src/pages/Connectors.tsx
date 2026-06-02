@@ -17,7 +17,7 @@ const statusConfig = {
   connected: { label: 'متصل', color: '#22c55e', bg: 'rgba(34,197,94,0.1)', icon: CheckCircle },
   expired: { label: 'منتهي', color: '#ff7a3d', bg: 'rgba(255,122,61,0.1)', icon: Clock },
   error: { label: 'خطأ', color: '#ff5577', bg: 'rgba(255,85,119,0.1)', icon: AlertCircle },
-  disconnected: { label: 'غير متصل', color: '#555', bg: 'var(--surface-2)', icon: Plus },
+  disconnected: { label: 'غير متصل', color: '#555', bg: 'var(--canvas-soft-2)', icon: Plus },
 }
 
 const connectorColors: Record<string, string> = {
@@ -32,7 +32,7 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
   const color = connectorColors[c.type] || '#666'
 
   return (
-    <div style={{ background: 'var(--surface-1)', borderRadius: 14, padding: '16px', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', gap: 12 }}>
       {/* logo */}
       <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <span style={{ fontSize: c.logo.length > 1 ? 11 : 15, fontWeight: 700, color, direction: 'ltr' }}>{c.logo}</span>
@@ -58,7 +58,7 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
         {c.status === 'connected' ? (
           <button
             onClick={() => onToggle(c.type)}
-            style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-2)', border: 'none', borderRadius: 7, padding: '5px 10px', cursor: 'pointer' }}
+            style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--canvas-soft-2)', border: 'none', borderRadius: 7, padding: '5px 10px', cursor: 'pointer' }}
           >
             فصل
           </button>
@@ -72,7 +72,7 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
         ) : (
           <button
             onClick={() => onToggle(c.type)}
-            style={{ fontSize: 11, color: 'var(--ink)', background: 'var(--surface-2)', border: 'none', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+            style={{ fontSize: 11, color: 'var(--ink)', background: 'var(--canvas-soft-2)', border: 'none', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
           >
             <Plus size={9} /> ربط
           </button>
@@ -140,7 +140,7 @@ export default function Connectors() {
             const catItems = connectors.filter(c => c.category === cat)
             const catConnected = catItems.filter(c => c.status === 'connected').length
             return (
-              <div key={cat} style={{ flex: 1, background: 'var(--surface-1)', borderRadius: 12, padding: '14px 16px' }}>
+              <div key={cat} style={{ flex: 1, background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px' }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{catConnected}/{catItems.length}</div>
                 <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{categoryLabels[cat]}</div>
               </div>
@@ -159,8 +159,8 @@ export default function Connectors() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {items.map(c => (
                   connecting === c.type ? (
-                    <div key={c.type} style={{ background: 'var(--surface-1)', borderRadius: 14, padding: '16px', border: '1px solid rgba(0,153,255,0.25)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div key={c.type} style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px', border: '1px solid rgba(0,153,255,0.25)', display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--accent-blue)', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
                       </div>
                       <span style={{ fontSize: 13, color: 'var(--ink-muted)' }}>جاري ربط {c.nameAr}...</span>
@@ -175,7 +175,7 @@ export default function Connectors() {
         })}
 
         {/* footer note */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '14px 16px', background: 'var(--surface-1)', borderRadius: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '14px 16px', background: 'var(--canvas-soft)', borderRadius: 12 }}>
           <ExternalLink size={13} color="var(--ink-muted)" />
           <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>جميع مفاتيح API مشفرة بـ AES-256 ولا تُشارك مع أي طرف ثالث</span>
         </div>

@@ -78,7 +78,7 @@ export default function Insights() {
 
         {/* header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Brain size={22} color="#fff" />
           </div>
           <div>
@@ -93,7 +93,7 @@ export default function Insights() {
           <>
             {/* usage banner */}
             {latestUsage && (
-              <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px 24px', marginBottom: 28, display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px 24px', marginBottom: 28, display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                     <TrendingUp size={14} color="var(--ink-muted)" />
@@ -124,13 +124,13 @@ export default function Insights() {
               <div style={{ marginBottom: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>رؤى المتجر</span>
-                  <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-1)', borderRadius: 6, padding: '2px 8px' }}>محدّثة تلقائياً</span>
+                  <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--canvas-soft)', borderRadius: 6, padding: '2px 8px' }}>محدّثة تلقائياً</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
                   {insights.map(insight => {
                     const displayValue = (INSIGHT_VALUE_LABELS[insight.key] ?? (v => v))(insight.value)
                     return (
-                      <div key={insight.key} style={{ background: 'var(--surface-1)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
+                      <div key={insight.key} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                           <div>
                             <div style={{ fontSize: 20, marginBottom: 4 }}>{INSIGHT_ICONS[insight.key] ?? '💡'}</div>

@@ -98,7 +98,7 @@ export default function Stores() {
             const StatusIcon = st.icon
             const isSyncing = syncing === s.id
             return (
-              <div key={s.id} style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px 22px', border: '1px solid var(--hairline)', position: 'relative', overflow: 'hidden' }}>
+              <div key={s.id} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', border: '1px solid var(--hairline)', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 3, background: pColor, borderRadius: '0 16px 16px 0' }} />
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -133,7 +133,7 @@ export default function Stores() {
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button
                         onClick={() => handleSync(s.id)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--surface-2)', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--canvas-soft-2)', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer' }}
                       >
                         <RefreshCw size={11} style={{ animation: isSyncing ? 'spin 1s linear infinite' : 'none' }} />
                         {isSyncing ? 'جاري التزامن...' : 'مزامنة'}

@@ -21,10 +21,10 @@ export default function Features() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -51,12 +51,12 @@ export default function Features() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
           {features.map(({ icon: Icon, title, desc }) => (
             <div key={title} style={{
-              background: 'var(--surface-1)',
+              background: 'var(--canvas-soft)',
               borderRadius: 16,
               padding: '24px',
-              border: '1px solid var(--hairline-soft)',
+              border: '1px solid var(--hairline)',
             }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                 <Icon size={20} color="var(--ink)" />
               </div>
               <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, letterSpacing: '-0.3px' }}>{title}</h3>
@@ -70,7 +70,7 @@ export default function Features() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

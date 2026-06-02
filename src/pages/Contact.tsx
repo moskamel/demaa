@@ -14,10 +14,10 @@ export default function Contact() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -41,18 +41,18 @@ export default function Contact() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
           <div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px', border: '1px solid var(--hairline-soft)' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px', border: '1px solid var(--hairline)' }}>
                 <div style={{ fontSize: 24, marginBottom: 12 }}>📧</div>
                 <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>البريد الإلكتروني</h3>
                 <a href="mailto:hello@deema.ai" style={{ fontSize: 14, color: 'var(--ink-muted)', textDecoration: 'none' }}>hello@deema.ai</a>
               </div>
-              <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px', border: '1px solid var(--hairline-soft)' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px', border: '1px solid var(--hairline)' }}>
                 <div style={{ fontSize: 24, marginBottom: 12 }}>💬</div>
                 <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>واتساب</h3>
                 <a href="https://wa.me/201000000000" style={{ fontSize: 14, color: 'var(--ink-muted)', textDecoration: 'none' }}>+20 100 000 0000</a>
                 <p style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>السبت – الخميس، ٩ص – ٦م</p>
               </div>
-              <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '20px', border: '1px solid var(--hairline-soft)' }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px', border: '1px solid var(--hairline)' }}>
                 <div style={{ fontSize: 24, marginBottom: 12 }}>📍</div>
                 <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>المقر</h3>
                 <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>القاهرة، مصر</p>
@@ -63,10 +63,10 @@ export default function Contact() {
           <div>
             {submitted ? (
               <div style={{
-                background: 'var(--surface-1)',
+                background: 'var(--canvas-soft)',
                 borderRadius: 20,
                 padding: '48px 32px',
-                border: '1px solid var(--hairline-soft)',
+                border: '1px solid var(--hairline)',
                 textAlign: 'center',
               }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
@@ -76,10 +76,10 @@ export default function Contact() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{
-                background: 'var(--surface-1)',
+                background: 'var(--canvas-soft)',
                 borderRadius: 20,
                 padding: '32px',
-                border: '1px solid var(--hairline-soft)',
+                border: '1px solid var(--hairline)',
                 display: 'flex', flexDirection: 'column', gap: 16,
               }}>
                 <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>أرسل رسالة</h2>
@@ -139,7 +139,7 @@ export default function Contact() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

@@ -33,10 +33,10 @@ export default function Platforms() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -59,7 +59,7 @@ export default function Platforms() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           {platforms.map(p => (
-            <div key={p.name} style={{ background: 'var(--surface-1)', borderRadius: 20, padding: '32px', border: '1px solid var(--hairline-soft)' }}>
+            <div key={p.name} style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '32px', border: '1px solid var(--hairline)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
                 <div style={{ fontSize: 40 }}>{p.emoji}</div>
                 <div>
@@ -100,7 +100,7 @@ export default function Platforms() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

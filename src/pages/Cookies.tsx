@@ -52,10 +52,10 @@ export default function Cookies() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -88,11 +88,11 @@ export default function Cookies() {
         <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 24, letterSpacing: '-0.4px' }}>أنواع ملفات تعريف الارتباط</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {cookieTypes.map(ct => (
-            <div key={ct.name} style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline-soft)' }}>
+            <div key={ct.name} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <h3 style={{ fontSize: 16, fontWeight: 600 }}>{ct.name}</h3>
                 <span style={{
-                  background: ct.required ? '#22c55e22' : 'var(--surface-2)',
+                  background: ct.required ? '#22c55e22' : 'var(--canvas-soft-2)',
                   color: ct.required ? '#22c55e' : 'var(--ink-muted)',
                   borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600,
                 }}>{ct.required ? 'ضروري' : 'اختياري'}</span>
@@ -100,21 +100,21 @@ export default function Cookies() {
               <p style={{ fontSize: 14, color: 'var(--ink-muted)', marginBottom: 12 }}>{ct.desc}</p>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {ct.examples.map(ex => (
-                  <span key={ex} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '4px 10px', fontSize: 12, color: 'var(--ink-muted)' }}>{ex}</span>
+                  <span key={ex} style={{ background: 'var(--canvas-soft-2)', borderRadius: 6, padding: '4px 10px', fontSize: 12, color: 'var(--ink-muted)' }}>{ex}</span>
                 ))}
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '24px', marginTop: 32, border: '1px solid var(--hairline-soft)' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', marginTop: 32, border: '1px solid var(--hairline)' }}>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.7 }}>
             لأي استفسار حول ملفات تعريف الارتباط: <a href="mailto:privacy@deema.ai" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>privacy@deema.ai</a>
           </p>
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

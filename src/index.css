@@ -1,48 +1,49 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
-
-/* ── Grok-inspired Design System ─────────────────────────────────────────── */
+/* ── Vercel-inspired Design System ─────────────────────────────────────────── */
 :root {
-  /* Core palette — Grok's pure black + off-whites */
-  --canvas:         #000000;
-  --surface-1:      #0f0f0f;
-  --surface-2:      #1a1a1a;
-  --surface-3:      #242424;
-  --surface-hover:  #1f1f1f;
+  /* Canvas */
+  --canvas:         #ffffff;
+  --canvas-soft:    #fafafa;
+  --canvas-soft-2:  #f5f5f5;
 
   /* Text */
-  --ink:            #ececec;
-  --ink-sub:        #a0a0a0;
-  --ink-muted:      #666666;
-  --ink-disabled:   #3a3a3a;
+  --ink:            #171717;
+  --ink-sub:        #4d4d4d;
+  --ink-muted:      #888888;
+  --ink-disabled:   #c8c8c8;
 
   /* Borders */
-  --hairline:       #2a2a2a;
-  --hairline-soft:  #1e1e1e;
+  --hairline:       #ebebeb;
+  --hairline-soft:  #ebebeb;
+  --hairline-strong: #a1a1a1;
 
-  /* Brand */
-  --primary:        #ffffff;
-  --on-primary:     #000000;
-  --accent:         #ffffff;
+  /* Brand / CTA */
+  --primary:        #171717;
+  --on-primary:     #ffffff;
+  --accent:         #171717;
+
+  /* Link */
+  --link:           #0070f3;
+  --accent-blue:    #0070f3;
 
   /* Semantic */
-  --semantic-success:  #4ade80;
-  --semantic-warning:  #fb923c;
-  --semantic-error:    #f87171;
-  --semantic-info:     #60a5fa;
+  --semantic-success:  #0070f3;
+  --semantic-warning:  #f5a623;
+  --semantic-error:    #ee0000;
+  --semantic-info:     #0070f3;
 
-  /* Grok accent colors */
-  --grok-purple:    #8b5cf6;
-  --grok-blue:      #3b82f6;
-  --grok-green:     #10b981;
+  /* Legacy gradient aliases — mapped to brand gradient colors */
+  --gradient-orange:    #f5a623;
+  --gradient-coral:     #ee0000;
+  --gradient-magenta:   #ff0080;
+  --gradient-violet:    #7928ca;
 
-  /* Legacy aliases for compatibility */
-  --accent-blue:        #3b82f6;
-  --gradient-magenta:   #a855f7;
-  --gradient-violet:    #8b5cf6;
-  --gradient-orange:    #fb923c;
-  --gradient-coral:     #f87171;
+  /* Surface aliases for components that still use var(--surface-*) */
+  --surface-1:      #fafafa;
+  --surface-2:      #f5f5f5;
+  --surface-3:      #ebebeb;
+  --surface-hover:  #f5f5f5;
 }
 
 /* ── Reset ────────────────────────────────────────────────────────────────── */
@@ -52,7 +53,7 @@ html {
   direction: rtl;
   background: var(--canvas);
   color: var(--ink);
-  font-family: 'Zain', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px;
   line-height: 1.5;
   letter-spacing: -0.1px;
@@ -68,26 +69,37 @@ html {
   letter-spacing: -0.04em;
   color: var(--ink);
 }
+.display-xl {
+  font-weight: 600;
+  font-size: 48px;
+  letter-spacing: -2.4px;
+  line-height: 1.1;
+}
 .display-lg {
   font-weight: 600;
   font-size: clamp(32px, 4vw, 56px);
   line-height: 1.05;
-  letter-spacing: -0.03em;
+  letter-spacing: -1.28px;
 }
 .display-md {
   font-weight: 600;
-  font-size: 28px;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.96px;
 }
+.body-lg { font-size: 18px; font-weight: 400; }
+.body-md { font-size: 16px; font-weight: 400; }
+.body-sm { font-size: 14px; font-weight: 400; letter-spacing: -0.28px; }
+.caption  { font-size: 12px; font-weight: 400; }
 
-/* ── Buttons — Grok style ─────────────────────────────────────────────────── */
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
 .btn-primary {
   background: var(--primary);
   color: var(--on-primary);
   border: none;
-  border-radius: 8px;
-  padding: 9px 18px;
+  border-radius: 100px;
+  padding: 0 12px;
+  height: 40px;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
@@ -97,18 +109,39 @@ html {
   align-items: center;
   gap: 6px;
   font-family: inherit;
-  transition: background 0.15s, opacity 0.15s;
-  letter-spacing: -0.1px;
+  transition: opacity 0.15s;
+  letter-spacing: -0.14px;
 }
-.btn-primary:hover { background: #e5e5e5; }
-.btn-primary:active { background: #d0d0d0; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:active { opacity: 0.75; }
+
+.btn-primary-sm {
+  background: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: 100px;
+  padding: 0 12px;
+  height: 32px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.btn-primary-sm:hover { opacity: 0.85; }
 
 .btn-secondary {
-  background: transparent;
+  background: #ffffff;
   color: var(--ink);
   border: 1px solid var(--hairline);
-  border-radius: 8px;
-  padding: 9px 18px;
+  border-radius: 100px;
+  padding: 0 12px;
+  height: 40px;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
@@ -119,16 +152,17 @@ html {
   gap: 6px;
   font-family: inherit;
   transition: background 0.15s, border-color 0.15s;
-  letter-spacing: -0.1px;
+  letter-spacing: -0.14px;
 }
-.btn-secondary:hover { background: var(--surface-2); border-color: #3a3a3a; }
+.btn-secondary:hover { background: var(--canvas-soft); border-color: var(--hairline-strong); }
 
 .btn-translucent {
-  background: var(--surface-2);
+  background: var(--canvas-soft);
   color: var(--ink-sub);
   border: 1px solid var(--hairline);
-  border-radius: 8px;
-  padding: 7px 14px;
+  border-radius: 100px;
+  padding: 0 12px;
+  height: 40px;
   font-size: 13px;
   font-weight: 400;
   cursor: pointer;
@@ -138,42 +172,75 @@ html {
   font-family: inherit;
   transition: background 0.15s, color 0.15s;
 }
-.btn-translucent:hover { background: var(--surface-3); color: var(--ink); }
+.btn-translucent:hover { background: var(--canvas-soft-2); color: var(--ink); }
 
 /* ── Cards ────────────────────────────────────────────────────────────────── */
-.card   { background: var(--surface-1); border-radius: 12px; padding: 20px; border: 1px solid var(--hairline); }
-.card-2 { background: var(--surface-2); border-radius: 12px; padding: 20px; border: 1px solid var(--hairline); }
+.card {
+  background: #ffffff;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.02), 0px 2px 2px rgba(0,0,0,0.04);
+}
+.card-2 {
+  background: var(--canvas-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 24px;
+}
 
-/* ── Spotlight cards (keep for landing) ──────────────────────────────────── */
-.spotlight-violet  { background: #1a1040; border: 1px solid #3d2d9e; border-radius: 12px; padding: 28px; color: #fff; }
-.spotlight-magenta { background: #1a0a22; border: 1px solid #7a2899; border-radius: 12px; padding: 28px; color: #fff; }
-.spotlight-orange  { background: #1a0f00; border: 1px solid #8b4000; border-radius: 12px; padding: 28px; color: #fff; }
-.spotlight-coral   { background: #1a0810; border: 1px solid #8b1a30; border-radius: 12px; padding: 28px; color: #fff; }
+/* ── Brand gradient cards (replace spotlight) ────────────────────────────── */
+.gradient-develop {
+  background: linear-gradient(135deg, #007cf0 0%, #00dfd8 100%);
+  border-radius: 12px;
+  padding: 28px;
+  color: #fff;
+}
+.gradient-preview {
+  background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%);
+  border-radius: 12px;
+  padding: 28px;
+  color: #fff;
+}
+.gradient-ship {
+  background: linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%);
+  border-radius: 12px;
+  padding: 28px;
+  color: #fff;
+}
+
+/* ── Spotlight aliases (kept for backward compat — now use brand gradients) */
+.spotlight-violet  { background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); border-radius: 12px; padding: 28px; color: #fff; }
+.spotlight-magenta { background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%); border-radius: 12px; padding: 28px; color: #fff; }
+.spotlight-orange  { background: linear-gradient(135deg, #007cf0 0%, #00dfd8 100%); border-radius: 12px; padding: 28px; color: #fff; }
+.spotlight-coral   { background: linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%); border-radius: 12px; padding: 28px; color: #fff; }
 
 /* ── Inputs ───────────────────────────────────────────────────────────────── */
 input, textarea, select {
-  background: var(--surface-1);
+  background: #ffffff;
   border: 1px solid var(--hairline);
-  border-radius: 8px;
+  border-radius: 6px;
+  height: 40px;
   color: var(--ink);
   font-family: inherit;
   font-size: 14px;
   outline: none;
   transition: border-color 0.15s;
 }
+textarea { height: auto; }
 input:focus, textarea:focus, select:focus {
-  border-color: #444;
+  border-color: var(--hairline-strong);
 }
 input::placeholder, textarea::placeholder { color: var(--ink-muted); }
 
-/* ── Scrollbar — Grok thin style ─────────────────────────────────────────── */
-::-webkit-scrollbar { width: 3px; height: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--hairline); }
+::-webkit-scrollbar-thumb { background: var(--hairline-strong); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
 
 /* ── Selection ────────────────────────────────────────────────────────────── */
-::selection { background: rgba(139, 92, 246, 0.25); color: var(--ink); }
+::selection { background: #171717; color: #f2f2f2; }
 
 /* ── Animations ───────────────────────────────────────────────────────────── */
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -184,9 +251,9 @@ input::placeholder, textarea::placeholder { color: var(--ink-muted); }
 .animate-fade-in { animation: fadeIn 0.2s ease-out; }
 .animate-pulse   { animation: pulse 1.5s ease-in-out infinite; }
 
-/* ── Grok-style chat message ─────────────────────────────────────────────── */
+/* ── Chat messages ───────────────────────────────────────────────────────── */
 .chat-message-user {
-  background: var(--surface-2);
+  background: var(--canvas-soft-2);
   border-radius: 18px 18px 4px 18px;
   padding: 12px 16px;
   font-size: 14px;
@@ -205,7 +272,7 @@ input::placeholder, textarea::placeholder { color: var(--ink-muted); }
   max-width: 85%;
 }
 
-/* ── Grok-style sidebar item ─────────────────────────────────────────────── */
+/* ── Sidebar item ────────────────────────────────────────────────────────── */
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -218,19 +285,19 @@ input::placeholder, textarea::placeholder { color: var(--ink-muted); }
   transition: background 0.1s, color 0.1s;
   text-decoration: none;
 }
-.sidebar-item:hover  { background: var(--surface-2); color: var(--ink); }
-.sidebar-item.active { background: var(--surface-2); color: var(--ink); }
+.sidebar-item:hover  { background: var(--canvas-soft); color: var(--ink); }
+.sidebar-item.active { background: var(--canvas-soft); color: var(--ink); }
 
-/* ── Grok-style input bar ─────────────────────────────────────────────────── */
+/* ── Chat input bar ──────────────────────────────────────────────────────── */
 .chat-input-bar {
-  background: var(--surface-1);
+  background: #ffffff;
   border: 1px solid var(--hairline);
-  border-radius: 16px;
+  border-radius: 12px;
   transition: border-color 0.15s;
 }
-.chat-input-bar:focus-within { border-color: #3a3a3a; }
+.chat-input-bar:focus-within { border-color: var(--hairline-strong); }
 
-/* ── Status dot ───────────────────────────────────────────────────────────── */
+/* ── Status dot ──────────────────────────────────────────────────────────── */
 .status-dot {
   width: 6px; height: 6px;
   border-radius: 50%;

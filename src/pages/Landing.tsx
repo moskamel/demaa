@@ -8,10 +8,10 @@ export default function Landing() {
       {/* ── NAV ─────────────────────────────────────────────────────── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -51,7 +51,7 @@ export default function Landing() {
       <section style={{ padding: '112px 30px 96px', maxWidth: 1199, margin: '0 auto', textAlign: 'center' }}>
 
         {/* eyebrow badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--surface-2)', borderRadius: 100, padding: '6px 16px', marginBottom: 40 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--canvas-soft-2)', borderRadius: 100, padding: '6px 16px', marginBottom: 40 }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--semantic-success)', flexShrink: 0 }} />
           <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', letterSpacing: '-0.13px' }}>متاح الآن · مجاني للبداية</span>
         </div>
@@ -96,13 +96,13 @@ export default function Landing() {
       {/* ── CHAT MOCKUP TILE ────────────────────────────────────────── */}
       <section style={{ padding: '0 30px 96px', maxWidth: 1199, margin: '0 auto' }}>
         <div style={{
-          background: 'var(--surface-1)',
+          background: 'var(--canvas-soft)',
           borderRadius: 20,
           overflow: 'hidden',
-          boxShadow: 'rgba(255,255,255,0.06) 0 0.5px 0 inset, rgba(0,0,0,0.4) 0 20px 60px',
+          boxShadow: '0px 1px 1px rgba(0,0,0,0.04), 0px 4px 12px rgba(0,0,0,0.08)',
         }}>
           {/* chrome bar */}
-          <div style={{ background: 'var(--surface-2)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid var(--hairline)' }}>
+          <div style={{ background: 'var(--canvas-soft-2)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid var(--hairline)' }}>
             {['#ff5f57','#ffbd2e','#28c940'].map(c => (
               <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
             ))}
@@ -120,7 +120,7 @@ export default function Landing() {
               ].map(c => (
                 <div key={c.t} style={{
                   padding: '8px 10px', borderRadius: 8,
-                  background: c.active ? 'var(--surface-2)' : 'transparent',
+                  background: c.active ? 'var(--canvas-soft-2)' : 'transparent',
                   display: 'flex', justifyContent: 'space-between',
                 }}>
                   <span style={{ fontSize: 12, color: c.active ? 'var(--ink)' : 'var(--ink-muted)', letterSpacing: '-0.12px' }}>{c.t}</span>
@@ -144,7 +144,7 @@ export default function Landing() {
             {/* chat messages */}
             <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto' }}>
               {/* Deema morning summary */}
-              <div style={{ background: 'var(--surface-2)', borderRadius: '4px 14px 14px 14px', padding: '16px 18px', maxWidth: '75%' }}>
+              <div style={{ background: 'var(--canvas-soft-2)', borderRadius: '4px 14px 14px 14px', padding: '16px 18px', maxWidth: '75%' }}>
                 <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 12 }}>صباح الخير! 🌅 ملخص متجرك:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
                   {[
@@ -167,13 +167,13 @@ export default function Landing() {
 
               {/* user bubble */}
               <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <div style={{ background: 'var(--surface-2)', borderRadius: '14px 4px 14px 14px', padding: '10px 14px', fontSize: 13, maxWidth: '60%' }}>
+                <div style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '10px 14px', fontSize: 13, maxWidth: '60%' }}>
                   اقبل الطلبات السليمة
                 </div>
               </div>
 
               {/* Deema confirmation */}
-              <div style={{ background: 'var(--surface-2)', borderRadius: '4px 14px 14px 14px', padding: '14px 18px', maxWidth: '75%', fontSize: 13, lineHeight: 1.65 }}>
+              <div style={{ background: 'var(--canvas-soft-2)', borderRadius: '4px 14px 14px 14px', padding: '14px 18px', maxWidth: '75%', fontSize: 13, lineHeight: 1.65 }}>
                 ✅ هتقبل ٣٥ طلب — ١٤,٥٠٠ ج.م<br />
                 <span style={{ color: 'var(--ink-muted)' }}>⏩ سيتم إنشاء بوالص الشحن تلقائياً</span>
                 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
@@ -221,7 +221,7 @@ export default function Landing() {
             </p>
             <div style={{ marginTop: 'auto', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {['أرامكس', 'SMSA', 'J&T'].map(s => (
-                <span key={s} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '4px 10px', fontSize: 12, color: 'var(--ink-muted)' }}>{s}</span>
+                <span key={s} style={{ background: 'var(--canvas-soft-2)', borderRadius: 6, padding: '4px 10px', fontSize: 12, color: 'var(--ink-muted)' }}>{s}</span>
               ))}
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function Landing() {
             <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.55, marginBottom: 20, letterSpacing: '-0.14px' }}>
               ملخص يومي شامل — مبيعات ومخزون ومشاكل
             </p>
-            <div style={{ background: 'var(--surface-2)', borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ background: 'var(--canvas-soft-2)', borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}>
               {[{ n: '٤٧', l: 'طلب', c: 'var(--gradient-orange)' }, { n: '١٤k', l: 'ج.م', c: 'var(--ink)' }, { n: '٩٨٪', l: 'رضا', c: 'var(--semantic-success)' }].map(s => (
                 <div key={s.l} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: s.c, fontVariantNumeric: 'tabular-nums' }}>{s.n}</div>
@@ -252,7 +252,7 @@ export default function Landing() {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {['"عايز أشوف الأوردرات"', '"وريني المعلقة"', '"شفت الأوردرات؟"'].map(t => (
-                <div key={t} style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '6px 10px', fontSize: 12, color: 'var(--ink-muted)', fontFamily: 'monospace' }}>{t}</div>
+                <div key={t} style={{ background: 'var(--canvas-soft-2)', borderRadius: 6, padding: '6px 10px', fontSize: 12, color: 'var(--ink-muted)', fontFamily: 'monospace' }}>{t}</div>
               ))}
             </div>
           </div>
@@ -279,7 +279,7 @@ export default function Landing() {
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
               {[{ e: '🛍️', n: 'Shopify' }, { e: '🌐', n: 'Wuilt' }, { e: '🏪', n: 'Shantaweb' }].map(p => (
-                <div key={p.n} style={{ background: 'var(--surface-2)', borderRadius: 10, padding: '10px 14px', flex: 1, textAlign: 'center' }}>
+                <div key={p.n} style={{ background: 'var(--canvas-soft-2)', borderRadius: 10, padding: '10px 14px', flex: 1, textAlign: 'center' }}>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{p.e}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{p.n}</div>
                 </div>
@@ -304,7 +304,7 @@ export default function Landing() {
             { n: '٣', title: 'ينفذ فوراً', desc: 'يطلب تأكيدك للإجراءات الكبيرة، ينفذ الباقي لحالك', icon: '⚡' },
           ].map((s, i) => (
             <div key={s.n} style={{
-              background: 'var(--surface-1)',
+              background: 'var(--canvas-soft)',
               padding: '32px 28px',
               borderRadius: i === 0 ? '20px 0 0 20px' : i === 2 ? '0 20px 20px 0' : 0,
               borderLeft: i > 0 ? '1px solid var(--hairline)' : 'none',
@@ -345,7 +345,7 @@ export default function Landing() {
             },
           ].map(tier => (
             <div key={tier.name} style={{
-              background: tier.featured ? 'var(--surface-2)' : 'var(--surface-1)',
+              background: tier.featured ? 'var(--canvas-soft-2)' : 'var(--canvas-soft)',
               borderRadius: 20,
               padding: 24,
               position: 'relative',
@@ -401,7 +401,7 @@ export default function Landing() {
       </section>
 
       {/* ── FOOTER ──────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '64px 30px', maxWidth: 1199, margin: '0 auto' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '64px 30px', maxWidth: 1199, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
@@ -453,7 +453,7 @@ export default function Landing() {
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '1px solid var(--hairline-soft)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, color: 'var(--ink-muted)', letterSpacing: '-0.12px' }}>© ٢٠٢٥ Deema. جميع الحقوق محفوظة.</span>
           <div style={{ display: 'flex', gap: 16 }}>
             {['تويتر', 'لينكدإن', 'إنستغرام'].map(s => (

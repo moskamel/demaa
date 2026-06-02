@@ -53,7 +53,7 @@ export default function Customers() {
             { icon: TrendingUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
             { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-EG')} ج.م`, color: '#22c55e' },
           ].map(({ icon: Icon, label, value, color }) => (
-            <div key={label} style={{ background: 'var(--surface-1)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
+            <div key={label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <Icon size={15} color={color} />
               </div>
@@ -67,11 +67,11 @@ export default function Customers() {
         <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
             <Search size={13} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-muted)', pointerEvents: 'none' }} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث باسم أو رقم جوال أو مدينة..." style={{ width: '100%', padding: '9px 34px 9px 14px', borderRadius: 10, border: '1px solid var(--hairline)', background: 'var(--surface-1)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث باسم أو رقم جوال أو مدينة..." style={{ width: '100%', padding: '9px 34px 9px 14px', borderRadius: 10, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
           </div>
-          <div style={{ display: 'flex', gap: 4, background: 'var(--surface-1)', borderRadius: 9, padding: 3 }}>
+          <div style={{ display: 'flex', gap: 4, background: 'var(--canvas-soft)', borderRadius: 9, padding: 3 }}>
             {(['all', 'vip', 'loyal', 'regular', 'new'] as SegFilter[]).map(s => (
-              <button key={s} onClick={() => setSegFilter(s)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: segFilter === s ? 'var(--surface-2)' : 'transparent', color: segFilter === s ? 'var(--ink)' : 'var(--ink-muted)' }}>
+              <button key={s} onClick={() => setSegFilter(s)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: segFilter === s ? 'var(--canvas-soft-2)' : 'transparent', color: segFilter === s ? 'var(--ink)' : 'var(--ink-muted)' }}>
                 {s === 'all' ? 'الكل' : segmentLabels[s]}
               </button>
             ))}
@@ -90,9 +90,9 @@ export default function Customers() {
             <div style={{ fontSize: 12 }}>جرب تغيير كلمة البحث أو الفلتر</div>
           </div>
         ) : (
-          <div style={{ background: 'var(--surface-1)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
             {filtered.map((c, i) => (
-              <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline-soft)' : 'none' }}>
+              <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
                 <div style={{ width: 36, height: 36, borderRadius: 10, background: `${segmentColors[c.segment] || '#6a4cf5'}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>
                   {c.segment === 'vip' ? '⭐' : c.segment === 'loyal' ? '💜' : c.segment === 'new' ? '🆕' : '👤'}
                 </div>

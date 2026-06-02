@@ -23,10 +23,10 @@ export default function Pricing() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -43,7 +43,7 @@ export default function Pricing() {
 
       <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--surface-1)', borderRadius: 100, padding: '6px 16px', marginBottom: 24, border: '1px solid var(--hairline-soft)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--canvas-soft)', borderRadius: 100, padding: '6px 16px', marginBottom: 24, border: '1px solid var(--hairline)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
             <span style={{ fontSize: 13, color: 'var(--ink-muted)' }}>مجاني بالكامل خلال مرحلة البيتا</span>
           </div>
@@ -53,7 +53,7 @@ export default function Pricing() {
 
         <div style={{ maxWidth: 480, margin: '0 auto' }}>
           <div style={{
-            background: 'var(--surface-1)',
+            background: 'var(--canvas-soft)',
             borderRadius: 24,
             padding: '40px',
             border: '1px solid rgba(255,255,255,0.1)',
@@ -87,7 +87,7 @@ export default function Pricing() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

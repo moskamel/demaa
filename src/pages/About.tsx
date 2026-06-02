@@ -29,10 +29,10 @@ export default function About() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -53,7 +53,7 @@ export default function About() {
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>فريق من القاهرة يبني مستقبل التجارة الإلكترونية العربية</p>
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 20, padding: '40px', marginBottom: 48, border: '1px solid var(--hairline-soft)' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '40px', marginBottom: 48, border: '1px solid var(--hairline)' }}>
           <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 16, letterSpacing: '-0.4px' }}>مهمتنا</h2>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.8, marginBottom: 16 }}>
             Deema وُلد من إحباط حقيقي — مئات التجار المصريين يضيعون ساعات يومياً في تتبع الطلبات، إدارة الشحنات، والرد على العملاء. كان الحل دائماً برامج معقدة بالإنجليزية تحتاج خبرة تقنية.
@@ -80,7 +80,7 @@ export default function About() {
           <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 32, letterSpacing: '-0.4px' }}>الفريق</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
             {teamMembers.map(m => (
-              <div key={m.name} style={{ background: 'var(--surface-1)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline-soft)', textAlign: 'center' }}>
+              <div key={m.name} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)', textAlign: 'center' }}>
                 <div style={{
                   width: 64, height: 64, borderRadius: '50%',
                   background: m.color + '33',
@@ -99,14 +99,14 @@ export default function About() {
           </div>
         </div>
 
-        <div style={{ background: 'var(--surface-1)', borderRadius: 20, padding: '32px', marginTop: 48, border: '1px solid var(--hairline-soft)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '32px', marginTop: 48, border: '1px solid var(--hairline)', textAlign: 'center' }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 12 }}>انضم إلينا</h2>
           <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 20 }}>نبحث عن أشخاص موهوبين يؤمنون بمستقبل التجارة الإلكترونية العربية</p>
           <Link to="/careers" className="btn-primary">شاهد الوظائف المتاحة</Link>
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>

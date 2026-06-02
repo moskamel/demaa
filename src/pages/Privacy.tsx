@@ -76,10 +76,10 @@ export default function Privacy() {
     <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(9,9,9,0.9)',
+        background: 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline-soft)',
+        borderBottom: '1px solid var(--hairline)',
         height: 56,
         display: 'flex', alignItems: 'center',
         padding: '0 30px',
@@ -105,13 +105,13 @@ export default function Privacy() {
             <div key={i}>
               <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 12, letterSpacing: '-0.3px' }}>{s.title}</h2>
               <p style={{ fontSize: 15, color: 'var(--ink-muted)', lineHeight: 1.8, whiteSpace: 'pre-line' }}>{s.content}</p>
-              {i < sections.length - 1 && <div style={{ height: 1, background: 'var(--hairline-soft)', marginTop: 40 }} />}
+              {i < sections.length - 1 && <div style={{ height: 1, background: 'var(--hairline)', marginTop: 40 }} />}
             </div>
           ))}
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline-soft)', padding: '24px 30px', textAlign: 'center' }}>
+      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
         <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
       </footer>
     </div>
