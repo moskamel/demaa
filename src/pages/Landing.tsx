@@ -101,7 +101,7 @@ export default function Landing() {
             {['#ff5f57','#ffbd2e','#28c940'].map(c => (
               <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
             ))}
-            <span style={{ color: 'var(--ink-muted)', fontSize: 12, marginRight: 'auto', letterSpacing: '-0.12px' }}>Deema · متجر النور — سلة</span>
+            <span style={{ color: 'var(--ink-muted)', fontSize: 12, marginRight: 'auto', letterSpacing: '-0.12px' }}>Deema · متجر النور — Shopify</span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', height: 400 }}>
@@ -270,10 +270,10 @@ export default function Landing() {
             <Globe size={22} color="var(--ink)" style={{ marginBottom: 20 }} />
             <h3 style={{ fontSize: 20, fontWeight: 500, letterSpacing: '-0.6px', marginBottom: 10 }}>٣ منصات</h3>
             <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.55, marginBottom: 16, letterSpacing: '-0.14px' }}>
-              سلة، زد، وShopify — ربط سريع بدون تقنيات معقدة
+              Shopify، Wuilt، وShantaweb — ربط سريع بدون تقنيات معقدة
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
-              {[{ e: '🟣', n: 'سلة' }, { e: '🟢', n: 'زد' }, { e: '🌿', n: 'Shopify' }].map(p => (
+              {[{ e: '🛍️', n: 'Shopify' }, { e: '🌐', n: 'Wuilt' }, { e: '🏪', n: 'Shantaweb' }].map(p => (
                 <div key={p.n} style={{ background: 'var(--surface-2)', borderRadius: 10, padding: '10px 14px', flex: 1, textAlign: 'center' }}>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{p.e}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{p.n}</div>

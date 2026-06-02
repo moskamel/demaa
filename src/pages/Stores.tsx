@@ -5,7 +5,7 @@ import { Plus, RefreshCw, Unlink, AlertCircle, CheckCircle, Clock, ChevronLeft }
 interface StoreItem {
   id: string
   name: string
-  platform: 'سلة' | 'زد' | 'Shopify'
+  platform: 'Shopify' | 'Wuilt' | 'Shantaweb'
   domain: string
   status: 'connected' | 'error' | 'expired' | 'pending'
   ordersMonth: number
@@ -15,9 +15,9 @@ interface StoreItem {
 }
 
 const STORES: StoreItem[] = [
-  { id: 'S1', name: 'متجر النور', platform: 'سلة', domain: 'noor.salla.sa', status: 'connected', ordersMonth: 234, revenueMonth: 89_420, lastSync: 'منذ 5 دقائق', color: '#6a4cf5' },
-  { id: 'S2', name: 'متجر العود', platform: 'زد', domain: 'aloud.zid.sa', status: 'connected', ordersMonth: 87, revenueMonth: 34_650, lastSync: 'منذ 12 دقيقة', color: '#d44df0' },
-  { id: 'S3', name: 'متجر الأناقة', platform: 'Shopify', domain: 'elegance.myshopify.com', status: 'expired', ordersMonth: 43, revenueMonth: 18_200, lastSync: 'منذ 3 ساعات', color: '#ff7a3d' },
+  { id: 'S1', name: 'متجر النور', platform: 'Shopify', domain: 'noor.myshopify.com', status: 'connected', ordersMonth: 234, revenueMonth: 89_420, lastSync: 'منذ 5 دقائق', color: '#6a4cf5' },
+  { id: 'S2', name: 'متجر العود', platform: 'Wuilt', domain: 'aloud.wuilt.com', status: 'connected', ordersMonth: 87, revenueMonth: 34_650, lastSync: 'منذ 12 دقيقة', color: '#d44df0' },
+  { id: 'S3', name: 'متجر الأناقة', platform: 'Shantaweb', domain: 'elegance.shantaweb.com', status: 'expired', ordersMonth: 43, revenueMonth: 18_200, lastSync: 'منذ 3 ساعات', color: '#ff7a3d' },
 ]
 
 const statusMap = {
@@ -27,7 +27,7 @@ const statusMap = {
   pending: { label: 'جاري الربط', color: '#999', icon: Clock },
 }
 
-const platformColors = { 'سلة': '#6a4cf5', 'زد': '#d44df0', 'Shopify': '#22c55e' }
+const platformColors = { 'Shopify': '#6a4cf5', 'Wuilt': '#d44df0', 'Shantaweb': '#22c55e' }
 
 export default function Stores() {
   const [syncing, setSyncing] = useState<string | null>(null)

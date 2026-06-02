@@ -415,7 +415,7 @@ export default function Dashboard() {
         <div style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 10, flexShrink: 0 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>متجر النور</span>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-1)', borderRadius: 4, padding: '2px 8px' }}>سلة</span>
+            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--surface-1)', borderRadius: 4, padding: '2px 8px' }}>Shopify</span>
             <ChevronDown size={13} color="var(--ink-muted)" />
           </div>
 
