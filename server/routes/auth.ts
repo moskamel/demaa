@@ -48,13 +48,13 @@ router.post('/signup', async (req, res) => {
       data: { organizationId: org.id, name: `متجر ${orgName}`, platform: 'salla', isActive: true },
     })
 
-    // Default subscription
+    // Subscription — unlimited pro plan
     await prisma.subscription.create({
       data: {
         organizationId: org.id,
-        planId: 'starter',
-        ordersLimit: 100,
-        currentPeriodEnd: new Date(Date.now() + 30 * 86400000),
+        planId: 'pro',
+        ordersLimit: 999999999,
+        currentPeriodEnd: new Date(Date.now() + 365 * 86400000 * 100),
       },
     })
 
@@ -147,7 +147,7 @@ router.post('/demo', async (_req, res) => {
         data: { organizationId: org.id, name: 'متجر النور', platform: 'salla', isActive: true },
       })
       await prisma.subscription.create({
-        data: { organizationId: org.id, ordersLimit: 1000, currentPeriodEnd: new Date(Date.now() + 30 * 86400000) },
+        data: { organizationId: org.id, planId: 'pro', ordersLimit: 999999999, currentPeriodEnd: new Date(Date.now() + 365 * 86400000 * 100) },
       })
 
       // Seed demo data
