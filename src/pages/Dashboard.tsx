@@ -329,9 +329,9 @@ export default function Dashboard() {
             <Link to="/stores" style={{ color: 'var(--ink-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}><Plus size={11} /></Link>
           </div>
           {[
-            { name: 'متجر النور', platform: 'سلة', active: true, dot: '#22c55e' },
-            { name: 'متجر العود', platform: 'زد', active: false, dot: '#22c55e' },
-            { name: 'الأناقة', platform: 'Shopify', active: false, dot: '#ff7a3d' },
+            { name: 'متجر النور', platform: 'Shopify', active: true, dot: '#22c55e' },
+            { name: 'متجر العود', platform: 'Wuilt', active: false, dot: '#22c55e' },
+            { name: 'الأناقة', platform: 'Shantaweb', active: false, dot: '#ff7a3d' },
           ].map(s => (
             <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: s.active ? 'var(--surface-1)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />

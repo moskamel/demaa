@@ -2,18 +2,60 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
 
-type Platform = 'salla' | 'zid' | 'shopify' | null
+type Platform = 'shopify' | 'wuilt' | 'shantaweb' | null
 
 const platforms = [
-  { id: 'salla', name: 'سلة', desc: 'المنصة السعودية الأولى', emoji: '🟣', method: 'api-key' },
-  { id: 'zid', name: 'زد', desc: 'تجارة إلكترونية عربية', emoji: '🟢', method: 'oauth' },
-  { id: 'shopify', name: 'Shopify', desc: 'منصة عالمية', emoji: '🌿', method: 'oauth' },
+  {
+    id: 'shopify',
+    name: 'Shopify',
+    desc: 'منصة عالمية للتجارة الإلكترونية',
+    logo: '🛍️',
+    url: 'https://www.shopify.com/',
+    method: 'oauth',
+    steps: [
+      'افتح Admin Panel الخاص بمتجرك على Shopify',
+      'اذهب إلى: Settings ← Apps and sales channels ← Develop apps',
+      'اضغط "Create an app" وسمّه Deema',
+      'من Admin API access scopes أضف: orders, products, fulfillments',
+      'انسخ Admin API access token والصقه هنا',
+    ],
+  },
+  {
+    id: 'wuilt',
+    name: 'Wuilt',
+    desc: 'منصة عربية لبناء المتاجر الإلكترونية',
+    logo: '🌐',
+    url: 'https://wuilt.com/',
+    method: 'api-key',
+    steps: [
+      'سجّل دخولك على لوحة تحكم Wuilt',
+      'اذهب إلى: الإعدادات ← التكاملات ← API',
+      'اضغط "إنشاء مفتاح API جديد"',
+      'امنح الصلاحيات: قراءة الطلبات، المنتجات، الشحن',
+      'انسخ المفتاح الظاهر والصقه هنا',
+    ],
+  },
+  {
+    id: 'shantaweb',
+    name: 'Shantaweb',
+    desc: 'منصة متاجر إلكترونية عربية',
+    logo: '🏪',
+    url: 'https://shantaweb.com/',
+    method: 'api-key',
+    steps: [
+      'سجّل دخولك على لوحة تحكم Shantaweb',
+      'اذهب إلى: الإعدادات ← API والتكاملات',
+      'اضغط "توليد مفتاح API جديد"',
+      'حدد الصلاحيات المطلوبة: طلبات، منتجات، شحن',
+      'انسخ المفتاح والصقه هنا',
+    ],
+  },
 ]
 
 export default function Onboarding() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [platform, setPlatform] = useState<Platform>(null)
-  const [apiKey, setApiKey] = useState('sk-test-deema-demo-1234567890abcdef')
+  const [apiKey, setApiKey] = useState('')
   const [loading, setLoading] = useState(false)
   const [connected, setConnected] = useState(false)
   const navigate = useNavigate()
@@ -41,7 +83,7 @@ export default function Onboarding() {
         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.4px' }}>Deema</span>
       </div>
 
-      {/* step indicator — ltr so 1→2→3 reads left to right */}
+      {/* step indicator */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 48, direction: 'ltr' }}>
         {[1, 2, 3].map(s => (
           <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -59,7 +101,7 @@ export default function Onboarding() {
         ))}
       </div>
 
-      {/* ── STEP 1: Choose platform ──────────────────────────────────── */}
+      {/* ── STEP 1: Choose platform ── */}
       {step === 1 && (
         <div style={{ width: '100%', maxWidth: 480 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
@@ -79,7 +121,7 @@ export default function Onboarding() {
                 cursor: 'pointer', textAlign: 'right', width: '100%',
                 boxShadow: platform === p.id ? 'rgba(0,153,255,0.15) 0 0 0 1px' : 'none',
               }}>
-                <span style={{ fontSize: 28 }}>{p.emoji}</span>
+                <span style={{ fontSize: 28 }}>{p.logo}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 2, letterSpacing: '-0.3px' }}>{p.name}</div>
                   <div style={{ fontSize: 13, color: 'var(--ink-muted)', letterSpacing: '-0.13px' }}>{p.desc}</div>
@@ -107,7 +149,7 @@ export default function Onboarding() {
         </div>
       )}
 
-      {/* ── STEP 2: API Key ──────────────────────────────────────────── */}
+      {/* ── STEP 2: API Key ── */}
       {step === 2 && (
         <div style={{ width: '100%', maxWidth: 480 }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -117,17 +159,11 @@ export default function Onboarding() {
             <p style={{ fontSize: 14, color: 'var(--ink-muted)', letterSpacing: '-0.14px' }}>أدخل بيانات المتجر لإتمام الربط</p>
           </div>
 
-          {/* instructions */}
           <div style={{ background: 'var(--surface-1)', borderRadius: 15, padding: 20, marginBottom: 16, border: '1px solid var(--hairline)' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 14, letterSpacing: '-0.13px' }}>
               كيف تحصل على API Key من {selectedPlatform?.name}؟
             </div>
-            {[
-              `افتح لوحة تحكم ${selectedPlatform?.name}`,
-              'اذهب إلى: التطبيقات ← مفاتيح API',
-              'اضغط "إنشاء مفتاح جديد"',
-              'انسخ المفتاح والصقه هنا',
-            ].map((s, i) => (
+            {selectedPlatform?.steps.map((s, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13, color: 'var(--ink-muted)', marginBottom: 10 }}>
                 <span style={{
                   width: 20, height: 20, borderRadius: '50%', background: 'var(--surface-2)',
@@ -137,10 +173,11 @@ export default function Onboarding() {
                 <span style={{ letterSpacing: '-0.13px' }}>{s}</span>
               </div>
             ))}
-            <button className="btn-secondary" style={{ marginTop: 8, fontSize: 12, padding: '7px 13px', borderRadius: 8 }}>
+            <a href={selectedPlatform?.url} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 8, fontSize: 12, color: '#6a4cf5', textDecoration: 'none' }}>
               <ExternalLink size={11} />
               فتح {selectedPlatform?.name} في تبويب جديد
-            </button>
+            </a>
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -149,12 +186,13 @@ export default function Onboarding() {
               type="text"
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
-              placeholder="sk-xxxxxxxxxxxxxxxxxxxx"
+              placeholder={selectedPlatform?.id === 'shopify' ? 'shpat_xxxxxxxxxxxxxxxxxxxx' : 'sk-xxxxxxxxxxxxxxxxxxxx'}
               style={{
                 width: '100%', background: 'var(--surface-1)',
                 border: '1px solid var(--hairline)', borderRadius: 10,
                 padding: '11px 14px', fontSize: 13, color: 'var(--ink)',
                 outline: 'none', fontFamily: 'monospace', direction: 'ltr', textAlign: 'left',
+                boxSizing: 'border-box',
               }}
               onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
               onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
@@ -176,7 +214,7 @@ export default function Onboarding() {
         </div>
       )}
 
-      {/* ── STEP 3: Confirm ─────────────────────────────────────────── */}
+      {/* ── STEP 3: Confirm ── */}
       {step === 3 && (
         <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
           {connected ? (
@@ -203,10 +241,10 @@ export default function Onboarding() {
                 </div>
                 <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 14 }}>
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 10 }}>الصلاحيات المطلوبة:</div>
-                  {['قراءة الطلبات', 'تحديث الطلبات', 'قراءة المنتجات', 'إنشاء الشحنات'].map(p => (
-                    <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--ink-muted)', marginBottom: 7 }}>
+                  {['قراءة الطلبات', 'تحديث الطلبات', 'قراءة المنتجات', 'إنشاء الشحنات'].map(perm => (
+                    <div key={perm} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--ink-muted)', marginBottom: 7 }}>
                       <Check size={12} color="var(--semantic-success)" strokeWidth={2.5} />
-                      <span style={{ letterSpacing: '-0.13px' }}>{p}</span>
+                      <span style={{ letterSpacing: '-0.13px' }}>{perm}</span>
                     </div>
                   ))}
                 </div>

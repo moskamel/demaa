@@ -45,7 +45,7 @@ router.post('/signup', async (req, res) => {
 
     // Default store
     await prisma.store.create({
-      data: { organizationId: org.id, name: orgName, platform: 'salla', isActive: true },
+      data: { organizationId: org.id, name: orgName, platform: 'shopify', isActive: true },
     })
 
     // Subscription — unlimited pro plan
@@ -144,7 +144,7 @@ router.post('/demo', async (_req, res) => {
       await prisma.teamMembership.create({ data: { organizationId: org.id, userId: demoUser.id, role: 'ADMIN' } })
 
       const store = await prisma.store.create({
-        data: { organizationId: org.id, name: 'متجر النور', platform: 'salla', isActive: true },
+        data: { organizationId: org.id, name: 'متجر النور', platform: 'shopify', isActive: true },
       })
       await prisma.subscription.create({
         data: { organizationId: org.id, planId: 'pro', ordersLimit: 999999999, currentPeriodEnd: new Date(Date.now() + 365 * 86400000 * 100) },

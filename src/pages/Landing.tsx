@@ -124,8 +124,8 @@ export default function Landing() {
               ))}
               <div style={{ marginTop: 'auto', padding: '8px 10px', borderTop: '1px solid var(--hairline)', paddingTop: 12 }}>
                 {[
-                  { name: 'متجر النور', platform: 'سلة', active: true },
-                  { name: 'متجر العود', platform: 'زد', active: false },
+                  { name: 'متجر النور', platform: 'Shopify', active: true },
+                  { name: 'متجر العود', platform: 'Wuilt', active: false },
                 ].map(s => (
                   <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--semantic-success)' }} />
