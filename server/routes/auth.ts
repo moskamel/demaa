@@ -45,7 +45,7 @@ router.post('/signup', async (req, res) => {
 
     // Default store
     await prisma.store.create({
-      data: { organizationId: org.id, name: `متجر ${orgName}`, platform: 'salla', isActive: true },
+      data: { organizationId: org.id, name: orgName, platform: 'salla', isActive: true },
     })
 
     // Subscription — unlimited pro plan

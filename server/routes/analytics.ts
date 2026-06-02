@@ -45,7 +45,10 @@ router.get('/overview', async (req: AuthRequest, res) => {
     rejectedOrders: orders.filter(o => o.status === 'rejected').length,
     totalRevenue: totalRevenue / 100,
     avgOrderValue: completed.length ? Math.round(totalRevenue / completed.length) / 100 : 0,
-    topCities: Object.entries(cityMap).sort((a, b) => b[1].revenue - a[1].revenue).slice(0, 6),
+    topCities: Object.entries(cityMap)
+      .map(([city, d]) => [city, { orders: d.orders, revenue: d.revenue / 100 }])
+      .sort((a: any, b: any) => b[1].revenue - a[1].revenue)
+      .slice(0, 6),
     paymentBreakdown: payMap,
   })
 })
