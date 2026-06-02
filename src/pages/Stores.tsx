@@ -3,17 +3,6 @@ import { Link } from 'react-router-dom'
 import { Plus, RefreshCw, Unlink, CheckCircle, Clock, ChevronLeft } from 'lucide-react'
 import { storesApi, type StoreData } from '../lib/api'
 
-// Extend storesApi with disconnect
-async function disconnectStore(id: string) {
-  const token = localStorage.getItem('deema_token')
-  const res = await fetch(`/api/stores/${id}/disconnect`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-  })
-  if (!res.ok) throw new Error('Failed to disconnect')
-  return res.json()
-}
-
 const statusMap = (isActive: boolean, syncStatus: string) => {
   if (syncStatus === 'syncing') return { label: 'جاري التزامن', color: '#0099ff', icon: Clock }
   if (!isActive) return { label: 'يحتاج تجديد', color: '#ff7a3d', icon: Clock }
@@ -42,7 +31,7 @@ export default function Stores() {
     if (!window.confirm('هل أنت متأكد من فصل هذا المتجر؟')) return
     setDisconnecting(id)
     try {
-      await disconnectStore(id)
+      await storesApi.disconnect(id)
       setStores(prev => prev.map(s => s.id === id ? { ...s, isActive: false, syncStatus: 'idle' } : s))
     } catch {
       // ignore

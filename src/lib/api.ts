@@ -183,6 +183,9 @@ export const storesApi = {
   async sync(id: string) {
     return request<{ syncing: boolean }>(`/stores/${id}/sync`, { method: 'POST' })
   },
+  async disconnect(id: string) {
+    return request<{ disconnected: boolean }>(`/stores/${id}/disconnect`, { method: 'POST' })
+  },
 }
 
 // ── Types ────────────────────────────────────────────────────

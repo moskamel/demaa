@@ -151,12 +151,12 @@ function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; no
       </div>
       <div style={{ maxHeight: 340, overflowY: 'auto' }}>
         {notifs.slice(0, 5).map(n => (
-          <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline)', background: (n as { readAt?: string | null; isRead?: boolean }).readAt || (n as { isRead?: boolean }).isRead ? 'transparent' : 'rgba(0,0,0,0.02)' }}>
+          <div key={n.id} style={{ padding: '11px 16px', borderBottom: '1px solid var(--hairline)', background: n.isRead ? 'transparent' : 'rgba(0,0,0,0.02)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: priorityColor[n.priority] || '#555', marginTop: 5, flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: (n as { readAt?: string | null; isRead?: boolean }).isRead ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
-                <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{(n as { body?: string }).body}</div>
+                <div style={{ fontSize: 12, fontWeight: n.isRead ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{n.body}</div>
                 <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
               </div>
             </div>

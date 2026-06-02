@@ -41,8 +41,9 @@ router.get('/low-stock', async (req: AuthRequest, res) => {
 // GET /products/:id
 router.get('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({ where: { organizationId: req.orgId } })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
   const product = await prisma.product.findFirst({
-    where: { id: req.params.id, storeId: store?.id },
+    where: { id: req.params.id, storeId: store.id },
   })
   if (!product) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
   res.json({ product })
@@ -51,6 +52,7 @@ router.get('/:id', async (req: AuthRequest, res) => {
 // PATCH /products/:id
 router.patch('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({ where: { organizationId: req.orgId } })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
   const { name, price, stock, category, lowStockAlert } = req.body
   const data: Record<string, unknown> = {}
   if (name !== undefined) data.name = name
@@ -60,7 +62,7 @@ router.patch('/:id', async (req: AuthRequest, res) => {
   if (lowStockAlert !== undefined) data.lowStockAlert = Number(lowStockAlert)
 
   const product = await prisma.product.updateMany({
-    where: { id: req.params.id, storeId: store?.id },
+    where: { id: req.params.id, storeId: store.id },
     data,
   })
   res.json({ updated: product.count })

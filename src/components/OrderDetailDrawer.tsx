@@ -130,7 +130,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
               <AlertTriangle size={14} color={order.riskScore >= 80 ? '#ff5577' : '#ff7a3d'} style={{ flexShrink: 0, marginTop: 1 }} />
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: order.riskScore >= 80 ? '#ff5577' : '#ff7a3d', marginBottom: 3 }}>درجة المخاطرة: {order.riskScore}/100</div>
-                {order.riskFactors && <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{order.riskFactors}</div>}
+                {order.riskFactors && (() => { try { const f = JSON.parse(order.riskFactors!); return Array.isArray(f) && f.length > 0 ? <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{f.join(' · ')}</div> : null } catch { return <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{order.riskFactors}</div> } })()}
               </div>
             </div>
           )}

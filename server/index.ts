@@ -55,6 +55,13 @@ app.use((_req, res) => {
   res.status(404).json({ error: { code: 'NOT_FOUND', message: 'المسار غير موجود' } })
 })
 
+// Global error handler (Express 5 async errors land here)
+import type { Request, Response, NextFunction } from 'express'
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('[server error]', err)
+  res.status(500).json({ error: { code: 'SERVER_ERROR', message: 'خطأ في الخادم' } })
+})
+
 app.listen(PORT, () => {
   startRetryWorker()
   console.log(`\n🚀 Deema API Server running on http://localhost:${PORT}`)
