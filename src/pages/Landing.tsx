@@ -43,7 +43,7 @@ export default function Landing() {
         {/* CTA pair */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <Link to="/login" className="btn-secondary">تسجيل الدخول</Link>
-          <Link to="/onboarding" className="btn-primary">ابدأ مجاناً</Link>
+          <Link to="/signup" className="btn-primary">ابدأ مجاناً</Link>
         </div>
       </nav>
 
@@ -67,7 +67,7 @@ export default function Landing() {
         </p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <Link to="/onboarding" className="btn-primary" style={{ padding: '12px 22px', fontSize: 15 }}>
+          <Link to="/signup" className="btn-primary" style={{ padding: '12px 22px', fontSize: 15 }}>
             ابدأ مجاناً <ArrowLeft size={14} />
           </Link>
           <Link to="/dashboard" className="btn-secondary" style={{ padding: '12px 22px', fontSize: 15 }}>
@@ -369,7 +369,7 @@ export default function Landing() {
                   </div>
                 ))}
               </div>
-              <Link to="/onboarding" style={{
+              <Link to="/signup" style={{
                 display: 'flex', justifyContent: 'center', textDecoration: 'none',
                 ...(tier.featured
                   ? { background: '#fff', color: '#000', borderRadius: 100, padding: '10px 18px', fontSize: 14, fontWeight: 500 }
@@ -390,7 +390,7 @@ export default function Landing() {
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', marginBottom: 36, letterSpacing: '-0.18px' }}>
             لا يحتاج بطاقة ائتمان · ابدأ في دقيقتين
           </p>
-          <Link to="/onboarding" style={{
+          <Link to="/signup" style={{
             background: '#fff', color: '#000', borderRadius: 100,
             padding: '12px 28px', fontSize: 15, fontWeight: 600,
             textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8,
