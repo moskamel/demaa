@@ -213,20 +213,13 @@ export default function Dashboard() {
     notifApi.list().then(r => { setApiNotifs(r.notifications); setUnreadNotifs(r.unreadCount) }).catch(() => {
       setApiNotifs([]); setUnreadNotifs(NOTIFICATIONS.filter(n => !n.readAt).length)
     })
-    // Load conversations or create one
-    convApi.list().then(async r => {
+    // Load conversations
+    convApi.list().then(r => {
       setConvList(r.conversations)
       if (r.conversations.length > 0) {
         setActiveConv(r.conversations[0].id)
-      } else {
-        const { conversation } = await convApi.create('طلبات اليوم')
-        setActiveConv(conversation.id)
-        setConvList([conversation])
       }
-    }).catch(async () => {
-      // No backend — create mock conv ID
-      setActiveConv('offline-conv')
-    })
+    }).catch(() => {})
   }, [])
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, isTyping])
@@ -250,7 +243,7 @@ export default function Dashboard() {
 
     try {
       let convId = activeConv
-      if (!convId || convId === 'offline-conv') {
+      if (!convId) {
         const { conversation } = await convApi.create(trimmed.slice(0, 40))
         convId = conversation.id
         setActiveConv(convId)
@@ -277,16 +270,10 @@ export default function Dashboard() {
     }
   }
 
-  const handleNewChat = async () => {
+  const handleNewChat = () => {
     setMessages([initialMessage])
     setCounter(2)
-    try {
-      const { conversation } = await convApi.create()
-      setActiveConv(conversation.id)
-      setConvList(prev => [conversation, ...prev])
-    } catch {
-      setActiveConv('offline-conv')
-    }
+    setActiveConv(null)
   }
 
   return (

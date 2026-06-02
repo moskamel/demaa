@@ -7,12 +7,12 @@ import { requireAuth, type AuthRequest } from '../middleware/auth.js'
 const router = Router()
 router.use(requireAuth)
 
-// GET /conversations
+// GET /conversations — only return conversations that have at least one message
 router.get('/', async (req: AuthRequest, res) => {
   const convs = await prisma.conversation.findMany({
-    where: { organizationId: req.orgId },
+    where: { organizationId: req.orgId, messages: { some: {} } },
     orderBy: { updatedAt: 'desc' },
-    take: 20,
+    take: 30,
     include: { _count: { select: { messages: true } } },
   })
   res.json({ conversations: convs })
