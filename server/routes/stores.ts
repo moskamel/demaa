@@ -65,6 +65,19 @@ router.post('/connect', async (req: AuthRequest, res) => {
   }
 })
 
+// POST /stores/:id/disconnect
+router.post('/:id/disconnect', async (req: AuthRequest, res) => {
+  const store = await prisma.store.findFirst({
+    where: { id: req.params.id, organizationId: req.orgId },
+  })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  await prisma.store.update({
+    where: { id: store.id },
+    data: { isActive: false, accessToken: null, syncStatus: 'idle' },
+  })
+  res.json({ disconnected: true })
+})
+
 router.get('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({
     where: { id: req.params.id, organizationId: req.orgId },

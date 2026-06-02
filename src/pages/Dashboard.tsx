@@ -70,7 +70,7 @@ function OrderListView({ rows, onOrderClick }: { rows: OrderRow[]; onOrderClick?
             </div>
           </div>
           <div style={{ textAlign: 'left', flexShrink: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{o.total.toLocaleString('ar-SA')} ر.س</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{(o.total / 100).toLocaleString('ar-SA')} ر.س</div>
             <div style={{ fontSize: 10, color: statusColors[o.status], textAlign: 'center', marginTop: 2 }}>{statusLabels[o.status]}</div>
           </div>
         </div>
@@ -252,12 +252,8 @@ export default function Dashboard() {
       // Refresh stats after action
       ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
     } catch (err) {
-      // Fallback to mock engine if API unavailable
-      const { detectIntent } = await import('../engine/intentDetector')
-      const { generateResponse } = await import('../engine/responseEngine')
-      const parsed = detectIntent(trimmed)
-      const response = generateResponse(parsed, null, () => {})
-      setMessages(prev => [...prev, { ...response, id: counter + 1 }])
+      const errMsg = (err as Error).message || 'حدث خطأ في الاتصال'
+      setMessages(prev => [...prev, { id: counter + 1, role: 'deema', content: `عذراً، حدث خطأ: ${errMsg}. حاول مجدداً.` }])
       setCounter(c => c + 1)
     } finally {
       setIsTyping(false)

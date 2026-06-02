@@ -3,6 +3,17 @@ import { Link } from 'react-router-dom'
 import { Plus, RefreshCw, Unlink, CheckCircle, Clock, ChevronLeft } from 'lucide-react'
 import { storesApi, type StoreData } from '../lib/api'
 
+// Extend storesApi with disconnect
+async function disconnectStore(id: string) {
+  const token = localStorage.getItem('deema_token')
+  const res = await fetch(`/api/stores/${id}/disconnect`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+  })
+  if (!res.ok) throw new Error('Failed to disconnect')
+  return res.json()
+}
+
 const statusMap = (isActive: boolean, syncStatus: string) => {
   if (syncStatus === 'syncing') return { label: 'جاري التزامن', color: '#0099ff', icon: Clock }
   if (!isActive) return { label: 'يحتاج تجديد', color: '#ff7a3d', icon: Clock }
@@ -20,11 +31,25 @@ const platformLabel: Record<string, string> = {
 export default function Stores() {
   const [stores, setStores] = useState<StoreData[]>([])
   const [syncing, setSyncing] = useState<string | null>(null)
+  const [disconnecting, setDisconnecting] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     storesApi.list().then(r => setStores(r.stores)).catch(() => setStores([])).finally(() => setLoading(false))
   }, [])
+
+  const handleDisconnect = async (id: string) => {
+    if (!window.confirm('هل أنت متأكد من فصل هذا المتجر؟')) return
+    setDisconnecting(id)
+    try {
+      await disconnectStore(id)
+      setStores(prev => prev.map(s => s.id === id ? { ...s, isActive: false, syncStatus: 'idle' } : s))
+    } catch {
+      // ignore
+    } finally {
+      setDisconnecting(null)
+    }
+  }
 
   const handleSync = async (id: string) => {
     setSyncing(id)
@@ -118,9 +143,12 @@ export default function Stores() {
                           إعادة الربط
                         </Link>
                       )}
-                      <button style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', marginRight: 'auto' }}>
+                      <button
+                        onClick={() => handleDisconnect(s.id)}
+                        disabled={disconnecting === s.id}
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', marginRight: 'auto', opacity: disconnecting === s.id ? 0.5 : 1 }}>
                         <Unlink size={11} />
-                        فصل
+                        {disconnecting === s.id ? 'جاري الفصل...' : 'فصل'}
                       </button>
                     </div>
                   </div>

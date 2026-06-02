@@ -50,6 +50,7 @@ router.get('/overview', async (req: AuthRequest, res) => {
       .sort((a: any, b: any) => b[1].revenue - a[1].revenue)
       .slice(0, 6),
     paymentBreakdown: payMap,
+    rejectionRate: orders.length ? Math.round((orders.filter(o => o.status === 'rejected').length / orders.length) * 100) : 0,
   })
 })
 

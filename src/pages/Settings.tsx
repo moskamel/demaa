@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, Sun, Shield, Bell, Zap, Globe } from 'lucide-react'
+import { ChevronLeft, Sun, Shield, Bell, Zap, Globe, User, Lock } from 'lucide-react'
+import { settingsApi } from '../lib/api'
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -54,7 +55,60 @@ export default function Settings() {
     sessionLog: true,
   })
 
+  const [profile, setProfile] = useState({ name: '', email: '', phone: '' })
+  const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' })
+  const [saving, setSaving] = useState(false)
+  const [savingPassword, setSavingPassword] = useState(false)
+  const [profileMsg, setProfileMsg] = useState('')
+  const [passwordMsg, setPasswordMsg] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+
+  useEffect(() => {
+    settingsApi.getProfile().then(r => {
+      setProfile({ name: r.user.name, email: r.user.email, phone: r.user.phone || '' })
+    }).catch(() => {})
+  }, [])
+
   const set = (key: keyof typeof settings, val: boolean | string | number) => setSettings(s => ({ ...s, [key]: val }))
+
+  const handleSaveProfile = async () => {
+    setSaving(true)
+    setProfileMsg('')
+    try {
+      await settingsApi.updateProfile({ name: profile.name, phone: profile.phone || undefined })
+      setProfileMsg('تم حفظ التغييرات بنجاح')
+      setTimeout(() => setProfileMsg(''), 3000)
+    } catch {
+      setProfileMsg('حدث خطأ أثناء الحفظ')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    setPasswordError('')
+    setPasswordMsg('')
+    if (!passwords.current || !passwords.newPass) { setPasswordError('يرجى تعبئة جميع الحقول'); return }
+    if (passwords.newPass !== passwords.confirm) { setPasswordError('كلمة المرور الجديدة غير متطابقة'); return }
+    if (passwords.newPass.length < 6) { setPasswordError('كلمة المرور يجب أن تكون 6 أحرف على الأقل'); return }
+    setSavingPassword(true)
+    try {
+      await settingsApi.changePassword(passwords.current, passwords.newPass)
+      setPasswordMsg('تم تغيير كلمة المرور بنجاح')
+      setPasswords({ current: '', newPass: '', confirm: '' })
+      setTimeout(() => setPasswordMsg(''), 3000)
+    } catch (err) {
+      setPasswordError((err as Error).message || 'حدث خطأ')
+    } finally {
+      setSavingPassword(false)
+    }
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid var(--hairline)',
+    background: 'var(--surface-2)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit',
+    outline: 'none', boxSizing: 'border-box',
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
@@ -69,6 +123,57 @@ export default function Settings() {
 
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '32px 24px' }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 28 }}>الإعدادات</h1>
+
+        {/* Profile section */}
+        <Section icon={User} title="الملف الشخصي">
+          <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>الاسم الكامل</label>
+              <input value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>البريد الإلكتروني</label>
+              <input value={profile.email} disabled style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>رقم الجوال</label>
+              <input value={profile.phone} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} placeholder="05xxxxxxxx" style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
+            </div>
+            {profileMsg && (
+              <div style={{ fontSize: 12, color: '#22c55e', background: 'rgba(34,197,94,0.08)', borderRadius: 8, padding: '8px 12px' }}>{profileMsg}</div>
+            )}
+            <button onClick={handleSaveProfile} disabled={saving} className="btn-primary" style={{ alignSelf: 'flex-start', padding: '9px 20px', borderRadius: 10, opacity: saving ? 0.7 : 1 }}>
+              {saving ? 'جاري الحفظ...' : 'حفظ الملف الشخصي'}
+            </button>
+          </div>
+        </Section>
+
+        {/* Password section */}
+        <Section icon={Lock} title="تغيير كلمة المرور">
+          <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>كلمة المرور الحالية</label>
+              <input type="password" value={passwords.current} onChange={e => setPasswords(p => ({ ...p, current: e.target.value }))} style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>كلمة المرور الجديدة</label>
+              <input type="password" value={passwords.newPass} onChange={e => setPasswords(p => ({ ...p, newPass: e.target.value }))} style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>تأكيد كلمة المرور</label>
+              <input type="password" value={passwords.confirm} onChange={e => setPasswords(p => ({ ...p, confirm: e.target.value }))} style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
+            </div>
+            {passwordError && (
+              <div style={{ fontSize: 12, color: '#ff5577', background: 'rgba(255,85,119,0.08)', borderRadius: 8, padding: '8px 12px' }}>{passwordError}</div>
+            )}
+            {passwordMsg && (
+              <div style={{ fontSize: 12, color: '#22c55e', background: 'rgba(34,197,94,0.08)', borderRadius: 8, padding: '8px 12px' }}>{passwordMsg}</div>
+            )}
+            <button onClick={handleChangePassword} disabled={savingPassword} className="btn-primary" style={{ alignSelf: 'flex-start', padding: '9px 20px', borderRadius: 10, opacity: savingPassword ? 0.7 : 1 }}>
+              {savingPassword ? 'جاري التغيير...' : 'تغيير كلمة المرور'}
+            </button>
+          </div>
+        </Section>
 
         {/* Deema settings */}
         <Section icon={Zap} title="إعدادات Deema">
@@ -165,18 +270,8 @@ export default function Settings() {
           <div>
             <SettingRow label="التحقق بخطوتين" desc="OTP عبر الجوال عند كل تسجيل دخول" checked={settings.twoFactor} onChange={v => set('twoFactor', v)} />
             <SettingRow label="سجل الجلسات" desc="تتبع كل الأجهزة التي سجّلت دخول" checked={settings.sessionLog} onChange={v => set('sessionLog', v)} />
-            <div style={{ paddingTop: 14 }}>
-              <button style={{ fontSize: 13, color: 'var(--gradient-coral)', background: 'rgba(255,85,119,0.08)', border: 'none', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit' }}>
-                تسجيل الخروج من كل الأجهزة
-              </button>
-            </div>
           </div>
         </Section>
-
-        {/* save */}
-        <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', borderRadius: 12, padding: '13px' }}>
-          حفظ التغييرات
-        </button>
       </div>
     </div>
   )

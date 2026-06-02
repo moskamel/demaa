@@ -2,6 +2,7 @@
 // Runs when no ANTHROPIC_API_KEY is set. No external API needed.
 
 import { executeTool } from './executor.js'
+import prisma from '../prisma.js'
 
 interface ChatCtx { orgId: string; userId?: string; conversationId: string }
 
@@ -32,7 +33,7 @@ const INTENTS: Intent[] = [
   // pending orders
   {
     name: 'get_pending',
-    patterns: [/طلبات? (معلق|بانتظار|جديد)/i, /كم.*(طلب|معلق)/i, /الطلبات المعلقة/i, /وش عندي/i],
+    patterns: [/طلبات? (معلق|بانتظار|جديد)/i, /كم.*(طلب|معلق)/i, /الطلبات المعلقة/i, /وريني الطلبات/i, /وش عندي/i],
     async handler(_msg, ctx) {
       const r = await executeTool('get_orders', { status: 'pending', limit: 50 }, ctx) as any
       const orders = r.orders || []
@@ -47,7 +48,7 @@ const INTENTS: Intent[] = [
   // accept all pending
   {
     name: 'accept_all',
-    patterns: [/اقبل (كل|جميع)/i, /قبول (كل|جميع)/i, /وافق (على )?(كل|جميع)/i],
+    patterns: [/اقبل (كل|جميع|الطلبات)/i, /قبول (كل|جميع)/i, /وافق (على )?(كل|جميع)/i, /اقبل الطلبات/i],
     async handler(_msg, ctx) {
       const r = await executeTool('get_orders', { status: 'pending', limit: 100 }, ctx) as any
       const orders = r.orders || []
@@ -84,7 +85,7 @@ const INTENTS: Intent[] = [
   // analytics / sales
   {
     name: 'analytics',
-    patterns: [/تحليل|مبيعات|إيراد|أداء|إحصاء|تقرير|كم ربح|كم حصلت/i, /وش أكثر/i],
+    patterns: [/تحليل|مبيعات|إيراد|أداء|إحصاء|تقرير|كم ربح|كم حصلت/i, /وش أكثر/i, /مبيعات اليوم/i],
     async handler(msg, ctx) {
       const period = /أسبوع|7/.test(msg) ? '7d' : /90|3 شهر/.test(msg) ? '90d' : '30d'
       const r = await executeTool('get_analytics', { period }, ctx) as any
@@ -104,7 +105,7 @@ const INTENTS: Intent[] = [
   // products low stock
   {
     name: 'low_stock',
-    patterns: [/مخزون (منخفض|ناقص|نفد)|نفد المخزون|مخزون قليل|منتجات? ناقص/i],
+    patterns: [/مخزون (منخفض|ناقص|نفد)|نفد المخزون|مخزون قليل|منتجات? ناقص/i, /المنتجات المنخفضة/i, /كام باقي/i],
     async handler(_msg, ctx) {
       const r = await executeTool('get_products', { lowStock: true, limit: 20 }, ctx) as any
       const products = r.products || []
@@ -117,7 +118,7 @@ const INTENTS: Intent[] = [
   // list products
   {
     name: 'get_products',
-    patterns: [/منتجاتي|قائمة المنتجات|عندي منتجات|كل المنتجات/i],
+    patterns: [/منتجاتي|قائمة المنتجات|عندي منتجات|كل المنتجات|وريني المنتجات/i],
     async handler(_msg, ctx) {
       const r = await executeTool('get_products', { limit: 20 }, ctx) as any
       const products = r.products || []
@@ -233,6 +234,36 @@ const INTENTS: Intent[] = [
       if (!order) return `ما لقيت طلب #${match[1]} في الطلبات المعلقة.`
       const res = await executeTool('reject_order', { orderId: order.id, reason: 'رفض من المتجر' }, ctx) as any
       return `❌ تم رفض طلب **#${order.externalRef || match[1]}** للعميل ${order.customerName}.`
+    }
+  },
+
+  // coupons list
+  {
+    name: 'get_coupons',
+    patterns: [/كوبونات|قائمة الكوبونات|عندي كوبون/i],
+    async handler(_msg, ctx) {
+      const coupons = await prisma.coupon.findMany({ where: { organizationId: ctx.orgId }, orderBy: { createdAt: 'desc' }, take: 10 })
+      if (!coupons.length) return 'ما في كوبونات مضافة بعد. أنشئ كوبون الآن!'
+      const list = coupons.map((c: any) =>
+        `• **${c.code}** — ${c.type === 'percentage' ? c.value / 100 + '%' : c.value / 100 + ' ر.س'} — استُخدم ${c.usageCount} مرة${c.maxUsage ? ' من ' + c.maxUsage : ''}`
+      ).join('\n')
+      return `🎟️ **كوبوناتك (${coupons.length}):**\n\n${list}`
+    }
+  },
+
+  // activity log
+  {
+    name: 'activity_log',
+    patterns: [/سجل الأنشطة|آخر الأنشطة|الأنشطة الأخيرة/i],
+    async handler(_msg, ctx) {
+      const logs = await prisma.activityLog.findMany({
+        where: { organizationId: ctx.orgId },
+        orderBy: { createdAt: 'desc' },
+        take: 8,
+      })
+      if (!logs.length) return 'ما في أنشطة مسجلة بعد.'
+      const list = logs.map((l: any) => `• ${l.summary} — ${new Date(l.createdAt).toLocaleString('ar-SA')}`).join('\n')
+      return `📋 **آخر الأنشطة:**\n\n${list}`
     }
   },
 

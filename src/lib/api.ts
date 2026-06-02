@@ -77,6 +77,9 @@ export const orders = {
   async bulkAccept(orderIds: string[]) {
     return request<{ accepted: number }>('/orders/bulk-accept', { method: 'POST', body: JSON.stringify({ orderIds }) })
   },
+  async ship(id: string, carrier = 'smsa') {
+    return request<{ shipped: boolean; trackingNumber: string; orderId: string }>(`/orders/${id}/ship`, { method: 'POST', body: JSON.stringify({ carrier }) })
+  },
 }
 
 // ── Products ────────────────────────────────────────────────
@@ -305,6 +308,26 @@ export interface TeamMember {
 export interface ConnectorData {
   type: string; name: string; nameAr: string; status: string;
   category: string; lastUsed?: string; logo: string
+}
+
+// ── Settings ──────────────────────────────────────────────────
+
+export const settingsApi = {
+  async getProfile() {
+    return request<{ user: { id: string; name: string; email: string; phone?: string; avatarUrl?: string } }>('/settings/profile')
+  },
+  async updateProfile(data: { name?: string; phone?: string; avatarUrl?: string }) {
+    return request<{ user: { id: string; name: string; email: string; phone?: string } }>('/settings/profile', { method: 'PATCH', body: JSON.stringify(data) })
+  },
+  async changePassword(currentPassword: string, newPassword: string) {
+    return request<{ changed: boolean }>('/settings/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) })
+  },
+  async getStore() {
+    return request<{ store: StoreData | null; org: { id: string; name: string } | null }>('/settings/store')
+  },
+  async updateStore(data: { orgName?: string; storeName?: string }) {
+    return request<{ updated: boolean }>('/settings/store', { method: 'PATCH', body: JSON.stringify(data) })
+  },
 }
 
 export interface CouponData {

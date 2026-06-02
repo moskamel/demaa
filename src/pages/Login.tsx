@@ -147,7 +147,7 @@ export default function Login() {
                   <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>أو</span>
                   <div style={{ flex: 1, height: 1, background: 'var(--hairline)' }} />
                 </div>
-                <button type="button" onClick={async () => { setLoading(true); try { const r = await authApi.demo(); setToken(r.token); localStorage.setItem('deema_user', JSON.stringify(r.user)); navigate('/dashboard') } catch { navigate('/dashboard') } finally { setLoading(false) } }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: 'var(--surface-2)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <button type="button" onClick={async () => { setLoading(true); try { const r = await authApi.demo(); setToken(r.token); localStorage.setItem('deema_user', JSON.stringify(r.user)); localStorage.setItem('deema_org', JSON.stringify(r.org)); navigate('/dashboard') } catch { navigate('/dashboard') } finally { setLoading(false) } }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, background: 'var(--surface-2)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   <span style={{ fontSize: 16 }}>🚀</span> دخول تجريبي (Demo)
                 </button>
               </>

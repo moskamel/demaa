@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { X, Package, MapPin, Phone, CreditCard, Clock, Truck, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 import { orders as ordersApi, type Order } from '../lib/api'
 
+
 interface Props {
   orderId: string | null
   onClose: () => void
@@ -53,6 +54,15 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   const handleReject = async () => {
     await ordersApi.reject(order.id)
     setOrder(prev => prev ? { ...prev, status: 'rejected' } : prev)
+  }
+
+  const handleShip = async () => {
+    try {
+      const result = await ordersApi.ship(order.id, 'smsa')
+      setOrder(prev => prev ? { ...prev, status: 'shipped', shipmentId: result.trackingNumber } : prev)
+    } catch (err) {
+      console.error('Ship error:', err)
+    }
   }
 
   return (
@@ -114,12 +124,12 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                   <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>{item.name}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>الكمية: {item.qty}</div>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.unitPrice * item.qty).toLocaleString('ar-SA')} ر.س</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.totalPrice / 100).toLocaleString('ar-SA')} ر.س</div>
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإجمالي</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{order.total.toLocaleString('ar-SA')} ر.س</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('ar-SA')} ر.س</span>
             </div>
           </Section>
 
@@ -142,7 +152,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
             </div>
           )}
           {order.status === 'accepted' && (
-            <button style={{ width: '100%', padding: '10px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: '#0099ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <button onClick={handleShip} style={{ width: '100%', padding: '10px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: '#0099ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
               <Truck size={14} /> إنشاء شحنة
             </button>
           )}

@@ -37,7 +37,7 @@ export default function Reports() {
 
   const handleRefresh = () => load(period, true)
 
-  const lowStockProducts = allProducts.filter(p => p.stock < 5)
+  const lowStockProducts = allProducts.filter(p => p.stock < p.lowStockAlert)
 
   const KPI = ({ icon: Icon, label, value, sub, color, trend }: {
     icon: React.ElementType; label: string; value: string; sub?: string; color: string; trend?: 'up' | 'down'
@@ -195,7 +195,7 @@ export default function Reports() {
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{p.name}</div>
                       <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{p.category || '—'} · {p.sku || p.id}</div>
                     </div>
-                    <div key={`${p.id}-price`} style={{ padding: '12px 20px', fontSize: 13, fontWeight: 600, color: 'var(--ink)', borderBottom: '1px solid var(--hairline-soft)', display: 'flex', alignItems: 'center' }}>{p.price.toLocaleString('ar-SA')} ر.س</div>
+                    <div key={`${p.id}-price`} style={{ padding: '12px 20px', fontSize: 13, fontWeight: 600, color: 'var(--ink)', borderBottom: '1px solid var(--hairline-soft)', display: 'flex', alignItems: 'center' }}>{(p.price / 100).toLocaleString('ar-SA')} ر.س</div>
                     <div key={`${p.id}-stock`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline-soft)', display: 'flex', alignItems: 'center' }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: p.stock === 0 ? '#ff5577' : p.stock < 5 ? '#ff7a3d' : 'var(--ink)' }}>{p.stock}</span>
                     </div>

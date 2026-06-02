@@ -30,7 +30,8 @@ export default function Customers() {
 
   const vipCount = allCustomers.filter(c => c.segment === 'vip').length
   const loyalCount = allCustomers.filter(c => c.segment === 'loyal').length
-  const totalSpent = allCustomers.reduce((s, c) => s + c.totalSpent, 0)
+  const totalSpentHalalahs = allCustomers.reduce((s, c) => s + c.totalSpent, 0)
+  const totalSpent = totalSpentHalalahs / 100
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
@@ -107,7 +108,7 @@ export default function Customers() {
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>طلبات</div>
                 </div>
                 <div style={{ textAlign: 'left', minWidth: 100 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{c.totalSpent.toLocaleString('ar-SA')} ر.س</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(c.totalSpent / 100).toLocaleString('ar-SA')} ر.س</div>
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>إجمالي الإنفاق</div>
                 </div>
               </div>

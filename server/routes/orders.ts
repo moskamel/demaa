@@ -34,7 +34,7 @@ router.get('/', async (req: AuthRequest, res) => {
   res.json({ orders, meta: { count: orders.length, hasMore: orders.length === parseInt(limit) } })
 })
 
-// GET /orders/stats
+// GET /orders/stats — MUST be before /:id
 router.get('/stats', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({ where: { organizationId: req.orgId, isActive: true } })
   if (!store) { res.json({ pending: 0, accepted: 0, shipped: 0, delivered: 0, rejected: 0 }); return }
@@ -47,6 +47,22 @@ router.get('/stats', async (req: AuthRequest, res) => {
     prisma.order.count({ where: { storeId: store.id, status: 'rejected' } }),
   ])
   res.json({ pending, accepted, shipped, delivered, rejected })
+})
+
+// POST /orders/bulk-accept — MUST be before /:id
+router.post('/bulk-accept', async (req: AuthRequest, res) => {
+  const { orderIds } = req.body as { orderIds: string[] }
+  if (!Array.isArray(orderIds) || orderIds.length === 0) {
+    res.status(400).json({ error: { code: 'INVALID', message: 'يرجى تحديد الطلبات' } }); return
+  }
+
+  const result = await prisma.order.updateMany({
+    where: { id: { in: orderIds }, status: 'pending', ...getStoreWhere(req.orgId!) },
+    data: { status: 'accepted', acceptedAt: new Date() },
+  })
+
+  await logActivity(req.orgId!, req.userId, 'bulk_accept', 'order', undefined, `قبول ${result.count} طلب`)
+  res.json({ accepted: result.count })
 })
 
 // GET /orders/:id
@@ -87,20 +103,24 @@ router.post('/:id/reject', async (req: AuthRequest, res) => {
   res.json({ rejected: true, orderId: order.id })
 })
 
-// POST /orders/bulk-accept
-router.post('/bulk-accept', async (req: AuthRequest, res) => {
-  const { orderIds } = req.body as { orderIds: string[] }
-  if (!Array.isArray(orderIds) || orderIds.length === 0) {
-    res.status(400).json({ error: { code: 'INVALID', message: 'يرجى تحديد الطلبات' } }); return
-  }
-
-  const result = await prisma.order.updateMany({
-    where: { id: { in: orderIds }, status: 'pending', ...getStoreWhere(req.orgId!) },
-    data: { status: 'accepted', acceptedAt: new Date() },
+// POST /orders/:id/ship — create a shipment for an accepted order
+router.post('/:id/ship', async (req: AuthRequest, res) => {
+  const { carrier = 'smsa' } = req.body
+  const order = await prisma.order.findFirst({
+    where: { id: req.params.id, status: 'accepted', ...getStoreWhere(req.orgId!) },
   })
+  if (!order) { res.status(404).json({ error: { code: 'NOT_FOUND', message: 'الطلب غير موجود أو غير مقبول' } }); return }
 
-  await logActivity(req.orgId!, req.userId, 'bulk_accept', 'order', undefined, `قبول ${result.count} طلب`)
-  res.json({ accepted: result.count })
+  const trackingNumber = `${(carrier as string).toUpperCase()}${Math.floor(Math.random() * 9000000000) + 1000000000}`
+  await prisma.shipment.create({
+    data: { orderId: order.id, carrier, trackingNumber, status: 'created' },
+  })
+  await prisma.order.update({
+    where: { id: order.id },
+    data: { status: 'shipped', shipmentId: trackingNumber },
+  })
+  await logActivity(req.orgId!, req.userId, 'ship_order', 'shipment', order.id, `شحن الطلب #${order.externalRef || order.id} — ${trackingNumber}`)
+  res.json({ shipped: true, trackingNumber, orderId: order.id })
 })
 
 async function logActivity(orgId: string, userId: string | undefined, action: string, entity: string, entityId: string | undefined, summary: string) {
