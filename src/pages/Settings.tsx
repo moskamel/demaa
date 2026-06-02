@@ -137,7 +137,7 @@ export default function Settings() {
             </div>
             <div>
               <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>رقم الجوال</label>
-              <input value={profile.phone} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} placeholder="05xxxxxxxx" style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
+              <input value={profile.phone} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} placeholder="01xxxxxxxxx" style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
             </div>
             {profileMsg && (
               <div style={{ fontSize: 12, color: '#22c55e', background: 'rgba(34,197,94,0.08)', borderRadius: 8, padding: '8px 12px' }}>{profileMsg}</div>

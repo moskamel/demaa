@@ -124,12 +124,12 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                   <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>{item.name}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>الكمية: {item.qty}</div>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.totalPrice / 100).toLocaleString('ar-SA')} ر.س</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.totalPrice / 100).toLocaleString('ar-EG')} ج.م</div>
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإجمالي</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('ar-SA')} ر.س</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('ar-EG')} ج.م</span>
             </div>
           </Section>
 

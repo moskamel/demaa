@@ -177,22 +177,22 @@ async function seedDemoData(orgId: string, storeId: string) {
 
   // Customers
   const customers = await Promise.all([
-    prisma.customer.create({ data: { organizationId: orgId, name: 'محمد الأحمدي', phone: '0501234567', city: 'الرياض', segment: 'vip', totalOrders: 8, totalSpent: 272000 } }),
-    prisma.customer.create({ data: { organizationId: orgId, name: 'سارة العمري', phone: '0551234567', city: 'جدة', segment: 'loyal', totalOrders: 4, totalSpent: 208000 } }),
-    prisma.customer.create({ data: { organizationId: orgId, name: 'خالد المنصور', phone: '0561234567', city: 'الدمام', segment: 'regular', totalOrders: 2, totalSpent: 89000 } }),
-    prisma.customer.create({ data: { organizationId: orgId, name: 'فاطمة الزهراني', phone: '0571234567', city: 'الرياض', segment: 'new', totalOrders: 0, totalSpent: 0 } }),
+    prisma.customer.create({ data: { organizationId: orgId, name: 'محمد الحسيني', phone: '01012345678', city: 'القاهرة', segment: 'vip', totalOrders: 8, totalSpent: 272000 } }),
+    prisma.customer.create({ data: { organizationId: orgId, name: 'سارة علي', phone: '01112345678', city: 'الإسكندرية', segment: 'loyal', totalOrders: 4, totalSpent: 208000 } }),
+    prisma.customer.create({ data: { organizationId: orgId, name: 'أحمد إبراهيم', phone: '01212345678', city: 'الجيزة', segment: 'regular', totalOrders: 2, totalSpent: 89000 } }),
+    prisma.customer.create({ data: { organizationId: orgId, name: 'فاطمة محمد', phone: '01512345678', city: 'القاهرة', segment: 'new', totalOrders: 0, totalSpent: 0 } }),
   ])
 
   // Orders
   const orderData = [
-    { customerName: 'محمد الأحمدي', customerPhone: '0501234567', city: 'الرياض', total: 34000, paymentMethod: 'card', status: 'pending', isNewCustomer: false, riskScore: 10, customerId: customers[0].id },
-    { customerName: 'سارة العمري', customerPhone: '0551234567', city: 'جدة', total: 52000, paymentMethod: 'tabby', status: 'pending', isNewCustomer: false, riskScore: 20, customerId: customers[1].id },
-    { customerName: 'خالد المنصور', customerPhone: '0561234567', city: 'الدمام', total: 89000, paymentMethod: 'card', status: 'pending', isNewCustomer: false, riskScore: 15, customerId: customers[2].id },
-    { customerName: 'فاطمة الزهراني', customerPhone: '0571234567', city: 'الرياض', total: 75000, paymentMethod: 'cash', status: 'pending', isNewCustomer: true, riskScore: 80, customerId: customers[3].id },
-    { customerName: 'عبدالله السعيد', customerPhone: '0531234567', city: 'مكة', total: 18000, paymentMethod: 'card', status: 'accepted', isNewCustomer: false, riskScore: 5 },
-    { customerName: 'نورا الحربي', customerPhone: '0541234567', city: 'جدة', total: 45000, paymentMethod: 'tamara', status: 'accepted', isNewCustomer: false, riskScore: 10 },
-    { customerName: 'أحمد القحطاني', customerPhone: '0511234567', city: 'الرياض', total: 34000, paymentMethod: 'card', status: 'shipped', isNewCustomer: false, riskScore: 5, shipmentId: 'SMSA1234567890' },
-    { customerName: 'منى الشهري', customerPhone: '0521234567', city: 'الطائف', total: 52000, paymentMethod: 'card', status: 'delivered', isNewCustomer: false, riskScore: 0 },
+    { customerName: 'محمد الحسيني', customerPhone: '01012345678', city: 'القاهرة', total: 34000, paymentMethod: 'card', status: 'pending', isNewCustomer: false, riskScore: 10, customerId: customers[0].id },
+    { customerName: 'سارة علي', customerPhone: '01112345678', city: 'الإسكندرية', total: 52000, paymentMethod: 'tabby', status: 'pending', isNewCustomer: false, riskScore: 20, customerId: customers[1].id },
+    { customerName: 'أحمد إبراهيم', customerPhone: '01212345678', city: 'الجيزة', total: 89000, paymentMethod: 'card', status: 'pending', isNewCustomer: false, riskScore: 15, customerId: customers[2].id },
+    { customerName: 'فاطمة محمد', customerPhone: '01512345678', city: 'القاهرة', total: 75000, paymentMethod: 'cash', status: 'pending', isNewCustomer: true, riskScore: 80, customerId: customers[3].id },
+    { customerName: 'عمر حسن', customerPhone: '01023456789', city: 'المنصورة', total: 18000, paymentMethod: 'card', status: 'accepted', isNewCustomer: false, riskScore: 5 },
+    { customerName: 'نورا مصطفى', customerPhone: '01134567890', city: 'الإسكندرية', total: 45000, paymentMethod: 'tamara', status: 'accepted', isNewCustomer: false, riskScore: 10 },
+    { customerName: 'كريم عبدالله', customerPhone: '01245678901', city: 'القاهرة', total: 34000, paymentMethod: 'card', status: 'shipped', isNewCustomer: false, riskScore: 5, shipmentId: 'SMSA1234567890' },
+    { customerName: 'منى خالد', customerPhone: '01056789012', city: 'الإسماعيلية', total: 52000, paymentMethod: 'card', status: 'delivered', isNewCustomer: false, riskScore: 0 },
   ]
 
   for (const [i, od] of orderData.entries()) {
@@ -222,9 +222,9 @@ async function seedDemoData(orgId: string, storeId: string) {
   // AI Memory
   const memoryItems = [
     { key: 'preferred_carrier', value: 'smsa', confidence: 0.92, label: 'شركة الشحن المفضلة' },
-    { key: 'top_city', value: 'الرياض', confidence: 0.95, label: 'أعلى مدينة مبيعاً' },
+    { key: 'top_city', value: 'القاهرة', confidence: 0.95, label: 'أعلى مدينة مبيعاً' },
     { key: 'best_sales_day', value: 'الجمعة', confidence: 0.78, label: 'أفضل يوم مبيعات' },
-    { key: 'avg_order_value', value: '487', confidence: 0.99, label: 'متوسط قيمة الطلب (ر.س)' },
+    { key: 'avg_order_value', value: '487', confidence: 0.99, label: 'متوسط قيمة الطلب (ج.م)' },
     { key: 'peak_hour', value: '21:00', confidence: 0.71, label: 'أعلى ساعة بيع' },
     { key: 'cash_ratio', value: '18%', confidence: 0.91, label: 'نسبة طلبات الكاش' },
   ]
@@ -237,7 +237,7 @@ async function seedDemoData(orgId: string, storeId: string) {
     data: [
       { organizationId: orgId, type: 'NEW_ORDER', priority: 'urgent', title: '4 طلبات جديدة بانتظار موافقتك', body: 'آخر طلب قبل 5 دقائق' },
       { organizationId: orgId, type: 'LOW_STOCK', priority: 'important', title: 'مخزون منخفض: كريم الوجه', body: 'نفد تماماً من المخزون' },
-      { organizationId: orgId, type: 'RISK_ALERT', priority: 'important', title: 'طلب مشبوه #10233', body: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ر.س' },
+      { organizationId: orgId, type: 'RISK_ALERT', priority: 'important', title: 'طلب مشبوه #10233', body: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ج.م' },
     ],
   })
 

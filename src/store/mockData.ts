@@ -63,9 +63,9 @@ export interface StoreInsight {
 
 export const STORE_INSIGHTS: StoreInsight[] = [
   { key: 'preferred_carrier', value: 'smsa', confidence: 0.92, label: 'شركة الشحن المفضلة', lastUpdated: 'منذ يومين' },
-  { key: 'cod_rejection_threshold', value: '1000', confidence: 0.85, label: 'حد رفض الكاش (ريال)', lastUpdated: 'منذ أسبوع' },
+  { key: 'cod_rejection_threshold', value: '1000', confidence: 0.85, label: 'حد رفض الكاش (ج.م)', lastUpdated: 'منذ أسبوع' },
   { key: 'best_sales_day', value: 'friday', confidence: 0.78, label: 'أفضل يوم مبيعات', lastUpdated: 'منذ أسبوع' },
-  { key: 'top_city', value: 'riyadh', confidence: 0.95, label: 'أعلى مدينة مبيعاً', lastUpdated: 'اليوم' },
+  { key: 'top_city', value: 'cairo', confidence: 0.95, label: 'أعلى مدينة مبيعاً', lastUpdated: 'اليوم' },
   { key: 'avg_order_value', value: '340', confidence: 0.99, label: 'متوسط قيمة الطلب', lastUpdated: 'اليوم' },
   { key: 'peak_hour', value: '21:00', confidence: 0.71, label: 'أوج ساعة الطلبات', lastUpdated: 'منذ 3 أيام' },
   { key: 'return_rate', value: '0.08', confidence: 0.88, label: 'معدل الإرجاع', lastUpdated: 'منذ أسبوع' },
@@ -94,7 +94,7 @@ export function computeRiskScore(order: Omit<Order, 'riskScore' | 'suspiciousRea
     }
     if (order.total > 800) {
       score += 20
-      reasons.push(`قيمة عالية (${order.total} ر.س)`)
+      reasons.push(`قيمة عالية (${order.total} ج.م)`)
     } else if (order.total > 500) {
       score += 10
     }
@@ -141,31 +141,31 @@ export const USAGE_RECORDS: UsageRecord[] = [
 // ── Mock Orders ──────────────────────────────────────────────────────────────
 
 export const ORDERS: Order[] = [
-  { id: '10231', customer: 'محمد الأحمدي', phone: '0501234567', city: 'الرياض', total: 340, status: 'pending', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T06:12:00', address: 'حي النزهة، الرياض', isNewCustomer: false },
-  { id: '10232', customer: 'سارة العمري', phone: '0551234567', city: 'جدة', total: 520, status: 'pending', payment: 'tabby', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T06:45:00', address: 'حي الزهراء، جدة', isNewCustomer: false },
-  { id: '10233', customer: 'عبدالله الشمري', phone: '0561234567', city: 'الرياض', total: 180, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T07:10:00', address: 'حي العليا، الرياض', isNewCustomer: false },
-  { id: '10234', customer: 'فاطمة القحطاني', phone: '0571234567', city: 'الدمام', total: 750, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 2, price: 340 }, { name: 'كريم الوجه', qty: 1, price: 90 }], createdAt: '2025-01-15T07:30:00', address: 'حي الشاطئ، الدمام', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 80, suspiciousReason: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ر.س' },
-  { id: '10235', customer: 'خالد المطيري', phone: '0581234567', city: 'الرياض', total: 290, status: 'pending', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-15T07:55:00', address: 'حي الملقا، الرياض', isNewCustomer: false },
-  { id: '10236', customer: 'نورة السبيعي', phone: '0591234567', city: 'مكة', total: 430, status: 'pending', payment: 'tamara', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-15T08:15:00', address: 'حي العزيزية، مكة', isNewCustomer: false },
-  { id: '10237', customer: 'أحمد الدوسري', phone: '0541234567', city: 'الرياض', total: 195, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 1, price: 90 }, { name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T08:40:00', address: 'حي السليمانية، الرياض', isNewCustomer: false },
-  { id: '10238', customer: 'ريم الزهراني', phone: '0531234567', city: 'جدة', total: 680, status: 'pending', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T08:55:00', address: 'حي الروضة، جدة', isNewCustomer: false },
-  { id: '10239', customer: 'ماجد العتيبي', phone: '0521234567', city: 'الدمام', total: 340, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T09:10:00', address: 'حي الفيصلية، الدمام', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 60, suspiciousReason: 'كاش عند الاستلام · عميل جديد' },
-  { id: '10240', customer: 'هند الحربي', phone: '0511234567', city: 'الرياض', total: 840, status: 'pending', payment: 'tabby', items: [{ name: 'ساعة سمارت', qty: 2, price: 290 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T09:25:00', address: 'حي الورود، الرياض', isNewCustomer: false },
-  { id: '10241', customer: 'تركي الرشيدي', phone: '0501111111', city: 'الرياض', total: 105, status: 'pending', payment: 'card', items: [{ name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T09:40:00', address: 'حي النرجس، الرياض', isNewCustomer: false },
-  { id: '10242', customer: 'منى الجهني', phone: '0502222222', city: 'المدينة', total: 260, status: 'pending', payment: 'card', items: [{ name: 'حقيبة جلد صغيرة', qty: 1, price: 260 }], createdAt: '2025-01-15T09:50:00', address: 'حي العزيزية، المدينة', isNewCustomer: false },
+  { id: '10231', customer: 'محمد الحسيني', phone: '01012345678', city: 'القاهرة', total: 340, status: 'pending', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T06:12:00', address: 'حي المعادي، القاهرة', isNewCustomer: false },
+  { id: '10232', customer: 'سارة علي', phone: '01112345678', city: 'الإسكندرية', total: 520, status: 'pending', payment: 'tabby', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T06:45:00', address: 'حي سيدي بشر، الإسكندرية', isNewCustomer: false },
+  { id: '10233', customer: 'كريم عبدالله', phone: '01212345678', city: 'القاهرة', total: 180, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T07:10:00', address: 'حي مدينة نصر، القاهرة', isNewCustomer: false },
+  { id: '10234', customer: 'فاطمة محمد', phone: '01512345678', city: 'الجيزة', total: 750, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 2, price: 340 }, { name: 'كريم الوجه', qty: 1, price: 90 }], createdAt: '2025-01-15T07:30:00', address: 'حي الدقي، الجيزة', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 80, suspiciousReason: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ج.م' },
+  { id: '10235', customer: 'أحمد إبراهيم', phone: '01034567890', city: 'القاهرة', total: 290, status: 'pending', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-15T07:55:00', address: 'حي مصر الجديدة، القاهرة', isNewCustomer: false },
+  { id: '10236', customer: 'نورا مصطفى', phone: '01145678901', city: 'المنصورة', total: 430, status: 'pending', payment: 'tamara', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-15T08:15:00', address: 'شارع الجمهورية، المنصورة', isNewCustomer: false },
+  { id: '10237', customer: 'عمر حسن', phone: '01256789012', city: 'القاهرة', total: 195, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 1, price: 90 }, { name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T08:40:00', address: 'حي الزمالك، القاهرة', isNewCustomer: false },
+  { id: '10238', customer: 'ريم خالد', phone: '01067890123', city: 'الإسكندرية', total: 680, status: 'pending', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T08:55:00', address: 'حي المنتزه، الإسكندرية', isNewCustomer: false },
+  { id: '10239', customer: 'ياسر سامي', phone: '01178901234', city: 'الجيزة', total: 340, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T09:10:00', address: 'حي الهرم، الجيزة', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 60, suspiciousReason: 'كاش عند الاستلام · عميل جديد' },
+  { id: '10240', customer: 'هند ماهر', phone: '01289012345', city: 'القاهرة', total: 840, status: 'pending', payment: 'tabby', items: [{ name: 'ساعة سمارت', qty: 2, price: 290 }, { name: 'كيبل شحن', qty: 2, price: 80 }], createdAt: '2025-01-15T09:25:00', address: 'حي التجمع الخامس، القاهرة', isNewCustomer: false },
+  { id: '10241', customer: 'طارق سعيد', phone: '01090123456', city: 'القاهرة', total: 105, status: 'pending', payment: 'card', items: [{ name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T09:40:00', address: 'حي شبرا، القاهرة', isNewCustomer: false },
+  { id: '10242', customer: 'منى يوسف', phone: '01101234567', city: 'الأقصر', total: 260, status: 'pending', payment: 'card', items: [{ name: 'حقيبة جلد صغيرة', qty: 1, price: 260 }], createdAt: '2025-01-15T09:50:00', address: 'شارع الكورنيش، الأقصر', isNewCustomer: false },
 
   // Accepted orders
-  { id: '10220', customer: 'وليد الغامدي', phone: '0503333333', city: 'الرياض', total: 480, status: 'accepted', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T05:00:00', address: 'حي الياسمين، الرياض' },
-  { id: '10221', customer: 'لمياء السلمي', phone: '0504444444', city: 'جدة', total: 340, status: 'accepted', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T05:20:00', address: 'حي الحمراء، جدة' },
-  { id: '10222', customer: 'بدر القرني', phone: '0505555555', city: 'أبها', total: 195, status: 'accepted', payment: 'tamara', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T05:40:00', address: 'حي النور، أبها' },
+  { id: '10220', customer: 'وليد نجيب', phone: '01212345679', city: 'القاهرة', total: 480, status: 'accepted', payment: 'card', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T05:00:00', address: 'حي المقطم، القاهرة' },
+  { id: '10221', customer: 'لمياء عادل', phone: '01023456780', city: 'الإسكندرية', total: 340, status: 'accepted', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T05:20:00', address: 'حي العجمي، الإسكندرية' },
+  { id: '10222', customer: 'بدر فارس', phone: '01534567890', city: 'الإسماعيلية', total: 195, status: 'accepted', payment: 'tamara', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T05:40:00', address: 'حي الإسماعيلية الجديدة' },
 
   // Shipped orders
-  { id: '10210', customer: 'عمر الأسمري', phone: '0506666666', city: 'الطائف', total: 290, status: 'shipped', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-14T10:00:00', address: 'حي الهدا، الطائف', shipmentId: 'ARX-789012' },
-  { id: '10211', customer: 'دانا الحازمي', phone: '0507777777', city: 'الرياض', total: 430, status: 'shipped', payment: 'tabby', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-14T11:00:00', address: 'حي المروج، الرياض', shipmentId: 'ARX-789013' },
-  { id: '10212', customer: 'سلطان الشهري', phone: '0508888888', city: 'الدمام', total: 340, status: 'shipped', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-14T12:00:00', address: 'حي الراكة، الدمام', shipmentId: 'SMSA-456789' },
+  { id: '10210', customer: 'عمر جلال', phone: '01145678902', city: 'الإسماعيلية', total: 290, status: 'shipped', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-14T10:00:00', address: 'شارع أحمد عرابي، الإسماعيلية', shipmentId: 'ARX-789012' },
+  { id: '10211', customer: 'دانا حسام', phone: '01256789013', city: 'القاهرة', total: 430, status: 'shipped', payment: 'tabby', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-14T11:00:00', address: 'حي المهندسين، القاهرة', shipmentId: 'ARX-789013' },
+  { id: '10212', customer: 'سلوى محمود', phone: '01067890124', city: 'الجيزة', total: 340, status: 'shipped', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-14T12:00:00', address: 'حي فيصل، الجيزة', shipmentId: 'SMSA-456789' },
 
   // Rejected
-  { id: '10205', customer: 'ليلى الحارثي', phone: '0509999999', city: 'جدة', total: 180, status: 'rejected', payment: 'cash', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-14T08:00:00', address: 'حي الجامعة، جدة' },
+  { id: '10205', customer: 'ليلى رشدي', phone: '01189012345', city: 'الإسكندرية', total: 180, status: 'rejected', payment: 'cash', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-14T08:00:00', address: 'حي كامب شيزار، الإسكندرية' },
 ]
 
 // ── Mock Products ────────────────────────────────────────────────────────────
@@ -185,14 +185,14 @@ export const PRODUCTS: Product[] = [
 
 export const ANALYTICS = {
   today: { orders: 47, revenue: 18_420, avgOrder: 392, topProduct: 'عطر العود الملكي' },
-  week: { orders: 312, revenue: 124_680, avgOrder: 400, growth: 18, topProduct: 'عطر العود الملكي', topCity: 'الرياض' },
-  month: { orders: 1_204, revenue: 489_200, avgOrder: 406, growth: 24, topProduct: 'عطر العود الملكي', topCity: 'الرياض' },
+  week: { orders: 312, revenue: 124_680, avgOrder: 400, growth: 18, topProduct: 'عطر العود الملكي', topCity: 'القاهرة' },
+  month: { orders: 1_204, revenue: 489_200, avgOrder: 406, growth: 24, topProduct: 'عطر العود الملكي', topCity: 'القاهرة' },
   byCity: [
-    { city: 'الرياض', orders: 18, revenue: 6_840 },
-    { city: 'جدة', orders: 12, revenue: 4_920 },
-    { city: 'الدمام', orders: 8, revenue: 3_200 },
-    { city: 'مكة', orders: 5, revenue: 2_150 },
-    { city: 'المدينة', orders: 4, revenue: 1_310 },
+    { city: 'القاهرة', orders: 18, revenue: 6_840 },
+    { city: 'الإسكندرية', orders: 12, revenue: 4_920 },
+    { city: 'الجيزة', orders: 8, revenue: 3_200 },
+    { city: 'المنصورة', orders: 5, revenue: 2_150 },
+    { city: 'الأقصر', orders: 4, revenue: 1_310 },
   ],
 }
 
@@ -246,10 +246,10 @@ export interface Notification {
 
 export const NOTIFICATIONS: Notification[] = [
   { id: 'N1', type: 'low_stock', priority: 'urgent', title: 'مخزون ينفد!', body: 'كريم الوجه — باقي 8 قطع فقط', createdAt: 'منذ 10 دقائق' },
-  { id: 'N2', type: 'suspicious_order', priority: 'urgent', title: 'طلب يحتاج مراجعة', body: 'طلب #10234 من فاطمة — كاش 750 ر.س · عميلة جديدة', createdAt: 'منذ 18 دقيقة' },
+  { id: 'N2', type: 'suspicious_order', priority: 'urgent', title: 'طلب يحتاج مراجعة', body: 'طلب #10234 من فاطمة — كاش 750 ج.م · عميلة جديدة', createdAt: 'منذ 18 دقيقة' },
   { id: 'N3', type: 'pending_too_long', priority: 'important', title: 'طلبات معلقة أكثر من ساعتين', body: '12 طلب في الانتظار منذ الصباح', createdAt: 'منذ 30 دقيقة' },
   { id: 'N4', type: 'connector_expired', priority: 'important', title: 'انتهت صلاحية تمارا', body: 'يحتاج تجديد الربط لاستمرار الدفع بالتقسيط', createdAt: 'منذ ساعتين' },
-  { id: 'N5', type: 'weekly_report', priority: 'info', title: 'تقرير الأسبوع جاهز', body: '312 طلب · 124,680 ر.س · نمو 18%', createdAt: 'أمس', readAt: 'أمس' },
+  { id: 'N5', type: 'weekly_report', priority: 'info', title: 'تقرير الأسبوع جاهز', body: '312 طلب · 124,680 ج.م · نمو 18%', createdAt: 'أمس', readAt: 'أمس' },
   { id: 'N6', type: 'shipment_created', priority: 'info', title: 'تم إنشاء 3 بوالص شحن', body: 'أرامكس · الطلبات 10210، 10211، 10212', createdAt: 'أمس', readAt: 'أمس' },
 ]
 
@@ -268,9 +268,9 @@ export interface TeamMember {
 }
 
 export const TEAM_MEMBERS: TeamMember[] = [
-  { id: 'T1', name: 'محمد العتيبي', email: 'm.otaibi@noor.sa', role: 'admin', avatar: 'م', joinedAt: '2024-10-01', lastActive: 'الآن' },
-  { id: 'T2', name: 'سارة الغامدي', email: 's.ghamdi@noor.sa', role: 'order_manager', avatar: 'س', joinedAt: '2024-11-15', lastActive: 'منذ ساعة' },
-  { id: 'T3', name: 'نواف الشمري', email: 'n.shamri@noor.sa', role: 'customer_service', avatar: 'ن', joinedAt: '2025-01-01', lastActive: 'أمس' },
+  { id: 'T1', name: 'محمد الحسيني', email: 'm.husseini@noor.eg', role: 'admin', avatar: 'م', joinedAt: '2024-10-01', lastActive: 'الآن' },
+  { id: 'T2', name: 'سارة علي', email: 's.ali@noor.eg', role: 'order_manager', avatar: 'س', joinedAt: '2024-11-15', lastActive: 'منذ ساعة' },
+  { id: 'T3', name: 'كريم عبدالله', email: 'k.abdallah@noor.eg', role: 'customer_service', avatar: 'ك', joinedAt: '2025-01-01', lastActive: 'أمس' },
 ]
 
 // ── Store state (mutable in-memory) ─────────────────────────────────────────
@@ -292,7 +292,7 @@ export const store = {
     if (o) {
       const before = o.status
       o.status = 'accepted'
-      store.activitiesLog.unshift({ time: now(), action: `قبول طلب #${id}`, detail: `${o.customer} — ${o.total} ر.س`, before: { status: before }, after: { status: 'accepted' } })
+      store.activitiesLog.unshift({ time: now(), action: `قبول طلب #${id}`, detail: `${o.customer} — ${o.total} ج.م`, before: { status: before }, after: { status: 'accepted' } })
     }
     return o
   },
@@ -322,7 +322,7 @@ export const store = {
     if (p) {
       const old = p.price
       p.price = newPrice
-      store.activitiesLog.unshift({ time: now(), action: `تحديث سعر ${p.name}`, detail: `من ${old} → ${newPrice} ر.س`, before: { price: old }, after: { price: newPrice } })
+      store.activitiesLog.unshift({ time: now(), action: `تحديث سعر ${p.name}`, detail: `من ${old} → ${newPrice} ج.م`, before: { price: old }, after: { price: newPrice } })
     }
     return p
   },
@@ -330,14 +330,14 @@ export const store = {
   addProduct: (product: Omit<Product, 'id'>) => {
     const p = { ...product, id: `P${String(store.products.length + 1).padStart(3, '0')}` }
     store.products.push(p)
-    store.activitiesLog.unshift({ time: now(), action: `إضافة منتج ${p.name}`, detail: `${p.price} ر.س · مخزون: ${p.stock}` })
+    store.activitiesLog.unshift({ time: now(), action: `إضافة منتج ${p.name}`, detail: `${p.price} ج.م · مخزون: ${p.stock}` })
     return p
   },
 
   addCoupon: (coupon: Omit<Coupon, 'uses'>) => {
     const c = { ...coupon, uses: 0 }
     store.coupons.push(c)
-    store.activitiesLog.unshift({ time: now(), action: `إنشاء كوبون ${c.code}`, detail: `خصم ${c.discount}${c.type === 'percent' ? '%' : ' ر.س'}` })
+    store.activitiesLog.unshift({ time: now(), action: `إنشاء كوبون ${c.code}`, detail: `خصم ${c.discount}${c.type === 'percent' ? '%' : ' ج.م'}` })
     return c
   },
 }

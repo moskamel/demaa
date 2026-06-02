@@ -60,7 +60,7 @@ function extractOrderId(text: string): string | undefined {
 }
 
 function extractPrice(text: string): number | undefined {
-  const m = text.match(/(\d+)\s*(ر\.س|ريال|رس)?/)
+  const m = text.match(/(\d+)\s*(ج\.م|جنيه|ج\.?م)?/)
   if (m) return parseInt(m[1])
 }
 
@@ -70,7 +70,7 @@ function extractPercent(text: string): number | undefined {
 }
 
 function extractCity(text: string): string | undefined {
-  const cities = ['الرياض', 'جدة', 'الدمام', 'مكة', 'المدينة', 'أبها', 'الطائف', 'تبوك', 'بريدة', 'الخبر']
+  const cities = ['القاهرة', 'الإسكندرية', 'الجيزة', 'المنصورة', 'الإسماعيلية', 'الأقصر', 'أسوان', 'طنطا', 'الزقازيق', 'المحلة']
   return cities.find(c => text.includes(c))
 }
 

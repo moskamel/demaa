@@ -18,10 +18,10 @@ const INSIGHT_ICONS: Record<string, string> = {
 
 const INSIGHT_VALUE_LABELS: Record<string, (v: string) => string> = {
   preferred_carrier: v => v === 'smsa' ? 'SMSA' : v,
-  top_city: v => v === 'riyadh' ? 'الرياض' : v,
+  top_city: v => v === 'cairo' ? 'القاهرة' : v,
   best_sales_day: v => ({ friday: 'الجمعة', thursday: 'الخميس', saturday: 'السبت' }[v] ?? v),
-  avg_order_value: v => `${v} ر.س`,
-  cod_rejection_threshold: v => `>${v} ر.س`,
+  avg_order_value: v => `${v} ج.م`,
+  cod_rejection_threshold: v => `>${v} ج.م`,
   peak_hour: v => v,
   return_rate: v => `${(parseFloat(v) * 100).toFixed(0)}%`,
   cash_ratio: v => `${(parseFloat(v) * 100).toFixed(0)}%`,

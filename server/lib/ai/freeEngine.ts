@@ -14,7 +14,7 @@ interface Intent {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function fmt(n: number) { return (n / 100).toLocaleString('ar-SA', { minimumFractionDigits: 0 }) + ' ر.س' }
+function fmt(n: number) { return (n / 100).toLocaleString('ar-EG', { minimumFractionDigits: 0 }) + ' ج.م' }
 function pct(n: number) { return Math.round(n) + '%' }
 
 // ── Intents ──────────────────────────────────────────────────────────────────
@@ -151,7 +151,7 @@ const INTENTS: Intent[] = [
     async handler(msg, ctx) {
       // Extract percent from message e.g. "كوبون خصم 20%"
       const pctMatch = msg.match(/(\d+)\s*%/)
-      const fixedMatch = msg.match(/(\d+)\s*ر\.?س/)
+      const fixedMatch = msg.match(/(\d+)\s*ج\.?م/)
       const codeMatch = msg.match(/[A-Z]{3,10}/)
       const value = pctMatch ? parseInt(pctMatch[1]) : fixedMatch ? parseInt(fixedMatch[1]) : 10
       const type = pctMatch ? 'percentage' : 'fixed'
@@ -245,7 +245,7 @@ const INTENTS: Intent[] = [
       const coupons = await prisma.coupon.findMany({ where: { organizationId: ctx.orgId }, orderBy: { createdAt: 'desc' }, take: 10 })
       if (!coupons.length) return 'ما في كوبونات مضافة بعد. أنشئ كوبون الآن!'
       const list = coupons.map((c: any) =>
-        `• **${c.code}** — ${c.type === 'percentage' ? c.value / 100 + '%' : c.value / 100 + ' ر.س'} — استُخدم ${c.usageCount} مرة${c.maxUsage ? ' من ' + c.maxUsage : ''}`
+        `• **${c.code}** — ${c.type === 'percentage' ? c.value / 100 + '%' : c.value / 100 + ' ج.م'} — استُخدم ${c.usageCount} مرة${c.maxUsage ? ' من ' + c.maxUsage : ''}`
       ).join('\n')
       return `🎟️ **كوبوناتك (${coupons.length}):**\n\n${list}`
     }
@@ -262,7 +262,7 @@ const INTENTS: Intent[] = [
         take: 8,
       })
       if (!logs.length) return 'ما في أنشطة مسجلة بعد.'
-      const list = logs.map((l: any) => `• ${l.summary} — ${new Date(l.createdAt).toLocaleString('ar-SA')}`).join('\n')
+      const list = logs.map((l: any) => `• ${l.summary} — ${new Date(l.createdAt).toLocaleString('ar-EG')}`).join('\n')
       return `📋 **آخر الأنشطة:**\n\n${list}`
     }
   },

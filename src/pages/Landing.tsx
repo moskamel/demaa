@@ -169,7 +169,7 @@ export default function Landing() {
 
               {/* Deema confirmation */}
               <div style={{ background: 'var(--surface-2)', borderRadius: '4px 14px 14px 14px', padding: '14px 18px', maxWidth: '75%', fontSize: 13, lineHeight: 1.65 }}>
-                ✅ هتقبل ٣٥ طلب — ١٤,٥٠٠ ر.س<br />
+                ✅ هتقبل ٣٥ طلب — ١٤,٥٠٠ ج.م<br />
                 <span style={{ color: 'var(--ink-muted)' }}>⏩ سيتم إنشاء بوالص الشحن تلقائياً</span>
                 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                   <button className="btn-primary" style={{ fontSize: 12, padding: '6px 12px' }}>نعم، نفّذ</button>
@@ -229,7 +229,7 @@ export default function Landing() {
               ملخص يومي شامل — مبيعات ومخزون ومشاكل
             </p>
             <div style={{ background: 'var(--surface-2)', borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}>
-              {[{ n: '٤٧', l: 'طلب', c: 'var(--gradient-orange)' }, { n: '١٤k', l: 'ر.س', c: 'var(--ink)' }, { n: '٩٨٪', l: 'رضا', c: 'var(--semantic-success)' }].map(s => (
+              {[{ n: '٤٧', l: 'طلب', c: 'var(--gradient-orange)' }, { n: '١٤k', l: 'ج.م', c: 'var(--ink)' }, { n: '٩٨٪', l: 'رضا', c: 'var(--semantic-success)' }].map(s => (
                 <div key={s.l} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: s.c, fontVariantNumeric: 'tabular-nums' }}>{s.n}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{s.l}</div>
@@ -324,17 +324,17 @@ export default function Landing() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 900, margin: '0 auto' }}>
           {[
             {
-              name: 'مجاني', price: '٠', period: 'ر.س/شهر', tag: null,
+              name: 'مجاني', price: '٠', period: 'ج.م/شهر', tag: null,
               features: ['متجر واحد', '٥٠ طلب / شهر', 'المنصات الأساسية', 'دعم إيميل'],
               featured: false,
             },
             {
-              name: 'احترافي', price: '٩٩', period: 'ر.س/شهر', tag: 'الأكثر شعبية',
+              name: 'احترافي', price: '٩٩', period: 'ج.م/شهر', tag: 'الأكثر شعبية',
               features: ['٣ متاجر', 'طلبات غير محدودة', 'جميع شركات الشحن', 'دعم أولوية', 'تقارير متقدمة'],
               featured: true,
             },
             {
-              name: 'شركات', price: '٢٩٩', period: 'ر.س/شهر', tag: null,
+              name: 'شركات', price: '٢٩٩', period: 'ج.م/شهر', tag: null,
               features: ['متاجر غير محدودة', 'API مخصص', 'فريق متعدد', 'مدير حساب', 'SLA مضمون'],
               featured: false,
             },
