@@ -26,6 +26,34 @@ const platforms = [
     steps: ['افتح إعدادات المتاجر في Deema', 'اختر "إضافة متجر Shantaweb"', 'أدخل بيانات حسابك في Shantaweb', 'فعّل الربط من لوحة Shantaweb', 'استمتع بإدارة Deema الذكية'],
     features: ['إدارة الطلبات المصرية', 'تكامل شحن محلي', 'بوابات الدفع المصرية', 'دعم العملة المصرية'],
   },
+  {
+    emoji: '📘',
+    name: 'Facebook & Instagram',
+    tagline: 'البيع عبر Meta Commerce Platform',
+    desc: 'فيسبوك وإنستغرام يستخدمان نفس منصة Meta Commerce. اربط صفحتك بـ Deema لإدارة طلبات الفيسبوك والإنستغرام من مكان واحد بالكامل.',
+    steps: [
+      'افتح Meta Business Suite على business.facebook.com',
+      'اذهب إلى: الإعدادات ← حسابات ← الصفحات',
+      'اختر صفحتك وافتح إعدادات Commerce',
+      'اذهب إلى: الإعدادات المتقدمة ← رموز الوصول',
+      'أنشئ System User Token بصلاحية manage_pages وانسخه في Deema',
+    ],
+    features: ['إدارة طلبات فيسبوك وإنستغرام', 'تحديث حالة الشحن تلقائياً', 'إلغاء الطلبات من Deema', 'مزامنة بيانات العملاء'],
+  },
+  {
+    emoji: '🎵',
+    name: 'TikTok Shop',
+    tagline: 'البيع عبر متجر تيك توك',
+    desc: 'TikTok Shop منصة تجارة إلكترونية سريعة النمو. اربط متجرك بـ Deema وادر طلبات TikTok مع باقي متاجرك من لوحة واحدة.',
+    steps: [
+      'افتح TikTok Seller Center على seller.tiktok.com',
+      'اذهب إلى: My Account ← Developer',
+      'اضغط "Apply for API Access"',
+      'بعد الموافقة اذهب إلى: API Management ← Access Token',
+      'انسخ الـ Access Token والـ Shop ID والصقهما في Deema',
+    ],
+    features: ['إدارة طلبات TikTok Shop', 'إنشاء شحنات تلقائياً', 'إلغاء الطلبات من Deema', 'مزامنة حالة الطلبات'],
+  },
 ]
 
 export default function Platforms() {

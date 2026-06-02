@@ -1,6 +1,8 @@
 import * as shopify from './shopify.js'
 import * as wuilt from './wuilt.js'
 import * as shantaweb from './shantaweb.js'
+import * as facebook from './facebook.js'
+import * as tiktok from './tiktok.js'
 
 type PlatformClient = {
   cancelOrder(domain: string, token: string, externalId: string): Promise<void>
@@ -11,6 +13,9 @@ const platforms: Record<string, PlatformClient> = {
   shopify,
   wuilt,
   shantaweb,
+  facebook,
+  instagram: facebook,
+  tiktok,
 }
 
 export interface Store {

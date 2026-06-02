@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import prisma from '../lib/prisma.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
+import { fetchOrders as fetchFacebookOrders } from '../lib/platforms/facebook.js'
+import { fetchOrders as fetchTikTokOrders } from '../lib/platforms/tiktok.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -100,20 +102,51 @@ router.post('/:id/sync', async (req: AuthRequest, res) => {
       data: { syncStatus: 'syncing', lastSyncAt: new Date() },
     })
 
-    // For non-Shopify or missing credentials, just mark idle
-    if (store.platform !== 'shopify' || !store.accessToken || !store.domain) {
-      await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
-      res.json({ syncing: false, message: 'لا توجد بيانات Shopify كافية للمزامنة' })
+    if (store.platform === 'shopify') {
+      if (!store.accessToken || !store.domain) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Shopify كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncShopify(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
+        console.error('Shopify sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
       return
     }
 
-    // Run sync asynchronously
-    res.json({ syncing: true })
+    if (store.platform === 'facebook' || store.platform === 'instagram') {
+      if (!store.accessToken || !store.domain) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Facebook كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncFacebook(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
+        console.error('Facebook sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
 
-    syncShopify(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
-      console.error('Shopify sync error:', err)
-      prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
-    })
+    if (store.platform === 'tiktok') {
+      if (!store.accessToken || !store.domain) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات TikTok كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncTikTok(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
+        console.error('TikTok sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    // For other platforms, just mark idle
+    await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+    res.json({ syncing: false, message: 'المزامنة غير متوفرة لهذه المنصة' })
   } catch (err) {
     console.error('sync error', err)
     res.status(500).json({ error: { code: 'SERVER_ERROR', message: 'خطأ في المزامنة' } })
@@ -221,6 +254,112 @@ function mapPaymentMethod(financialStatus: string): string {
   if (financialStatus === 'paid') return 'card'
   if (financialStatus === 'pending') return 'cod'
   return 'card'
+}
+
+async function syncFacebook(storeId: string, pageId: string, token: string, orgId: string) {
+  const orders = await fetchFacebookOrders(pageId, token)
+
+  for (const o of orders) {
+    const externalRef = o.id
+    const customerName = o.buyer_details?.name || o.shipping_address?.name || 'عميل غير معروف'
+    const customerPhone = o.buyer_details?.phone || null
+    const city = o.shipping_address?.city || 'غير محدد'
+    const address = o.shipping_address
+      ? [o.shipping_address.street1].filter(Boolean).join(', ')
+      : null
+    const firstItem = o.items?.data?.[0]
+    const total = firstItem
+      ? Math.round(parseFloat(firstItem.price_per_unit.amount) * firstItem.quantity * 100)
+      : 0
+    const status = mapFacebookStatus(o.order_status?.state)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod: 'card', total, placedAt: new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapFacebookStatus(state: string | undefined): string {
+  if (!state) return 'pending'
+  if (state === 'CREATED') return 'pending'
+  if (state === 'IN_PROGRESS') return 'accepted'
+  if (state === 'FULFILLED') return 'delivered'
+  if (state === 'CANCELLED') return 'rejected'
+  return 'pending'
+}
+
+async function syncTikTok(storeId: string, shopId: string, token: string, orgId: string) {
+  const orders = await fetchTikTokOrders(shopId, token)
+
+  for (const o of orders) {
+    const externalRef = o.order_id
+    const customerName = o.recipient_address?.name || 'عميل غير معروف'
+    const customerPhone = o.recipient_address?.phone_number || null
+    const city = o.recipient_address?.district_info?.[0]?.address_level_name || 'غير محدد'
+    const address = o.recipient_address?.full_address || null
+    const total = o.payment_info?.total_amount ? Math.round(parseFloat(o.payment_info.total_amount) * 100) : 0
+    const paymentMethod = o.payment_info?.payment_method === 'COD' ? 'cod' : 'card'
+    const status = mapTikTokStatus(o.order_status)
+    const placedAt = o.create_time ? new Date(o.create_time * 1000) : new Date()
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total, placedAt,
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapTikTokStatus(status: string): string {
+  if (status === 'AWAITING_SHIPMENT') return 'accepted'
+  if (status === 'SHIPPED') return 'shipped'
+  if (status === 'DELIVERED') return 'delivered'
+  if (status === 'CANCELLED') return 'rejected'
+  return 'pending'
 }
 
 // ── Shopify API types ────────────────────────────────────────

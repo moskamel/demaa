@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
 import { storesApi } from '../lib/api'
 
-type Platform = 'shopify' | 'wuilt' | 'shantaweb' | null
+type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | null
 
 const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
   const [err, setErr] = useState(false)
   const initial = name[0].toUpperCase()
-  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946' }
+  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101' }
   if (err) return (
     <div style={{ width: 32, height: 32, borderRadius: 8, background: colors[domain] || '#444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{initial}</span>
@@ -66,6 +66,34 @@ const platforms = [
       'اضغط "توليد مفتاح API جديد"',
       'حدد الصلاحيات المطلوبة: طلبات، منتجات، شحن',
       'انسخ المفتاح والصقه هنا',
+    ],
+  },
+  {
+    id: 'facebook',
+    name: 'Facebook & Instagram',
+    desc: 'البيع عبر فيسبوك وإنستغرام',
+    url: 'https://www.facebook.com/business/commerce',
+    method: 'api-key',
+    steps: [
+      'افتح Meta Business Suite على business.facebook.com',
+      'اذهب إلى: الإعدادات ← حسابات ← الصفحات',
+      'اختر صفحتك وافتح إعدادات Commerce',
+      'اذهب إلى: الإعدادات المتقدمة ← رموز الوصول',
+      'أنشئ System User Token بصلاحية manage_pages وانسخه هنا',
+    ],
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok Shop',
+    desc: 'البيع عبر متجر تيك توك',
+    url: 'https://seller.tiktok.com',
+    method: 'api-key',
+    steps: [
+      'افتح TikTok Seller Center على seller.tiktok.com',
+      'اذهب إلى: My Account ← Developer',
+      'اضغط "Apply for API Access"',
+      'بعد الموافقة اذهب إلى: API Management ← Access Token',
+      'انسخ الـ Access Token والصقه هنا',
     ],
   },
 ]
@@ -224,14 +252,16 @@ export default function Onboarding() {
             </a>
           </div>
 
-          {platform === 'shopify' && (
+          {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && (
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>Store Domain</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>
+                {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : 'Store Domain'}
+              </label>
               <input
                 type="text"
                 value={storeDomain}
                 onChange={e => setStoreDomain(e.target.value)}
-                placeholder="mystore.myshopify.com"
+                placeholder={platform === 'facebook' ? '123456789012345' : platform === 'tiktok' ? '7123456789012345678' : 'mystore.myshopify.com'}
                 style={{
                   width: '100%', background: 'var(--canvas-soft)',
                   border: '1px solid var(--hairline)', borderRadius: 10,
@@ -269,10 +299,10 @@ export default function Onboarding() {
               رجوع
             </button>
             <button
-              disabled={!apiKey.trim() || (platform === 'shopify' && !storeDomain.trim())}
+              disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
               onClick={() => setStep(3)}
               className="btn-primary"
-              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' || storeDomain.trim())) ? 1 : 0.4 }}>
+              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4 }}>
               التحقق من الـ Key
             </button>
           </div>
