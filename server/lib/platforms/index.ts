@@ -8,6 +8,10 @@ import * as zid from './zid.js'
 import * as amazon from './amazon.js'
 import * as noon from './noon.js'
 import * as jumia from './jumia.js'
+import * as woocommerce from './woocommerce.js'
+import * as wix from './wix.js'
+import * as bigcommerce from './bigcommerce.js'
+import * as ecwid from './ecwid.js'
 
 type PlatformClient = {
   cancelOrder(domain: string, token: string, externalId: string): Promise<void>
@@ -26,6 +30,10 @@ const platforms: Record<string, PlatformClient> = {
   amazon,
   noon,
   jumia,
+  woocommerce,
+  wix,
+  bigcommerce,
+  ecwid,
 }
 
 export interface Store {

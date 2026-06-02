@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
 import { storesApi } from '../lib/api'
 
-type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | null
+type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | 'woocommerce' | 'wix' | 'bigcommerce' | 'ecwid' | null
 
 const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
   const [err, setErr] = useState(false)
   const initial = name[0].toUpperCase()
-  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101', salla: '#5B4FCF', zid: '#E4003B', amazon: '#FF9900', noon: '#FEEE00', jumia: '#F68B1E' }
+  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101', salla: '#5B4FCF', zid: '#E4003B', amazon: '#FF9900', noon: '#FEEE00', jumia: '#F68B1E', woocommerce: '#96588A', wix: '#0C6EBD', bigcommerce: '#34313F', ecwid: '#F05523' }
   if (err) return (
     <div style={{ width: 32, height: 32, borderRadius: 8, background: colors[domain] || '#444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{initial}</span>
     </div>
   )
-  const logoDomains: Record<string, string> = { zid: 'zid.sa', salla: 'salla.com', amazon: 'amazon.com', noon: 'noon.com', jumia: 'jumia.com' }
+  const logoDomains: Record<string, string> = { zid: 'zid.sa', salla: 'salla.com', amazon: 'amazon.com', noon: 'noon.com', jumia: 'jumia.com', woocommerce: 'woocommerce.com', wix: 'wix.com', bigcommerce: 'bigcommerce.com', ecwid: 'ecwid.com' }
   const logoDomain = logoDomains[domain] ?? `${domain}.com`
   return (
     <img
@@ -168,6 +168,62 @@ const platforms = [
       'أدخل البيانات بالصيغة: eg:accessToken',
     ],
   },
+  {
+    id: 'woocommerce',
+    name: 'WooCommerce',
+    desc: 'إضافة التجارة الإلكترونية الأشهر على WordPress',
+    url: 'https://woocommerce.com',
+    method: 'api-key',
+    steps: [
+      'افتح لوحة تحكم WordPress الخاصة بك',
+      'اذهب إلى: WooCommerce ← الإعدادات ← المتقدم ← REST API',
+      'اضغط "إضافة مفتاح" وامنح صلاحية القراءة والكتابة',
+      'انسخ Consumer Key و Consumer Secret',
+      'أدخل البيانات بالصيغة: consumerKey:consumerSecret',
+    ],
+  },
+  {
+    id: 'wix',
+    name: 'Wix Stores',
+    desc: 'منصة بناء المواقع الأشهر مع متجر متكامل',
+    url: 'https://wix.com',
+    method: 'api-key',
+    steps: [
+      'افتح Wix Business Manager على manage.wix.com',
+      'اذهب إلى: الإعدادات ← Advanced Settings ← API Keys',
+      'أنشئ مفتاح API جديد وامنح صلاحيات eCommerce',
+      'انسخ الـ API Key ورقم الـ Site ID من الإعدادات',
+      'أدخل البيانات بالصيغة: siteId:apiKey',
+    ],
+  },
+  {
+    id: 'bigcommerce',
+    name: 'BigCommerce',
+    desc: 'منصة تجارة إلكترونية عالمية للمتاجر الكبيرة',
+    url: 'https://bigcommerce.com',
+    method: 'api-key',
+    steps: [
+      'افتح لوحة تحكم BigCommerce',
+      'اذهب إلى: Advanced Settings ← API Accounts',
+      'أنشئ حساب API جديد من نوع V2/V3',
+      'امنح الصلاحيات: Orders (Read/Write), Shipping (Write)',
+      'أدخل البيانات بالصيغة: storeHash:accessToken',
+    ],
+  },
+  {
+    id: 'ecwid',
+    name: 'Ecwid',
+    desc: 'منصة متجر مدمجة مع أي موقع',
+    url: 'https://ecwid.com',
+    method: 'api-key',
+    steps: [
+      'افتح لوحة تحكم Ecwid',
+      'اذهب إلى: My Profile ← Apps ← Legacy API Keys',
+      'انقر "Create Key" واختر الصلاحيات المطلوبة',
+      'انسخ الـ Store ID و Secret Token',
+      'أدخل البيانات بالصيغة: storeId:secretToken',
+    ],
+  },
 ]
 
 export default function Onboarding() {
@@ -190,7 +246,7 @@ export default function Onboarding() {
       setLoading(false)
       setConnected(true)
       // Kick off sync in background for supported platforms
-      if (store.id && (platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'salla' || platform === 'zid' || platform === 'amazon' || platform === 'noon' || platform === 'jumia')) {
+      if (store.id && (platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'salla' || platform === 'zid' || platform === 'amazon' || platform === 'noon' || platform === 'jumia' || platform === 'woocommerce' || platform === 'wix' || platform === 'bigcommerce' || platform === 'ecwid')) {
         setSyncing(true)
         try {
           await storesApi.sync(store.id)
@@ -324,17 +380,17 @@ export default function Onboarding() {
             </a>
           </div>
 
-          {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'amazon') && (
+          {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'amazon' || platform === 'woocommerce') && (
 
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>
-                {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : platform === 'amazon' ? 'Marketplace ID' : 'Store Domain'}
+                {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : platform === 'amazon' ? 'Marketplace ID' : platform === 'woocommerce' ? 'Store Domain' : 'Store Domain'}
               </label>
               <input
                 type="text"
                 value={storeDomain}
                 onChange={e => setStoreDomain(e.target.value)}
-                placeholder={platform === 'facebook' ? '123456789012345' : platform === 'tiktok' ? '7123456789012345678' : platform === 'amazon' ? 'A2VIGQ35RCS4UG' : 'mystore.myshopify.com'}
+                placeholder={platform === 'facebook' ? '123456789012345' : platform === 'tiktok' ? '7123456789012345678' : platform === 'amazon' ? 'A2VIGQ35RCS4UG' : platform === 'woocommerce' ? 'mystore.com' : 'mystore.myshopify.com'}
                 style={{
                   width: '100%', background: 'var(--canvas-soft)',
                   border: '1px solid var(--hairline)', borderRadius: 10,

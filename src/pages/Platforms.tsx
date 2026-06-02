@@ -124,6 +124,62 @@ const platforms = [
     ],
     features: ['إدارة طلبات Jumia', 'تحديث حالة الشحن', 'إلغاء الطلبات من Deema', 'دعم مصر وأفريقيا'],
   },
+  {
+    emoji: '🔌',
+    name: 'WooCommerce',
+    tagline: 'إضافة التجارة الإلكترونية الأشهر على WordPress',
+    desc: 'WooCommerce تشغّل أكثر من 28% من جميع المتاجر الإلكترونية في العالم. إذا كان موقعك على WordPress مع WooCommerce، يمكنك ربطه بـ Deema بمفتاح API مباشرة.',
+    steps: [
+      'افتح لوحة تحكم WordPress',
+      'اذهب إلى: WooCommerce ← الإعدادات ← المتقدم ← REST API',
+      'اضغط "إضافة مفتاح" وامنح صلاحية القراءة والكتابة',
+      'انسخ Consumer Key و Consumer Secret',
+      'أدخل البيانات بالصيغة: consumerKey:consumerSecret',
+    ],
+    features: ['مزامنة طلبات WooCommerce', 'إتمام الشحن تلقائياً', 'إلغاء الطلبات من Deema', 'دعم جميع العملات'],
+  },
+  {
+    emoji: '🎨',
+    name: 'Wix Stores',
+    tagline: 'منصة بناء المواقع الأشهر مع متجر متكامل',
+    desc: 'Wix تخدم أكثر من 250 مليون موقع حول العالم. إذا كان لديك متجر على Wix، يمكنك ربطه بـ Deema عبر Wix Headless API لإدارة طلباتك من مكان واحد.',
+    steps: [
+      'افتح Wix Business Manager على manage.wix.com',
+      'اذهب إلى: الإعدادات ← Advanced Settings ← API Keys',
+      'أنشئ مفتاح API جديد وامنح صلاحيات eCommerce',
+      'انسخ الـ API Key و Site ID',
+      'أدخل البيانات بالصيغة: siteId:apiKey',
+    ],
+    features: ['مزامنة طلبات Wix Stores', 'تأكيد التوصيل تلقائياً', 'إلغاء الطلبات من Deema', 'دعم متاجر Wix الكاملة'],
+  },
+  {
+    emoji: '🏢',
+    name: 'BigCommerce',
+    tagline: 'منصة تجارة إلكترونية عالمية للمتاجر الكبيرة',
+    desc: 'BigCommerce منصة قوية تخدم العلامات التجارية الكبيرة مثل Ben & Jerry\'s وSkullcandy. API واضح وسريع يتيح ربط كامل مع Deema.',
+    steps: [
+      'افتح لوحة تحكم BigCommerce',
+      'اذهب إلى: Advanced Settings ← API Accounts',
+      'أنشئ حساب API جديد من نوع V2/V3',
+      'امنح الصلاحيات: Orders (Read/Write), Shipping (Write)',
+      'أدخل البيانات بالصيغة: storeHash:accessToken',
+    ],
+    features: ['مزامنة طلبات BigCommerce', 'إنشاء شحنات تلقائياً', 'إلغاء الطلبات من Deema', 'دعم العملات المتعددة'],
+  },
+  {
+    emoji: '🧩',
+    name: 'Ecwid',
+    tagline: 'منصة متجر مدمجة مع أي موقع',
+    desc: 'Ecwid (Lightspeed E-Series) يمكن تضمينها في أي موقع. تخدم أكثر من 130,000 متجر في 175 دولة. ربطها بـ Deema يعطيك إدارة مركزية لكل طلباتك.',
+    steps: [
+      'افتح لوحة تحكم Ecwid',
+      'اذهب إلى: My Profile ← Apps ← Legacy API Keys',
+      'انقر "Create Key" واختر الصلاحيات المطلوبة',
+      'انسخ الـ Store ID و Secret Token',
+      'أدخل البيانات بالصيغة: storeId:secretToken',
+    ],
+    features: ['مزامنة طلبات Ecwid', 'تحديث حالة الشحن', 'إلغاء الطلبات من Deema', 'دعم Ecwid على أي موقع'],
+  },
 ]
 
 export default function Platforms() {

@@ -8,6 +8,10 @@ import { fetchOrders as fetchZidOrders } from '../lib/platforms/zid.js'
 import { fetchOrders as fetchAmazonOrders } from '../lib/platforms/amazon.js'
 import { fetchOrders as fetchNoonOrders } from '../lib/platforms/noon.js'
 import { fetchOrders as fetchJumiaOrders } from '../lib/platforms/jumia.js'
+import { fetchOrders as fetchWooOrders } from '../lib/platforms/woocommerce.js'
+import { fetchOrders as fetchWixOrders } from '../lib/platforms/wix.js'
+import { fetchOrders as fetchBigCommerceOrders } from '../lib/platforms/bigcommerce.js'
+import { fetchOrders as fetchEcwidOrders } from '../lib/platforms/ecwid.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -88,6 +92,14 @@ router.post('/connect', async (req: AuthRequest, res) => {
         syncNoon(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (noon):', err))
       } else if (platform === 'jumia') {
         syncJumia(store.id, domain || store.id, token, orgId).catch(err => console.error('connect sync error (jumia):', err))
+      } else if (platform === 'woocommerce' && domain) {
+        syncWoo(store.id, domain, token, orgId).catch(err => console.error('connect sync error (woocommerce):', err))
+      } else if (platform === 'wix') {
+        syncWix(store.id, domain || '', token, orgId).catch(err => console.error('connect sync error (wix):', err))
+      } else if (platform === 'bigcommerce') {
+        syncBigCommerce(store.id, domain || '', token, orgId).catch(err => console.error('connect sync error (bigcommerce):', err))
+      } else if (platform === 'ecwid') {
+        syncEcwid(store.id, domain || '', token, orgId).catch(err => console.error('connect sync error (ecwid):', err))
       }
     }
   } catch (err) {
@@ -238,6 +250,62 @@ router.post('/:id/sync', async (req: AuthRequest, res) => {
       res.json({ syncing: true })
       syncJumia(store.id, store.domain || store.id, store.accessToken, req.orgId!).catch(err => {
         console.error('Jumia sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'woocommerce') {
+      if (!store.accessToken || !store.domain) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات WooCommerce كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncWoo(store.id, store.domain, store.accessToken, req.orgId!).catch(err => {
+        console.error('WooCommerce sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'wix') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Wix كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncWix(store.id, store.domain || '', store.accessToken, req.orgId!).catch(err => {
+        console.error('Wix sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'bigcommerce') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات BigCommerce كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncBigCommerce(store.id, store.domain || '', store.accessToken, req.orgId!).catch(err => {
+        console.error('BigCommerce sync error:', err)
+        prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
+      })
+      return
+    }
+
+    if (store.platform === 'ecwid') {
+      if (!store.accessToken) {
+        await prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'idle' } })
+        res.json({ syncing: false, message: 'لا توجد بيانات Ecwid كافية للمزامنة' })
+        return
+      }
+      res.json({ syncing: true })
+      syncEcwid(store.id, store.domain || '', store.accessToken, req.orgId!).catch(err => {
+        console.error('Ecwid sync error:', err)
         prisma.store.update({ where: { id: store.id }, data: { syncStatus: 'error' } }).catch(() => {})
       })
       return
@@ -717,6 +785,212 @@ function mapJumiaStatus(status: string): string {
   if (status === 'shipped' || status === 'in_transit') return 'shipped'
   if (status === 'delivered') return 'delivered'
   if (status === 'canceled' || status === 'returned' || status === 'failed_delivery') return 'rejected'
+  return 'pending'
+}
+
+async function syncWoo(storeId: string, domain: string, token: string, orgId: string) {
+  const orders = await fetchWooOrders(domain, token)
+  for (const o of orders) {
+    const externalRef = String(o.id)
+    const first = o.billing?.first_name || ''
+    const last = o.billing?.last_name || ''
+    const customerName = [first, last].filter(Boolean).join(' ') || 'عميل غير معروف'
+    const customerPhone = o.billing?.phone || null
+    const city = o.billing?.city || 'غير محدد'
+    const address = o.billing?.address_1 || null
+    const total = o.total ? Math.round(parseFloat(o.total) * 100) : 0
+    const paymentMethod = o.payment_method?.includes('cod') ? 'cod' : 'card'
+    const status = mapWooStatus(o.status)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.date_created ? new Date(o.date_created) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapWooStatus(status: string): string {
+  if (status === 'pending' || status === 'on-hold') return 'pending'
+  if (status === 'processing') return 'accepted'
+  if (status === 'completed') return 'delivered'
+  if (status === 'cancelled' || status === 'refunded' || status === 'failed') return 'rejected'
+  return 'pending'
+}
+
+async function syncWix(storeId: string, domain: string, token: string, orgId: string) {
+  const orders = await fetchWixOrders(domain, token)
+  for (const o of orders) {
+    const externalRef = o.id
+    const contact = o.shippingInfo?.logistics?.shippingDestination?.contactDetails
+    const addrObj = o.shippingInfo?.logistics?.shippingDestination?.address
+    const first = contact?.firstName || ''
+    const last = '' // Wix only gives firstName in contactDetails typically
+    const customerName = first || 'عميل غير معروف'
+    const customerPhone = contact?.phone || null
+    const city = addrObj?.city || 'غير محدد'
+    const address = addrObj?.addressLine || null
+    const total = o.priceSummary?.total?.amount ? Math.round(parseFloat(o.priceSummary.total.amount) * 100) : 0
+    const paymentMethod = o.paymentStatus === 'NOT_PAID' ? 'cod' : 'card'
+    const status = mapWixStatus(o.status)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.createdDate ? new Date(o.createdDate) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapWixStatus(status: string): string {
+  if (status === 'PENDING' || status === 'INITIALIZED') return 'pending'
+  if (status === 'APPROVED') return 'accepted'
+  if (status === 'FULFILLED') return 'delivered'
+  if (status === 'CANCELED') return 'rejected'
+  return 'pending'
+}
+
+async function syncBigCommerce(storeId: string, domain: string, token: string, orgId: string) {
+  const orders = await fetchBigCommerceOrders(domain, token)
+  for (const o of orders) {
+    const externalRef = String(o.id)
+    const first = o.billing_address?.first_name || ''
+    const last = o.billing_address?.last_name || ''
+    const customerName = [first, last].filter(Boolean).join(' ') || 'عميل غير معروف'
+    const customerPhone = o.billing_address?.phone || null
+    const city = o.billing_address?.city || 'غير محدد'
+    const address = o.billing_address?.street_1 || null
+    const total = o.total_inc_tax ? Math.round(parseFloat(o.total_inc_tax) * 100) : 0
+    const paymentMethod = o.payment_method?.toLowerCase().includes('cash') ? 'cod' : 'card'
+    const status = mapBigCommerceStatus(o.status)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.date_created ? new Date(o.date_created) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapBigCommerceStatus(status: string): string {
+  if (status === 'Pending' || status === 'Awaiting Payment') return 'pending'
+  if (status === 'Awaiting Fulfillment' || status === 'Awaiting Shipment' || status === 'Awaiting Pickup') return 'accepted'
+  if (status === 'Shipped' || status === 'Partially Shipped') return 'shipped'
+  if (status === 'Completed' || status === 'Delivered') return 'delivered'
+  if (status === 'Cancelled' || status === 'Declined' || status === 'Refunded') return 'rejected'
+  return 'pending'
+}
+
+async function syncEcwid(storeId: string, domain: string, token: string, orgId: string) {
+  const orders = await fetchEcwidOrders(domain, token)
+  for (const o of orders) {
+    const externalRef = String(o.id)
+    const customerName = o.shippingPerson?.name || 'عميل غير معروف'
+    const customerPhone = o.shippingPerson?.phone || null
+    const city = o.shippingPerson?.city || 'غير محدد'
+    const address = o.shippingPerson?.street || null
+    const total = o.total ? Math.round(o.total * 100) : 0
+    const paymentMethod = o.paymentMethod?.toLowerCase().includes('cash') ? 'cod' : 'card'
+    const status = mapEcwidStatus(o.fulfillmentStatus)
+
+    let customer = customerPhone
+      ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+      : null
+    if (!customer && customerName !== 'عميل غير معروف') {
+      customer = await prisma.customer.findFirst({ where: { organizationId: orgId, name: customerName } })
+    }
+    if (!customer) {
+      customer = await prisma.customer.create({
+        data: { organizationId: orgId, name: customerName, phone: customerPhone, city },
+      })
+    }
+
+    const existing = await prisma.order.findFirst({ where: { storeId, externalRef } })
+    if (!existing) {
+      await prisma.order.create({
+        data: {
+          storeId, externalRef, customerId: customer.id,
+          customerName, customerPhone, city, address,
+          status, paymentMethod, total,
+          placedAt: o.createDate ? new Date(o.createDate) : new Date(),
+        },
+      })
+    } else {
+      await prisma.order.update({ where: { id: existing.id }, data: { status, total } })
+    }
+  }
+  await prisma.store.update({ where: { id: storeId }, data: { syncStatus: 'idle' } })
+}
+
+function mapEcwidStatus(status: string): string {
+  if (status === 'AWAITING_PROCESSING' || status === 'NEW') return 'pending'
+  if (status === 'PROCESSING') return 'accepted'
+  if (status === 'SHIPPED') return 'shipped'
+  if (status === 'DELIVERED') return 'delivered'
+  if (status === 'WILL_NOT_DELIVER' || status === 'RETURNED') return 'rejected'
   return 'pending'
 }
 
