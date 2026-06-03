@@ -12,7 +12,7 @@ const signupSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
-  orgName: z.string().min(2),
+  orgName: z.string().optional(),
 })
 
 const loginSchema = z.object({
@@ -27,7 +27,8 @@ router.post('/signup', async (req, res) => {
     res.status(400).json({ error: { code: 'VALIDATION', message: 'بيانات غير صحيحة', details: parsed.error.errors } })
     return
   }
-  const { name, email, password, orgName } = parsed.data
+  const { name, email, password, orgName: rawOrgName } = parsed.data
+  const orgName = rawOrgName && rawOrgName.trim().length >= 2 ? rawOrgName.trim() : name
 
   try {
     const existing = await prisma.user.findUnique({ where: { email } })
@@ -43,9 +44,9 @@ router.post('/signup', async (req, res) => {
     const user = await prisma.user.create({ data: { name, email, passwordHash } })
     await prisma.teamMembership.create({ data: { organizationId: org.id, userId: user.id, role: 'ADMIN' } })
 
-    // Default store
+    // Default store — will be replaced when user connects a real platform
     await prisma.store.create({
-      data: { organizationId: org.id, name: orgName, platform: 'shopify', isActive: true },
+      data: { organizationId: org.id, name: orgName, platform: 'shopify', isActive: false },
     })
 
     // Subscription — unlimited pro plan
