@@ -588,7 +588,7 @@ export default function Dashboard() {
             </div>
 
             {/* input area */}
-            <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 20px 14px', flexShrink: 0 }}>
+            <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 200px 14px', flexShrink: 0 }}>
               <div style={{ position: 'relative', marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
                   {QUICK.map((q, i) => (
