@@ -100,7 +100,7 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
-      <div style={{ maxWidth: '70%' }}>
+      <div style={{ maxWidth: '70%', width: 'fit-content' }}>
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
           <p style={{ whiteSpace: 'pre-line', color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{msg.content}</p>
           {msg.stats && (
@@ -398,7 +398,7 @@ export default function Dashboard() {
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, maxWidth: '50%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, maxWidth: '50%', width: 'fit-content' }}>
                         <div className="chat-message-user" style={{ background: '#6a4cf5', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.25)' }}>
                           {msg.content}
                         </div>
