@@ -476,7 +476,7 @@ export default function Dashboard() {
 
         {/* ── NEW CHAT (Grok-style) ── */}
         {!activeConv ? (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', background: '#0a0a0a' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', background: 'var(--canvas)' }}>
             {/* Star dots */}
             {Array.from({ length: 40 }).map((_, i) => (
               <div key={i} style={{
@@ -484,7 +484,7 @@ export default function Dashboard() {
                 width: i % 5 === 0 ? 2.5 : 1.5,
                 height: i % 5 === 0 ? 2.5 : 1.5,
                 borderRadius: '50%',
-                background: 'rgba(255,255,255,0.4)',
+                background: 'var(--ink-disabled)',
                 top: `${Math.sin(i * 137.508) * 50 + 50}%`,
                 left: `${Math.cos(i * 137.508) * 50 + 50}%`,
                 animation: `pulse ${2 + (i % 3)}s ${i * 0.15}s ease-in-out infinite`,
