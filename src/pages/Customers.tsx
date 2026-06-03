@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { SearchNormal1, People, TrendUp, ShoppingBag, Star1 } from 'iconsax-react'
 import { customers as customersApi, type Customer } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import AppHeader from '../components/AppHeader'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
 const segmentLabels: Record<string, string> = { vip: 'VIP', loyal: 'مخلص', regular: 'عادي', new: 'جديد' }
@@ -37,7 +38,8 @@ export default function Customers() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
-      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', paddingBottom: 60 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)', paddingBottom: 60 }}>
+      <AppHeader />
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 24px' }}>
 
         {/* KPIs */}

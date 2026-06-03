@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { DocumentDownload, TickCircle, CloseCircle, Box, Flash } from 'iconsax-react'
 import { analytics, type ActivityLog } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import AppHeader from '../components/AppHeader'
 
 const filters = [
   { id: 'all', label: 'الكل' },
@@ -104,15 +105,14 @@ export default function Activity() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
-      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', color: 'var(--ink)' }}>
-      <nav style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 30px', gap: 12 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>سجل الأنشطة</span>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)', color: 'var(--ink)' }}>
+      <AppHeader>
         {logs.length > 0 && (
           <span style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e', borderRadius: 100, fontSize: 10, padding: '2px 8px', fontWeight: 600 }}>
             {logs.length}
           </span>
         )}
-      </nav>
+      </AppHeader>
 
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>

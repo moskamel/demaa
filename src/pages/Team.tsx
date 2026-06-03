@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Add, Trash, ShieldTick, ClipboardText, Headphone } from 'iconsax-react'
 import { teamApi, type TeamMember } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import AppHeader from '../components/AppHeader'
 
 type NormRole = 'admin' | 'order_manager' | 'customer_service'
 
@@ -68,7 +69,8 @@ export default function Team() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
-      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
+      <AppHeader />
 
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>

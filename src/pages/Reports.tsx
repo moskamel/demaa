@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, Refresh2 } from 'iconsax-react'
 import { analytics as analyticsApi, products as productsApi, type AnalyticsOverview, type Product } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import AppHeader from '../components/AppHeader'
 
 const paymentLabels: Record<string, string> = { card: 'بطاقة', cash: 'كاش', tabby: 'تابby', tamara: 'تمارا' }
 const paymentColors: Record<string, string> = { card: '#6a4cf5', cash: '#ff7a3d', tabby: '#22c55e', tamara: '#0099ff' }
@@ -63,9 +64,9 @@ export default function Reports() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
-      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
-
-      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '28px 24px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
+      <AppHeader />
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '28px 24px', width: '100%' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
         ) : !overview ? (

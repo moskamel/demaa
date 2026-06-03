@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box, Truck, Notification as NotificationIcon } from 'iconsax-react'
 import { notifications as notifApi, type Notification } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import AppHeader from '../components/AppHeader'
 
 const typeConfig: Record<string, { icon: typeof NotificationIcon; color: string; bg: string }> = {
   low_stock: { icon: Box, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
@@ -50,7 +51,8 @@ export default function Notifications() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
-      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
+      <AppHeader />
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 24px' }}>
         {/* filter tabs */}
