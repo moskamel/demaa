@@ -45,7 +45,7 @@ export default function Pricing() {
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>خطة واحدة، كل المميزات، بدون تعقيد</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'stretch' }}>
 
           {/* Free Plan */}
           <div style={{
