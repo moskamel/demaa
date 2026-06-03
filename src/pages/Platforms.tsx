@@ -187,13 +187,13 @@ export default function Platforms() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 30px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>المنصات المدعومة</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>اربط متجرك في دقائق — بدون خبرة تقنية</p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
           {platforms.map(p => (
             <div key={p.name} style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '32px', border: '1px solid var(--hairline)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
