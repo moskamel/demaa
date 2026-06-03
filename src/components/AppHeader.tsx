@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowDown2, TickCircle, Add } from 'iconsax-react'
+import { ArrowDown2, TickCircle, Add, ArrowRight } from 'iconsax-react'
 import { orders as ordersApi, storesApi, type StoreData } from '../lib/api'
 // clearToken handled in AppSidebar
 
@@ -18,6 +18,8 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard':     'لوحة التحكم',
 }
 
+const SECONDARY_PAGES = ['/notifications', '/activity', '/coupons', '/settings', '/billing']
+
 const platformColors: Record<string, string> = {
   shopify: '#6a4cf5', wuilt: '#d44df0', shantaweb: '#22c55e',
 }
@@ -33,6 +35,7 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const pageTitle = title ?? PAGE_TITLES[location.pathname] ?? ''
+  const isSecondary = SECONDARY_PAGES.includes(location.pathname)
 
   const [pending, setPending] = useState<number | null>(null)
   const [stores, setStores] = useState<StoreData[]>([])
@@ -73,10 +76,22 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
       display: 'flex', alignItems: 'center', padding: '0 28px',
       gap: 16, flexShrink: 0, background: 'var(--canvas)',
     }}>
-      {/* Page title */}
-      <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px', flex: 1 }}>
-        {pageTitle}
-      </span>
+      {/* Page title + optional back arrow */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+        {isSecondary && (
+          <button
+            onClick={() => navigate(-1)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6, transition: 'color 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink-muted)' }}
+          >
+            <ArrowRight size={18} variant="Outline" />
+          </button>
+        )}
+        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>
+          {pageTitle}
+        </span>
+      </div>
 
       {children}
 

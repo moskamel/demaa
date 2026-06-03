@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useConfirm } from '../hooks/useConfirm'
 import {
   Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
@@ -180,6 +180,7 @@ function getDailySuggestion(stats: { pending: number; accepted: number }) {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const handleLogout = () => { clearToken(); navigate('/login') }
   const { confirm: confirmAction, Dialog: ConfirmDialog } = useConfirm()
 
@@ -188,7 +189,7 @@ export default function Dashboard() {
   const [counter, setCounter] = useState(2)
   const [isTyping, setIsTyping] = useState(false)
   const [showNotifs, setShowNotifs] = useState(false)
-  const [activeConv, setActiveConv] = useState<string | null>(null)
+  const [activeConv, setActiveConv] = useState<string | null>(() => searchParams.get('conv'))
   const skipLoadRef = useRef(false)
   const [convList, setConvList] = useState<{ id: string; title?: string; updatedAt: string }[]>([])
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
