@@ -138,8 +138,8 @@ export default function Coupons() {
               { label: 'إجمالي الكوبونات', value: coupons.length, icon: Tag, color: '#6a4cf5' },
               { label: 'الكوبونات النشطة', value: coupons.filter(c => c.isActive).length, icon: TickCircle, color: '#22c55e' },
               { label: 'إجمالي الاستخدامات', value: coupons.reduce((s, c) => s + c.usageCount, 0), icon: PercentageSquare, color: '#0099ff' },
-            ].map(({ label, value, icon: Icon, color }) => (
-              <div key={label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
+            ].map(({ label, value, icon: Icon, color }, i) => (
+              <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
                 <div style={{ width: 32, height: 32, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
                   <Icon size={14} color={color} variant="Outline" />
                 </div>
@@ -151,9 +151,11 @@ export default function Coupons() {
 
           {/* List */}
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, background: 'var(--canvas-soft)', borderRadius: 16, overflow: 'hidden', border: '1px solid var(--hairline)' }}>
+              {[0,1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 64, borderRadius: 0, borderBottom: '1px solid var(--hairline)' }} />)}
+            </div>
           ) : coupons.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 0' }}>
+            <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '80px 0' }}>
               <PercentageSquare size={40} variant="Outline" color="var(--ink-muted)" style={{ marginBottom: 16, opacity: 0.4 }} />
               <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 8 }}>لا توجد كوبونات</div>
               <div style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>أنشئ أول كوبون خصم لعملائك</div>
@@ -161,7 +163,10 @@ export default function Coupons() {
           ) : (
             <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
               {coupons.map((c, i) => (
-                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < coupons.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
+                <div key={c.id} className="animate-fade-in-up" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < coupons.length - 1 ? '1px solid var(--hairline)' : 'none', transition: 'background 0.15s', animationDelay: `${i * 40}ms` }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '' }}
+                >
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(106,76,245,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Tag size={16} color="#6a4cf5" variant="Outline" />
                   </div>

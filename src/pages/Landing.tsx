@@ -222,9 +222,9 @@ export default function Landing() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
 
           {/* Right: copy (RTL = right is first) */}
-          <div>
+          <div className="animate-fade-in-up">
             {/* Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: T.yellow, borderRadius: 9999, padding: '6px 16px', marginBottom: 28 }}>
+            <div className="animate-pop-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: T.yellow, borderRadius: 9999, padding: '6px 16px', marginBottom: 28 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', animation: 'pulse 1.5s infinite', flexShrink: 0 }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>+١٢٠٠ تاجر نشط</span>
             </div>
@@ -254,7 +254,7 @@ export default function Landing() {
           </div>
 
           {/* Left: chat mockup */}
-          <div style={{ background: T.canvas, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 12px 32px -4px rgba(5,0,56,0.08)' }}>
+          <div className="animate-fade-in-up" style={{ background: T.canvas, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 12px 32px -4px rgba(5,0,56,0.08)', animationDelay: '120ms' }}>
             {/* Window chrome */}
             <div style={{ background: T.surface, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${T.hairline}` }}>
               {['#ff5f57', '#ffbd2e', '#28c940'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
@@ -363,10 +363,10 @@ export default function Landing() {
               demo: '"وريني طلبات Salla وShopify مع بعض"',
               bg: '#fde0f0',
             },
-          ].map(f => (
-            <div key={f.title} style={{ background: f.bg, borderRadius: 28, padding: 32, transition: 'transform 0.2s, box-shadow 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.08)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none' }}
+          ].map((f, i) => (
+            <div key={f.title} className="animate-fade-in-up" style={{ background: f.bg, borderRadius: 28, padding: 32, transition: 'transform 0.2s var(--ease-spring), box-shadow 0.2s ease', animationDelay: `${i * 80}ms` }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 48px rgba(0,0,0,0.1)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
             >
               <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(28,28,30,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: T.ink }}>{f.icon}</div>
               <h3 style={{ fontSize: 22, fontWeight: 500, letterSpacing: '-0.5px', color: T.ink, marginBottom: 10 }}>{f.title}</h3>

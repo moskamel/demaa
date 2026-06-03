@@ -51,8 +51,8 @@ export default function Customers() {
             { icon: Star1, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
             { icon: TrendUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
             { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-EG')} ج.م`, color: '#22c55e' },
-          ].map(({ icon: Icon, label, value, color }) => (
-            <div key={label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
+          ].map(({ icon: Icon, label, value, color }, i) => (
+            <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <Icon size={15} color={color} variant="Outline" />
               </div>
@@ -79,11 +79,11 @@ export default function Customers() {
 
         {/* table */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>
-            <div style={{ fontSize: 14 }}>جاري التحميل...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'var(--canvas-soft)', borderRadius: 16, overflow: 'hidden', border: '1px solid var(--hairline)' }}>
+            {[0,1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 64, borderRadius: 0, borderBottom: '1px solid var(--hairline)' }} />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>
+          <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
             <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>لا توجد نتائج</div>
             <div style={{ fontSize: 12 }}>جرب تغيير كلمة البحث أو الفلتر</div>
@@ -91,7 +91,10 @@ export default function Customers() {
         ) : (
           <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>
             {filtered.map((c, i) => (
-              <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
+              <div key={c.id} className="animate-fade-in-up" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < filtered.length - 1 ? '1px solid var(--hairline)' : 'none', transition: 'background 0.15s', animationDelay: `${i * 30}ms` }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '' }}
+              >
                 <div style={{ width: 36, height: 36, borderRadius: 10, background: `${segmentColors[c.segment] || '#6a4cf5'}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>
                   {c.segment === 'vip' ? '⭐' : c.segment === 'loyal' ? '💜' : c.segment === 'new' ? '🆕' : '👤'}
                 </div>

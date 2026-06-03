@@ -30,7 +30,7 @@ function SettingRow({ label, desc, checked, onChange }: { label: string; desc?: 
 
 function Section({ icon: Icon, title, children }: { icon: typeof Sun1; title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', marginBottom: 16, border: '1px solid var(--hairline)' }}>
+    <div className="animate-fade-in-up" style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', marginBottom: 16, border: '1px solid var(--hairline)', transition: 'border-color 0.2s, box-shadow 0.2s' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <Icon size={14} color="var(--ink-muted)" variant="Outline" />
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</span>

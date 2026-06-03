@@ -42,13 +42,18 @@ function ActionIcon({ type, color }: { type: string; color: string }) {
 
 function ActivityRow({ item, index, total }: { item: { id: string; time: string; icon: string; color: string; title: string; by: string; detail: string }; index: number; total: number }) {
   return (
-    <div style={{
+    <div className="animate-fade-in-up" style={{
       background: 'var(--canvas-soft)',
       padding: '14px 18px',
       borderRadius: index === 0 ? '15px 15px 4px 4px' : index === total - 1 ? '4px 4px 15px 15px' : 4,
       display: 'flex', alignItems: 'center', gap: 14,
       borderBottom: index < total - 1 ? '1px solid var(--hairline)' : 'none',
-    }}>
+      animationDelay: `${index * 30}ms`,
+      transition: 'background 0.15s',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas-soft)' }}
+    >
       <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <ActionIcon type={item.icon} color={item.color} />
       </div>
@@ -140,7 +145,9 @@ export default function Activity() {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {[0,1,2,3,4,5,6].map(i => <div key={i} className="skeleton" style={{ height: 60, borderRadius: i === 0 ? '15px 15px 4px 4px' : i === 6 ? '4px 4px 15px 15px' : 4 }} />)}
+          </div>
         ) : (
           <>
             {today.length > 0 && (

@@ -113,14 +113,18 @@ export default function Team() {
         </div>
 
         {/* members */}
-        {loading && <div style={{ color: 'var(--ink-muted)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>جاري التحميل...</div>}
+        {loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[0,1,2].map(i => <div key={i} className="skeleton" style={{ height: 68, borderRadius: 14 }} />)}
+          </div>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {members.map(m => {
+          {members.map((m, idx) => {
             const normRole = normalizeRole(m.role)
             const cfg = roleConfig[normRole]
             const Icon = cfg.icon
             return (
-              <div key={m.id} style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)' }}>
+              <div key={m.id} className="animate-fade-in-up card-interactive" style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)', animationDelay: `${idx * 50}ms` }}>
                 {/* avatar */}
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: cfg.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 16, fontWeight: 700, color: cfg.color }}>{m.avatar}</span>
@@ -162,10 +166,10 @@ export default function Team() {
 
         {/* invite modal */}
         {showInvite && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
+          <div className="animate-backdrop-in" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
             onClick={e => e.target === e.currentTarget && setShowInvite(false)}
           >
-            <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '28px', width: 380, border: '1px solid var(--hairline)' }}>
+            <div className="animate-modal-in" style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '28px', width: 380, border: '1px solid var(--hairline)', fontFamily: "'Zain','Inter',sans-serif", direction: 'rtl' }}>
               <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)', marginBottom: 20, letterSpacing: '-0.3px' }}>دعوة عضو جديد</h2>
 
               <label style={{ display: 'block', marginBottom: 12 }}>

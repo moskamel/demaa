@@ -52,7 +52,7 @@ export default function Billing() {
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '40px 24px' }}>
 
         {/* hero banner */}
-        <div style={{ background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', borderRadius: 20, padding: '32px 28px', marginBottom: 32, textAlign: 'center' }}>
+        <div className="animate-fade-in-up" style={{ background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', borderRadius: 20, padding: '32px 28px', marginBottom: 32, textAlign: 'center' }}>
           <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
             <Flash size={24} color="#fff" variant="Outline" />
           </div>
@@ -71,7 +71,7 @@ export default function Billing() {
         </div>
 
         {/* plan card */}
-        <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, border: '2px solid #6a4cf5', padding: '28px', marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
+        <div className="animate-fade-in-up" style={{ background: 'var(--canvas-soft)', borderRadius: 20, border: '2px solid #6a4cf5', padding: '28px', marginBottom: 24, position: 'relative', overflow: 'hidden', animationDelay: '80ms' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, left: 0, height: 3, background: 'linear-gradient(90deg, #6a4cf5, #d44df0)' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -113,8 +113,8 @@ export default function Billing() {
             { label: 'الطلبات المعالجة', value: loading ? '...' : (orderCount ?? 0).toLocaleString('ar-EG'), icon: Box, color: '#6a4cf5' },
             { label: 'المتاجر المربوطة', value: loading ? '...' : (storeCount ?? 0).toLocaleString('ar-EG'), icon: Shop, color: '#0099ff' },
             { label: 'أعضاء الفريق', value: loading ? '...' : (memberCount ?? 0).toLocaleString('ar-EG'), icon: People, color: '#22c55e' },
-          ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px', textAlign: 'center' }}>
+          ].map(({ label, value, icon: Icon, color }, i) => (
+            <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px', textAlign: 'center', animationDelay: `${160 + i * 60}ms` }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
                 <Icon size={16} color={color} variant="Outline" />
               </div>

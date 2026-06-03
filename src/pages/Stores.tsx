@@ -74,18 +74,20 @@ export default function Stores() {
         </div>
 
         {loading && (
-          <div style={{ textAlign: 'center', padding: 40, color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[0,1,2].map(i => <div key={i} className="skeleton" style={{ height: 110, borderRadius: 16 }} />)}
+          </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {stores.map(s => {
+          {stores.map((s, idx) => {
             const pColor = platformColors[s.platform] ?? '#666'
             const pLabel = platformLabel[s.platform] ?? s.platform
             const st = statusMap(s.isActive, s.syncStatus)
             const StatusIcon = st.icon
             const isSyncing = syncing === s.id
             return (
-              <div key={s.id} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', border: '1px solid var(--hairline)', position: 'relative', overflow: 'hidden' }}>
+              <div key={s.id} className="animate-fade-in-up card-interactive" style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', border: '1px solid var(--hairline)', position: 'relative', overflow: 'hidden', animationDelay: `${idx * 60}ms` }}>
                 <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 3, background: pColor, borderRadius: '0 16px 16px 0' }} />
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -146,14 +148,15 @@ export default function Stores() {
         </div>
 
         {!loading && stores.length === 0 && (
-          <div style={{ textAlign: 'center', padding: 60, color: 'var(--ink-muted)', fontSize: 14 }}>
+          <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: 60, color: 'var(--ink-muted)', fontSize: 14 }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🏪</div>
             <p style={{ marginBottom: 16 }}>لا يوجد متاجر مربوطة بعد</p>
             <Link to="/onboarding" className="btn-primary" style={{ fontSize: 13 }}>ربط متجرك الأول</Link>
           </div>
         )}
 
         <Link to="/onboarding" style={{ textDecoration: 'none' }}>
-          <div style={{ marginTop: 12, background: 'transparent', border: '2px dashed var(--hairline)', borderRadius: 16, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', color: 'var(--ink-muted)' }}>
+          <div className="hover-lift" style={{ marginTop: 12, background: 'transparent', border: '2px dashed var(--hairline)', borderRadius: 16, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', color: 'var(--ink-muted)', transition: 'border-color 0.2s, color 0.2s' }}>
             <Add size={16} variant="Outline" />
             <span style={{ fontSize: 14 }}>ربط متجر جديد</span>
           </div>
