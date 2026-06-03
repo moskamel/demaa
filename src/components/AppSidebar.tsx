@@ -4,7 +4,7 @@ import {
   Shop, ChartSquare, People, Electricity,
   Notification as NotifIcon, ArrowDown2, MessageAdd1, Logout,
   SearchNormal1, Activity, Profile2User, PercentageSquare,
-  Setting2, Receipt21,
+  Setting2, Receipt21, Edit2, Trash,
 } from 'iconsax-react'
 import { clearToken, notifications as notifApi } from '../lib/api'
 import SearchModal from './SearchModal'
@@ -24,15 +24,20 @@ interface AppSidebarProps {
   activeConv?: string | null
   onSelectConv?: (id: string) => void
   onNewChat?: () => void
+  onDeleteConv?: (id: string) => void
+  onRenameConv?: (id: string, title: string) => void
 }
 
-export default function AppSidebar({ convList, activeConv, onSelectConv, onNewChat }: AppSidebarProps = {}) {
+export default function AppSidebar({ convList, activeConv, onSelectConv, onNewChat, onDeleteConv, onRenameConv }: AppSidebarProps = {}) {
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('sidebar_collapsed') === '1' } catch { return false }
   })
   const [unreadCount, setUnreadCount] = useState(0)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
+  const [hoveredConv, setHoveredConv] = useState<string | null>(null)
+  const [editingConv, setEditingConv] = useState<string | null>(null)
+  const [editTitle, setEditTitle] = useState('')
   const profileRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
@@ -190,15 +195,64 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
             {!collapsed && <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '6px 8px 4px' }}>المحادثات السابقة</div>}
             {convList.length === 0 && !collapsed && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', padding: '8px 10px', textAlign: 'center', marginTop: 8 }}>لا توجد محادثات بعد</div>}
             {convList.map(c => (
-              <button key={c.id} onClick={() => onSelectConv?.(c.id)} style={{
-                width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: collapsed ? '8px 10px' : '7px 10px',
-                borderRadius: 8, border: 'none', background: c.id === activeConv ? 'rgba(255,255,255,0.1)' : 'transparent',
-                cursor: 'pointer', marginBottom: 1, textAlign: 'right', fontFamily: 'inherit',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-              }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
-                {!collapsed && <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#fff' : 'rgba(255,255,255,0.6)' }}>{c.title || 'محادثة'}</span>}
-              </button>
+              <div key={c.id}
+                style={{ position: 'relative', marginBottom: 1 }}
+                onMouseEnter={() => setHoveredConv(c.id)}
+                onMouseLeave={() => setHoveredConv(null)}
+              >
+                {editingConv === c.id ? (
+                  <form onSubmit={e => { e.preventDefault(); onRenameConv?.(c.id, editTitle); setEditingConv(null) }}
+                    style={{ padding: '4px 8px' }}>
+                    <input
+                      autoFocus
+                      value={editTitle}
+                      onChange={e => setEditTitle(e.target.value)}
+                      onBlur={() => { onRenameConv?.(c.id, editTitle); setEditingConv(null) }}
+                      onKeyDown={e => { if (e.key === 'Escape') setEditingConv(null) }}
+                      style={{
+                        width: '100%', boxSizing: 'border-box', padding: '5px 8px',
+                        background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: 6, color: '#fff', fontSize: 12, fontFamily: 'inherit', outline: 'none',
+                      }}
+                    />
+                  </form>
+                ) : (
+                  <button onClick={() => onSelectConv?.(c.id)} style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+                    padding: collapsed ? '8px 10px' : '7px 10px',
+                    borderRadius: 8, border: 'none',
+                    background: c.id === activeConv ? 'rgba(255,255,255,0.1)' : hoveredConv === c.id ? 'rgba(255,255,255,0.06)' : 'transparent',
+                    cursor: 'pointer', textAlign: 'right', fontFamily: 'inherit',
+                    justifyContent: collapsed ? 'center' : 'flex-start',
+                    transition: 'background 0.12s',
+                  }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+                    {!collapsed && <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#fff' : 'rgba(255,255,255,0.6)' }}>{c.title || 'محادثة'}</span>}
+                    {!collapsed && hoveredConv === c.id && (
+                      <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
+                        <button
+                          onClick={e => { e.stopPropagation(); setEditTitle(c.title || ''); setEditingConv(c.id) }}
+                          title="تعديل الاسم"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 3, borderRadius: 4, color: 'rgba(255,255,255,0.4)', display: 'flex', transition: 'color 0.12s' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+                        >
+                          <Edit2 size={12} variant="Outline" />
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); onDeleteConv?.(c.id) }}
+                          title="حذف المحادثة"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 3, borderRadius: 4, color: 'rgba(255,255,255,0.4)', display: 'flex', transition: 'color 0.12s' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
+                          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+                        >
+                          <Trash size={12} variant="Outline" />
+                        </button>
+                      </div>
+                    )}
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         )}

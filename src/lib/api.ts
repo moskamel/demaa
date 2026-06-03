@@ -129,6 +129,9 @@ export const conversations = {
   async delete(id: string) {
     return request(`/conversations/${id}`, { method: 'DELETE' })
   },
+  async rename(id: string, title: string) {
+    return request(`/conversations/${id}`, { method: 'PATCH', body: JSON.stringify({ title }) })
+  },
 }
 
 // ── Notifications ────────────────────────────────────────────

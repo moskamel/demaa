@@ -271,11 +271,22 @@ export default function Dashboard() {
     setActiveConv(null)
   }
 
+  const handleDeleteConv = async (id: string) => {
+    await convApi.delete(id).catch(() => {})
+    setConvList(prev => prev.filter(c => c.id !== id))
+    if (activeConv === id) handleNewChat()
+  }
+
+  const handleRenameConv = async (id: string, title: string) => {
+    await convApi.rename(id, title).catch(() => {})
+    setConvList(prev => prev.map(c => c.id === id ? { ...c, title } : c))
+  }
+
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--canvas)', overflow: 'hidden' }}>
 
       {/* ── SIDEBAR ──────────────────────────────────────────────────────────── */}
-      <AppSidebar convList={convList} activeConv={activeConv} onSelectConv={setActiveConv} onNewChat={handleNewChat} />
+      <AppSidebar convList={convList} activeConv={activeConv} onSelectConv={setActiveConv} onNewChat={handleNewChat} onDeleteConv={handleDeleteConv} onRenameConv={handleRenameConv} />
       {false && <aside style={{ display: 'none' }}>
 
         {/* ── Top: logo + collapse toggle */}

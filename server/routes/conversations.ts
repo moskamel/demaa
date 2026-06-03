@@ -80,6 +80,13 @@ async function saveMessages(convId: string, userMsg: string, result: { response:
   })
 }
 
+// PATCH /conversations/:id
+router.patch('/:id', async (req: AuthRequest, res) => {
+  const { title } = req.body
+  const conv = await prisma.conversation.updateMany({ where: { id: req.params.id, organizationId: req.orgId }, data: { title } })
+  res.json({ updated: conv.count > 0 })
+})
+
 // DELETE /conversations/:id
 router.delete('/:id', async (req: AuthRequest, res) => {
   await prisma.conversation.deleteMany({ where: { id: req.params.id, organizationId: req.orgId } })
