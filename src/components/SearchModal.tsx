@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Search, ShoppingCart, Package, Users, BarChart2 } from 'lucide-react'
+import { CloseCircle, SearchNormal1, ShoppingCart, Box, People, ChartSquare } from 'iconsax-react'
 import { useNavigate } from 'react-router-dom'
 import { orders as ordersApi, products as productsApi } from '../lib/api'
 

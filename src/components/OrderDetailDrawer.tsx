@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Package, MapPin, Phone, CreditCard, Clock, Truck, AlertTriangle, CheckCircle, XCircle, Loader } from 'lucide-react'
+import { CloseCircle, Box, Location, Call, Card, Clock, Truck, Warning2, TickCircle, Refresh2 } from 'iconsax-react'
 import { orders as ordersApi, type Order } from '../lib/api'
 import { useToast } from './Toast'
 
@@ -49,7 +49,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.12)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
       <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 380, background: 'var(--canvas-soft)', borderRight: '1px solid var(--hairline)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <Loader size={22} color="var(--ink-muted)" style={{ animation: 'spin 1s linear infinite' }} />
+          <Refresh2 size={22} color="var(--ink-muted)" variant="Outline" style={{ animation: 'spin 1s linear infinite' }} />
           <span style={{ color: 'var(--ink-muted)', fontSize: 13 }}>جاري التحميل</span>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
             </div>
           </div>
           <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }}>
-            <X size={14} />
+            <CloseCircle size={14} variant="Outline" />
           </button>
         </div>
 
@@ -127,7 +127,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
           {/* risk alert */}
           {order.riskScore >= 60 && (
             <div style={{ background: order.riskScore >= 80 ? 'rgba(255,85,119,0.08)' : 'rgba(255,122,61,0.08)', border: `1px solid ${order.riskScore >= 80 ? 'rgba(255,85,119,0.3)' : 'rgba(255,122,61,0.3)'}`, borderRadius: 12, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              <AlertTriangle size={14} color={order.riskScore >= 80 ? '#ff5577' : '#ff7a3d'} style={{ flexShrink: 0, marginTop: 1 }} />
+              <Warning2 size={14} color={order.riskScore >= 80 ? '#ff5577' : '#ff7a3d'} variant="Outline" style={{ flexShrink: 0, marginTop: 1 }} />
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: order.riskScore >= 80 ? '#ff5577' : '#ff7a3d', marginBottom: 3 }}>درجة المخاطرة: {order.riskScore}/100</div>
                 {order.riskFactors && (() => { try { const f = JSON.parse(order.riskFactors!); return Array.isArray(f) && f.length > 0 ? <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{f.join(' · ')}</div> : null } catch { return <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{order.riskFactors}</div> } })()}
@@ -138,9 +138,9 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
           {/* customer */}
           <Section title="معلومات العميل">
             <Row icon={<span style={{ fontSize: 15 }}>👤</span>} label="الاسم" value={order.customerName} />
-            <Row icon={<Phone size={13} color="var(--ink-muted)" />} label="الجوال" value={order.customerPhone || '—'} ltr />
-            <Row icon={<MapPin size={13} color="var(--ink-muted)" />} label="المدينة" value={order.city} />
-            {order.address && <Row icon={<MapPin size={13} color="var(--ink-muted)" />} label="العنوان" value={order.address} />}
+            <Row icon={<Call size={13} color="var(--ink-muted)" variant="Outline" />} label="الجوال" value={order.customerPhone || '—'} ltr />
+            <Row icon={<Location size={13} color="var(--ink-muted)" variant="Outline" />} label="المدينة" value={order.city} />
+            {order.address && <Row icon={<Location size={13} color="var(--ink-muted)" variant="Outline" />} label="العنوان" value={order.address} />}
             {order.isNewCustomer && (
               <div style={{ display: 'flex', gap: 6, alignItems: 'center', padding: '6px 0', fontSize: 11, color: '#22c55e' }}>
                 <span>🆕</span> عميل جديد — أول طلب له
@@ -153,7 +153,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
             {order.items.map((item, i) => (
               <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < order.items.length - 1 ? '1px solid var(--hairline)' : 'none' }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Package size={13} color="var(--ink-muted)" />
+                  <Box size={13} color="var(--ink-muted)" variant="Outline" />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>{item.name}</div>
@@ -170,9 +170,9 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
 
           {/* payment & shipping */}
           <Section title="الدفع والشحن">
-            <Row icon={<CreditCard size={13} color="var(--ink-muted)" />} label="طريقة الدفع" value={paymentLabels[order.paymentMethod] || order.paymentMethod} />
-            <Row icon={<Clock size={13} color="var(--ink-muted)" />} label="تاريخ الطلب" value={new Date(order.placedAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })} />
-            {order.shipmentId && <Row icon={<Truck size={13} color="#0099ff" />} label="رقم الشحنة" value={order.shipmentId} ltr valueColor="#0099ff" />}
+            <Row icon={<Card size={13} color="var(--ink-muted)" variant="Outline" />} label="طريقة الدفع" value={paymentLabels[order.paymentMethod] || order.paymentMethod} />
+            <Row icon={<Clock size={13} color="var(--ink-muted)" variant="Outline" />} label="تاريخ الطلب" value={new Date(order.placedAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })} />
+            {order.shipmentId && <Row icon={<Truck size={13} color="#0099ff" variant="Outline" />} label="رقم الشحنة" value={order.shipmentId} ltr valueColor="#0099ff" />}
           </Section>
 
           {/* actions */}
@@ -183,7 +183,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                 loading={actionLoading === 'accept'}
                 disabled={!!actionLoading}
                 bg="#22c55e" color="#fff"
-                icon={<CheckCircle size={14} />}
+                icon={<TickCircle size={14} variant="Outline" />}
                 label="قبول"
               />
               <ActionBtn
@@ -192,7 +192,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                 disabled={!!actionLoading}
                 bg="rgba(255,85,119,0.08)" color="#ff5577"
                 border="1px solid rgba(255,85,119,0.3)"
-                icon={<XCircle size={14} />}
+                icon={<CloseCircle size={14} variant="Outline" />}
                 label="رفض"
               />
             </div>
@@ -203,7 +203,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
               loading={actionLoading === 'ship'}
               disabled={!!actionLoading}
               bg="#0099ff" color="#fff"
-              icon={<Truck size={14} />}
+              icon={<Truck size={14} variant="Outline" />}
               label="إنشاء شحنة"
               fullWidth
             />
@@ -249,7 +249,7 @@ function ActionBtn({ onClick, loading, disabled, bg, color, border, icon, label,
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
       opacity: disabled ? 0.7 : 1, transition: 'opacity 0.15s',
     }}>
-      {loading ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : icon}
+      {loading ? <Refresh2 size={14} variant="Outline" style={{ animation: 'spin 1s linear infinite' }} /> : icon}
       {label}
     </button>
   )

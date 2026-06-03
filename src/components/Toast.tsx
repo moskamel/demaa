@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react'
-import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react'
+import { TickCircle, CloseCircle, Warning2, InfoCircle } from 'iconsax-react'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -21,7 +21,7 @@ export function useToast() {
   return ctx
 }
 
-const icons: Record<ToastType, React.ElementType> = { success: CheckCircle, error: XCircle, warning: AlertTriangle, info: Info }
+const icons: Record<ToastType, React.ElementType> = { success: TickCircle, error: CloseCircle, warning: Warning2, info: InfoCircle }
 const colors: Record<ToastType, string> = { success: '#22c55e', error: '#ff5577', warning: '#ff7a3d', info: '#0099ff' }
 
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
@@ -40,10 +40,10 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
       boxShadow: '0 4px 20px rgba(0,0,0,0.10)', fontSize: 13, color: 'var(--ink)',
       animation: 'fadeIn 0.18s ease-out', minWidth: 220, maxWidth: 320,
     }}>
-      <Icon size={15} color={color} style={{ flexShrink: 0 }} />
+      <Icon size={15} color={color} variant="Outline" style={{ flexShrink: 0 }} />
       <span style={{ flex: 1, letterSpacing: '-0.13px' }}>{toast.message}</span>
       <button onClick={() => onRemove(toast.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 0, display: 'flex' }}>
-        <X size={13} />
+        <CloseCircle size={13} variant="Outline" />
       </button>
     </div>
   )
