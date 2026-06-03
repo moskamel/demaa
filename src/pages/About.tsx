@@ -60,7 +60,7 @@ export default function About() {
 
         <div>
           <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 32, letterSpacing: '-0.4px' }}>الفريق</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {teamMembers.map(m => (
               <div key={m.name} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)', textAlign: 'center' }}>
                 <div style={{
