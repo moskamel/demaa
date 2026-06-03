@@ -22,8 +22,6 @@ const NAV_BOTTOM = [
   { to: '/billing', icon: Card, label: 'الاشتراك' },
   { to: '/settings', icon: Setting2, label: 'الإعدادات' },
 ]
-  { to: '/notifications', icon: NotifIcon, label: 'الإشعارات' },
-]
 
 export default function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false)
