@@ -99,12 +99,8 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
 
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, maxWidth: '80%' }}>
-      <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink)' }}>D</span>
-      </div>
+    <div style={{ display: 'flex', alignItems: 'flex-start', maxWidth: '80%' }}>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 5 }}>Deema</div>
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
           <p style={{ whiteSpace: 'pre-line', color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{msg.content}</p>
           {msg.stats && (
@@ -131,7 +127,6 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
             </div>
           )}
         </div>
-      </div>
     </div>
   )
 }
@@ -556,15 +551,12 @@ export default function Dashboard() {
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
                         <div className="chat-message-user" style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55vw', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
                           {msg.content}
                         </div>
                         {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
-                      </div>
-                      <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-                        {(JSON.parse(localStorage.getItem('deema_user') || '{}').name || 'م')[0]}
                       </div>
                     </div>
                   )}
@@ -572,10 +564,7 @@ export default function Dashboard() {
               ))}
 
               {isTyping && (
-                <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700 }}>D</span>
-                  </div>
+                <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                     {[0, 1, 2].map(i => (
                       <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)', animation: `dotBounce 1.2s ${i * 0.18}s ease-in-out infinite` }} />
