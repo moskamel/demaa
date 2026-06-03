@@ -81,7 +81,7 @@ export default function Reports() {
           <Refresh2 size={13} variant="Outline" style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} /> تحديث
         </button>
       </AppHeader>
-      <div style={{ padding: '30px 30px 30px 20px', width: '100%' }}>
+      <div style={{ padding: '30px 100px', width: '100%' }}>
         {loading ? (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
