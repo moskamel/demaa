@@ -54,7 +54,7 @@ export default function Notifications() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '50px 150px' }}>
+      <div style={{ padding: '30px 30px 30px 20px' }}>
         {/* filter tabs */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 24, background: 'var(--canvas-soft)', borderRadius: 10, padding: 4 }}>
           {([['all', 'الكل'], ['unread', 'غير مقروء'], ['urgent', 'عاجل']] as const).map(([v, l]) => (
