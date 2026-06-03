@@ -42,7 +42,7 @@ export default function Customers() {
       <AppSidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)', paddingBottom: 60 }}>
       <AppHeader />
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 24px' }}>
+      <div style={{ padding: '50px' }}>
 
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
