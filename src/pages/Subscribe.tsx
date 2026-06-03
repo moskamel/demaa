@@ -187,15 +187,7 @@ export default function Subscribe() {
           <div style={{ maxWidth: 520, margin: '0 auto' }}>
 
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
-              <h2 style={{ fontSize: 28, fontWeight: 500, letterSpacing: '-0.5px', margin: '0 0 8px', color: '#1c1c1e' }}>بيانات الدفع</h2>
-              {/* Plan name + change button inline */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 14, color: '#555a6a' }}>اشتراك {selectedPlanObj.name} · ٩٩ ج.م شهرياً</span>
-                <button onClick={() => setStep('plan')} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', color: '#1c1c1e', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, padding: 0 }}>
-                  <Edit size={13} variant="Outline" />
-                  تغيير الخطة
-                </button>
-              </div>
+              <h2 style={{ fontSize: 28, fontWeight: 500, letterSpacing: '-0.5px', margin: 0, color: '#1c1c1e' }}>بيانات الدفع</h2>
             </div>
 
             {/* Order summary */}
@@ -213,6 +205,15 @@ export default function Subscribe() {
                 <span style={{ color: '#1c1c1e' }}>٤٩.٥ ج.م</span>
               </div>
               <p style={{ fontSize: 12, color: '#8e91a0', marginTop: 8 }}>ثم ٩٩ ج.م شهرياً · إلغاء في أي وقت</p>
+              <div style={{ borderTop: '1px solid #e0e2e8', marginTop: 14, paddingTop: 14 }}>
+                <button onClick={() => setStep('plan')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: '9px 16px', borderRadius: 10, background: '#f7f8fa', border: '1px solid #e0e2e8', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: '#1c1c1e', transition: 'background 0.15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#eef0f5' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#f7f8fa' }}
+                >
+                  <Edit size={13} variant="Outline" />
+                  تغيير الخطة
+                </button>
+              </div>
             </div>
 
             {/* Payment method tabs */}
