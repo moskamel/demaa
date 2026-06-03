@@ -80,7 +80,7 @@ export default function Team() {
     }
   }
 
-  return (
+  return (<>
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
@@ -216,5 +216,5 @@ export default function Team() {
       </div>
     </div>
     {Dialog}
-  )
+  </>)
 }

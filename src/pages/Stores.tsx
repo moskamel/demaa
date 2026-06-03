@@ -62,7 +62,7 @@ export default function Stores() {
     }
   }
 
-  return (
+  return (<>
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
@@ -167,5 +167,6 @@ export default function Stores() {
       </div>
     </div>
     {Dialog}
+  </>
   )
 }
