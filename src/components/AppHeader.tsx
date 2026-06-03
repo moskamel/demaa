@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowDown2, TickCircle, Add, ArrowRight } from 'iconsax-react'
+import { ArrowDown2, TickCircle, Add, ArrowRight, Pause, Play, Trash } from 'iconsax-react'
 import { orders as ordersApi, storesApi, type StoreData } from '../lib/api'
 // clearToken handled in AppSidebar
 
@@ -42,6 +42,8 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
   const [stores, setStores] = useState<StoreData[]>([])
   const [activeStore, setActiveStore] = useState<StoreData | null>(null)
   const [showStores, setShowStores] = useState(false)
+  const [hoveredStore, setHoveredStore] = useState<string | null>(null)
+  const [actingStore, setActingStore] = useState<string | null>(null)
   const storeRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -68,6 +70,39 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
     setShowStores(false)
   }
 
+  const refreshStores = () => {
+    storesApi.list().then(r => {
+      setStores(r.stores)
+      if (activeStore) {
+        const updated = r.stores.find(s => s.id === activeStore.id)
+        setActiveStore(updated ?? r.stores[0] ?? null)
+      }
+    }).catch(() => {})
+  }
+
+  const handlePauseResume = async (e: React.MouseEvent, s: StoreData) => {
+    e.stopPropagation()
+    setActingStore(s.id)
+    try {
+      if (s.isActive) await storesApi.pause(s.id)
+      else await storesApi.resume(s.id)
+      refreshStores()
+    } catch {}
+    setActingStore(null)
+  }
+
+  const handleDelete = async (e: React.MouseEvent, s: StoreData) => {
+    e.stopPropagation()
+    if (!confirm(`هل تريد حذف متجر "${s.name}" نهائياً؟`)) return
+    setActingStore(s.id)
+    try {
+      await storesApi.delete(s.id)
+      refreshStores()
+      if (activeStore?.id === s.id) setActiveStore(null)
+      setShowStores(false)
+    } catch {}
+    setActingStore(null)
+  }
 
   const pColor = activeStore ? (platformColors[activeStore.platform] ?? '#6a4cf5') : '#6a4cf5'
 
@@ -172,25 +207,58 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
 
             {stores.map(s => {
               const c = platformColors[s.platform] ?? '#6a4cf5'
-              const isActive = activeStore?.id === s.id
+              const isSelected = activeStore?.id === s.id
+              const isHovered = hoveredStore === s.id
+              const isActing = actingStore === s.id
               return (
-                <button key={s.id} onClick={() => selectStore(s)} style={{
-                  width: '100%', padding: '10px 14px', background: isActive ? 'var(--canvas-soft-2)' : 'none',
-                  border: 'none', textAlign: 'right', cursor: 'pointer', fontFamily: 'inherit',
-                  display: 'flex', alignItems: 'center', gap: 10, transition: 'background 0.12s',
-                }}
-                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
-                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = '' }}
+                <div key={s.id}
+                  onMouseEnter={() => setHoveredStore(s.id)}
+                  onMouseLeave={() => setHoveredStore(null)}
+                  style={{ position: 'relative' }}
                 >
-                  <div style={{ width: 30, height: 30, borderRadius: 8, background: c + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: c }}>{s.name[0]}</span>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
-                    <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>{s.platform} · {s.isActive ? 'متصل' : 'غير متصل'}</div>
-                  </div>
-                  {isActive && <TickCircle size={14} color="#22c55e" variant="Outline" />}
-                </button>
+                  <button onClick={() => selectStore(s)} style={{
+                    width: '100%', padding: '10px 14px', background: isSelected ? 'var(--canvas-soft-2)' : 'none',
+                    border: 'none', textAlign: 'right', cursor: 'pointer', fontFamily: 'inherit',
+                    display: 'flex', alignItems: 'center', gap: 10, transition: 'background 0.12s',
+                  }}
+                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+                    onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '' }}
+                  >
+                    <div style={{ width: 30, height: 30, borderRadius: 8, background: c + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: c }}>{s.name[0]}</span>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                      <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>{s.platform} · {s.isActive ? 'متصل' : 'متوقف'}</div>
+                    </div>
+                    {isSelected && !isHovered && <TickCircle size={14} color="#22c55e" variant="Outline" />}
+                    {isHovered && !isActing && (
+                      <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+                        <button
+                          onClick={e => handlePauseResume(e, s)}
+                          title={s.isActive ? 'إيقاف مؤقت' : 'تشغيل'}
+                          style={{ width: 26, height: 26, borderRadius: 6, border: 'none', background: 'var(--canvas-soft)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.isActive ? '#ff7a3d' : '#22c55e' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas-soft)' }}
+                        >
+                          {s.isActive
+                            ? <Pause size={12} variant="Outline" color="#ff7a3d" />
+                            : <Play size={12} variant="Outline" color="#22c55e" />}
+                        </button>
+                        <button
+                          onClick={e => handleDelete(e, s)}
+                          title="حذف المتجر"
+                          style={{ width: 26, height: 26, borderRadius: 6, border: 'none', background: 'var(--canvas-soft)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,85,119,0.12)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas-soft)' }}
+                        >
+                          <Trash size={12} variant="Outline" color="#ff5577" />
+                        </button>
+                      </div>
+                    )}
+                    {isActing && <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--ink-muted)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />}
+                  </button>
+                </div>
               )
             })}
 

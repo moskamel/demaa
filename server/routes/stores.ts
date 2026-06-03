@@ -131,6 +131,30 @@ router.post('/:id/disconnect', async (req: AuthRequest, res) => {
   res.json({ disconnected: true })
 })
 
+// POST /stores/:id/pause
+router.post('/:id/pause', async (req: AuthRequest, res) => {
+  const store = await prisma.store.findFirst({ where: { id: req.params.id, organizationId: req.orgId } })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  await prisma.store.update({ where: { id: store.id }, data: { isActive: false } })
+  res.json({ paused: true })
+})
+
+// POST /stores/:id/resume
+router.post('/:id/resume', async (req: AuthRequest, res) => {
+  const store = await prisma.store.findFirst({ where: { id: req.params.id, organizationId: req.orgId } })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  await prisma.store.update({ where: { id: store.id }, data: { isActive: true } })
+  res.json({ resumed: true })
+})
+
+// DELETE /stores/:id
+router.delete('/:id', async (req: AuthRequest, res) => {
+  const store = await prisma.store.findFirst({ where: { id: req.params.id, organizationId: req.orgId } })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  await prisma.store.delete({ where: { id: store.id } })
+  res.json({ deleted: true })
+})
+
 router.get('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({
     where: { id: req.params.id, organizationId: req.orgId },

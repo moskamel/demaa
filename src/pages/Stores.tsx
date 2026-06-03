@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock } from 'iconsax-react'
+import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock, Pause, Play, Trash } from 'iconsax-react'
 import { storesApi, type StoreData } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
@@ -25,6 +25,8 @@ export default function Stores() {
   const [stores, setStores] = useState<StoreData[]>([])
   const [syncing, setSyncing] = useState<string | null>(null)
   const [disconnecting, setDisconnecting] = useState<string | null>(null)
+  const [pausing, setPausing] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<string | null>(null)
   const { confirm, Dialog } = useConfirm()
   const toast = useToast()
   const [loading, setLoading] = useState(true)
@@ -45,6 +47,54 @@ export default function Stores() {
       toast.error('فشل فصل المتجر')
     } finally {
       setDisconnecting(null)
+    }
+  }
+
+  const handlePauseResume = async (id: string, isActive: boolean) => {
+    const action = isActive ? 'إيقاف' : 'تشغيل'
+    const ok = await confirm({
+      title: `${action} المتجر`,
+      message: `هل تريد ${action} هذا المتجر؟`,
+      confirmLabel: action,
+      risk: 'medium',
+      consequence: isActive
+        ? 'لن يتم استقبال طلبات جديدة مؤقتاً. يمكنك إعادة التشغيل في أي وقت.'
+        : 'سيبدأ استقبال الطلبات من هذا المتجر مجدداً.',
+    })
+    if (!ok) return
+    setPausing(id)
+    try {
+      if (isActive) await storesApi.pause(id)
+      else await storesApi.resume(id)
+      setStores(prev => prev.map(s => s.id === id ? { ...s, isActive: !isActive } : s))
+      toast.success(isActive ? 'تم إيقاف المتجر مؤقتاً' : 'تم تشغيل المتجر')
+    } catch {
+      toast.error('فشلت العملية')
+    } finally {
+      setPausing(null)
+    }
+  }
+
+  const handleDelete = async (id: string, name: string) => {
+    const ok = await confirm({
+      title: 'حذف المتجر نهائياً',
+      message: `هل تريد حذف متجر "${name}" نهائياً؟`,
+      confirmLabel: 'حذف نهائي',
+      danger: true,
+      risk: 'critical',
+      consequence: 'سيتم حذف المتجر وجميع بياناته بشكل دائم ولا يمكن التراجع.',
+      confirmPhrase: 'DELETE',
+    })
+    if (!ok) return
+    setDeleting(id)
+    try {
+      await storesApi.delete(id)
+      setStores(prev => prev.filter(s => s.id !== id))
+      toast.success('تم حذف المتجر')
+    } catch {
+      toast.error('فشل حذف المتجر')
+    } finally {
+      setDeleting(null)
     }
   }
 
@@ -119,7 +169,7 @@ export default function Stores() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <button
                         onClick={() => handleSync(s.id)}
                         style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--canvas-soft-2)', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer' }}
@@ -127,17 +177,39 @@ export default function Stores() {
                         <Refresh2 size={11} variant="Outline" style={{ animation: isSyncing ? 'spin 1s linear infinite' : 'none' }} />
                         {isSyncing ? 'جاري التزامن...' : 'مزامنة'}
                       </button>
+
+                      {/* Pause / Resume */}
+                      <button
+                        onClick={() => handlePauseResume(s.id, s.isActive)}
+                        disabled={pausing === s.id}
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: s.isActive ? 'rgba(255,122,61,0.08)' : 'rgba(34,197,94,0.08)', border: `1px solid ${s.isActive ? 'rgba(255,122,61,0.2)' : 'rgba(34,197,94,0.2)'}`, borderRadius: 8, padding: '6px 12px', fontSize: 12, color: s.isActive ? '#ff7a3d' : '#22c55e', cursor: 'pointer', opacity: pausing === s.id ? 0.5 : 1 }}
+                      >
+                        {s.isActive
+                          ? <><Pause size={11} variant="Outline" /> {pausing === s.id ? '...' : 'إيقاف مؤقت'}</>
+                          : <><Play size={11} variant="Outline" /> {pausing === s.id ? '...' : 'تشغيل'}</>}
+                      </button>
+
                       {!s.isActive && (
                         <Link to="/onboarding" state={{ fromDashboard: true }} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,122,61,0.1)', border: '1px solid rgba(255,122,61,0.25)', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--gradient-orange)', cursor: 'pointer', textDecoration: 'none' }}>
                           إعادة الربط
                         </Link>
                       )}
+
                       <button
                         onClick={() => handleDisconnect(s.id, s.name)}
                         disabled={disconnecting === s.id}
-                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', marginRight: 'auto', opacity: disconnecting === s.id ? 0.5 : 1 }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', opacity: disconnecting === s.id ? 0.5 : 1 }}>
                         <LinkIcon size={11} variant="Outline" />
                         {disconnecting === s.id ? 'جاري الفصل...' : 'فصل'}
+                      </button>
+
+                      {/* Delete — far left */}
+                      <button
+                        onClick={() => handleDelete(s.id, s.name)}
+                        disabled={deleting === s.id}
+                        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,85,119,0.06)', border: '1px solid rgba(255,85,119,0.15)', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: '#ff5577', cursor: 'pointer', marginRight: 'auto', opacity: deleting === s.id ? 0.5 : 1 }}>
+                        <Trash size={11} variant="Outline" />
+                        {deleting === s.id ? 'جاري الحذف...' : 'حذف'}
                       </button>
                     </div>
                   </div>

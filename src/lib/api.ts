@@ -189,6 +189,15 @@ export const storesApi = {
   async disconnect(id: string) {
     return request<{ disconnected: boolean }>(`/stores/${id}/disconnect`, { method: 'POST' })
   },
+  async pause(id: string) {
+    return request<{ paused: boolean }>(`/stores/${id}/pause`, { method: 'POST' })
+  },
+  async resume(id: string) {
+    return request<{ resumed: boolean }>(`/stores/${id}/resume`, { method: 'POST' })
+  },
+  async delete(id: string) {
+    return request<{ deleted: boolean }>(`/stores/${id}`, { method: 'DELETE' })
+  },
 }
 
 // ── Types ────────────────────────────────────────────────────
