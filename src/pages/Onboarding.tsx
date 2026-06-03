@@ -576,7 +576,7 @@ export default function Onboarding() {
                 disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
                 onClick={() => setStep(3)}
                 style={{
-                  flex: 1, justifyContent: 'center', padding: '13px', borderRadius: 9999, border: 'none',
+                  flex: 1, padding: '13px', borderRadius: 9999, border: 'none',
                   background: 'linear-gradient(135deg, #6a4cf5, #d44df0)',
                   color: '#fff', fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
