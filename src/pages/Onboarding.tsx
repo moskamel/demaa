@@ -386,6 +386,15 @@ export default function Onboarding() {
               }}>
               التالي <ArrowLeft2 size={15} variant="Outline" />
             </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              style={{
+                width: '100%', padding: '11px', borderRadius: 9999, border: 'none',
+                background: 'transparent', color: 'var(--ink-muted)',
+                cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', marginTop: 8,
+              }}>
+              تخطي — ربط لاحقاً
+            </button>
           </div>
         </div>
       )}
