@@ -87,6 +87,10 @@ const FAQS = [
 
 // ── Component ────────────────────────────────────────────────────────────────
 export default function Landing() {
+  const isAuthed = !!localStorage.getItem('deema_token')
+  const ctaTo = isAuthed ? '/dashboard' : '/signup'
+  const loginTo = isAuthed ? '/dashboard' : '/login'
+
   const [demoIdx, setDemoIdx] = useState(0)
   const [demoInput, setDemoInput] = useState('')
   const [demoMessages, setDemoMessages] = useState<Array<{ role: 'user' | 'ai'; text: string; stats?: typeof DEMO_COMMANDS[0]['stats']; actions?: string[] }>>([
@@ -183,7 +187,7 @@ export default function Landing() {
         <span style={{ background: T.yellow, color: T.ink, borderRadius: 9999, padding: '2px 10px', fontSize: 12, fontWeight: 700 }}>🎉 عرض الإطلاق</span>
         <span>أول ٣ أشهر بخصم ٥٠٪ ·</span>
         <strong>سارع قبل انتهاء العرض</strong>
-        <Link to="/signup" style={{ color: T.yellow, fontWeight: 600, textDecoration: 'underline', marginRight: 4 }}>اشترك الآن</Link>
+        <Link to={ctaTo} style={{ color: T.yellow, fontWeight: 600, textDecoration: 'underline', marginRight: 4 }}>اشترك الآن</Link>
       </div>
 
       {/* ── NAV ──────────────────────────────────────────────────────────────── */}
@@ -208,8 +212,8 @@ export default function Landing() {
 
         {/* Right CTAs */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Link to="/login" style={{ ...btnOutline, padding: '8px 20px', fontSize: 13 }}>دخول</Link>
-          <Link to="/signup" style={{ ...btnPrimary, padding: '8px 20px', fontSize: 13 }}>ابدأ مجاناً</Link>
+          <Link to={loginTo} style={{ ...btnOutline, padding: '8px 20px', fontSize: 13 }}>دخول</Link>
+          <Link to={ctaTo} style={{ ...btnPrimary, padding: '8px 20px', fontSize: 13 }}>ابدأ مجاناً</Link>
         </div>
       </nav>
 
@@ -237,7 +241,7 @@ export default function Landing() {
             </p>
 
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 32 }}>
-              <Link to="/signup" style={{ ...btnPrimary, padding: '14px 28px', fontSize: 15 }}>
+              <Link to={ctaTo} style={{ ...btnPrimary, padding: '14px 28px', fontSize: 15 }}>
                 ابدأ مجاناً ←
               </Link>
             </div>
@@ -587,7 +591,7 @@ export default function Landing() {
                     </div>
                   ))}
                 </div>
-                <Link to="/signup" style={{
+                <Link to={ctaTo} style={{
                   display: 'flex', justifyContent: 'center', textDecoration: 'none',
                   borderRadius: 9999, padding: '12px 24px', fontSize: 14, fontWeight: 500,
                   ...(tier.featured
@@ -645,7 +649,7 @@ export default function Landing() {
           </p>
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            <Link to="/signup" style={{ background: '#fff', color: T.ink, borderRadius: 9999, padding: '14px 32px', fontSize: 16, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '-0.3px' }}>
+            <Link to={ctaTo} style={{ background: '#fff', color: T.ink, borderRadius: 9999, padding: '14px 32px', fontSize: 16, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '-0.3px' }}>
               ابدأ مجاناً الآن <ArrowLeft2 size={15} variant="Outline" />
             </Link>
           </div>

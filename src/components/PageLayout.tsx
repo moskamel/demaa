@@ -18,6 +18,10 @@ const FOOTER_COLS = [
 ]
 
 export default function PageLayout({ children }: Props) {
+  const isAuthed = !!localStorage.getItem('deema_token')
+  const ctaTo = isAuthed ? '/dashboard' : '/signup'
+  const loginTo = isAuthed ? '/dashboard' : '/login'
+
   return (
     <div dir="rtl" style={{ background: '#ffffff', color: '#1c1c1e', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Zain', 'Inter', sans-serif" }}>
 
@@ -50,16 +54,16 @@ export default function PageLayout({ children }: Props) {
         </div>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-          <Link to="/login" style={{
+          <Link to={loginTo} style={{
             padding: '9px 20px', borderRadius: 9999, border: '1px solid #c7cad5',
             background: 'transparent', color: '#1c1c1e', fontSize: 14, fontWeight: 500,
             textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
-          }}>دخول</Link>
-          <Link to="/signup" style={{
+          }}>{isAuthed ? 'لوحة التحكم' : 'دخول'}</Link>
+          <Link to={ctaTo} style={{
             padding: '9px 20px', borderRadius: 9999, border: 'none',
             background: '#1c1c1e', color: '#fff', fontSize: 14, fontWeight: 500,
             textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
-          }}>ابدأ مجاناً</Link>
+          }}>{isAuthed ? 'الذهاب للمساعد' : 'ابدأ مجاناً'}</Link>
         </div>
       </nav>
 
