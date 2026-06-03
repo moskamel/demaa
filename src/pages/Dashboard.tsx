@@ -267,125 +267,187 @@ export default function Dashboard() {
     setActiveConv(null)
   }
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  const navBtnStyle = (collapsed: boolean): React.CSSProperties => ({
+    width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+    padding: collapsed ? '8px 10px' : '7px 10px',
+    borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
+    color: 'rgba(255,255,255,0.65)', fontSize: 13, fontFamily: 'inherit',
+    justifyContent: collapsed ? 'center' : 'flex-start', transition: 'background 0.15s',
+  })
+
+  const navLabelStyle: React.CSSProperties = {
+    fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 400,
+  }
+
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--canvas)', overflow: 'hidden' }}>
 
       {/* ── SIDEBAR ──────────────────────────────────────────────────────────── */}
-      <aside style={{ width: 240, background: 'var(--canvas)', borderLeft: '1px solid var(--hairline)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
+      <aside style={{
+        width: sidebarCollapsed ? 56 : 240,
+        background: '#111',
+        borderLeft: '1px solid rgba(255,255,255,0.07)',
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+        transition: 'width 0.2s ease',
+        overflow: 'hidden',
+      }}>
 
-        {/* logo + new chat */}
-        <div style={{ padding: '14px 12px 10px', borderBottom: '1px solid var(--hairline)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, padding: '0 4px' }}>
-            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span style={{ color: '#000', fontWeight: 700, fontSize: 11 }}>D</span>
-            </div>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.4px', flex: 1 }}>Deema</span>
-            <button onClick={handleNewChat} style={{ width: 26, height: 26, borderRadius: 7, background: 'var(--canvas-soft)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }} title="محادثة جديدة">
-              <MessageAdd1 size={12} variant="Outline" />
-            </button>
-          </div>
-        </div>
-
-        {/* conversations */}
-        <div style={{ padding: '10px 8px 6px' }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', padding: '0 8px', marginBottom: 4 }}>المحادثات</div>
-          {convList.length === 0 && (
-            <div style={{ fontSize: 11, color: 'var(--ink-muted)', padding: '6px 10px', opacity: 0.6 }}>لا توجد محادثات بعد</div>
-          )}
-          {convList.map(c => (
-            <button key={c.id} onClick={() => setActiveConv(c.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 8, border: 'none', background: c.id === activeConv ? 'var(--canvas-soft)' : 'transparent', color: c.id === activeConv ? 'var(--ink)' : 'var(--ink-muted)', cursor: 'pointer', fontSize: 12, marginBottom: 1, textAlign: 'right', fontFamily: 'inherit' }}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title || 'محادثة'}</span>
-              <span style={{ fontSize: 10, color: 'var(--ink-muted)', flexShrink: 0, marginRight: 6 }}>{c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('ar-SA') : ''}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* stores */}
-        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>متاجري</div>
-            <Link to="/stores" style={{ color: 'var(--ink-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}><Add size={11} variant="Outline" /></Link>
-          </div>
-          {stores.map((s, i) => (
-            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: i === 0 ? 'var(--canvas-soft)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.isActive ? '#22c55e' : '#ff7a3d', flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: i === 0 ? 'var(--ink)' : 'var(--ink-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
-              <span style={{ fontSize: 10, color: 'var(--ink-muted)', textTransform: 'capitalize' }}>{s.platform}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* connectors */}
-        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>التطبيقات</div>
-            <Link to="/connectors" style={{ color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 10 }}>إدارة</Link>
-          </div>
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            {stores.map(s => (
-              <span key={s.id} style={{ fontSize: 10, background: 'var(--canvas-soft)', color: 'var(--ink-muted)', borderRadius: 100, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 3 }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: s.isActive ? '#22c55e' : '#999', flexShrink: 0 }} />{s.platform}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* notifications */}
-        <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>الإشعارات</div>
-            {unreadNotifs > 0 && <span style={{ fontSize: 9, color: '#ff5577', background: 'rgba(255,85,119,0.12)', borderRadius: 100, padding: '2px 6px', fontWeight: 700 }}>{unreadNotifs}</span>}
-          </div>
-          {apiNotifs.slice(0, 3).map(n => (
-            <div key={n.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '5px 6px', borderRadius: 7, marginBottom: 2, background: n.isRead ? 'transparent' : 'rgba(0,0,0,0.02)' }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: n.priority === 'urgent' ? '#ff5577' : n.priority === 'important' ? '#ff7a3d' : '#555', marginTop: 5, flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.35, fontWeight: n.isRead ? 400 : 500 }}>{n.title}</div>
-                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 1 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
+        {/* ── Top: logo + collapse toggle */}
+        <div style={{ padding: sidebarCollapsed ? '14px 10px' : '14px 12px', display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+          {!sidebarCollapsed && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ color: '#000', fontWeight: 700, fontSize: 12 }}>D</span>
               </div>
+              <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', letterSpacing: '-0.4px' }}>Deema</span>
             </div>
-          ))}
-          <Link to="/notifications" style={{ display: 'block', fontSize: 11, color: 'var(--accent-blue)', textDecoration: 'none', padding: '4px 6px', marginTop: 2 }}>عرض الكل ←</Link>
-        </div>
-
-        {/* daily suggestion */}
-        <div style={{ padding: '10px 12px', borderTop: '1px solid var(--hairline)' }}>
-          <div style={{ background: 'rgba(0,112,243,0.06)', border: '1px solid rgba(0,112,243,0.15)', borderRadius: 10, padding: '10px 11px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
-              <Lamp size={11} color="#6a4cf5" variant="Outline" />
-              <span style={{ fontSize: 10, fontWeight: 600, color: '#0070f3', letterSpacing: '0.04em' }}>اقتراح اليوم</span>
+          )}
+          {sidebarCollapsed && (
+            <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#000', fontWeight: 700, fontSize: 12 }}>D</span>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{getDailySuggestion(orderStats)}</div>
-            <button onClick={() => handleSend('اشحن الطلبات المقبولة')} style={{ marginTop: 7, fontSize: 11, color: '#0070f3', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', textDecoration: 'underline' }}>
-              اشحن الآن
-            </button>
-          </div>
-        </div>
-
-        {/* bottom nav */}
-        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
-          {[
-            { to: '/activity', icon: Clock, label: 'السجل' },
-            { to: '/insights', icon: Cpu, label: 'الذاكرة' },
-            { to: '/settings', icon: Setting2, label: 'الإعدادات' },
-            { to: '/billing', icon: Card, label: 'الاشتراك' },
-          ].map(({ to, icon: Icon, label }) => (
-            <Link key={to} to={to} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 4px', borderRadius: 8, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 10, transition: 'color 0.1s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
+          )}
+          {!sidebarCollapsed && (
+            <button onClick={() => setSidebarCollapsed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6 }}
+              title="طي الشريط الجانبي"
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
             >
-              <Icon size={13} variant="Outline" />
-              {label}
+              <ArrowDown2 size={14} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
+            </button>
+          )}
+        </div>
+
+        {/* ── Nav actions */}
+        <div style={{ padding: sidebarCollapsed ? '10px 8px' : '10px 8px', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
+
+          {/* Search */}
+          <button onClick={() => setShowSearch(true)} style={navBtnStyle(sidebarCollapsed)}
+            title="بحث"
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+          >
+            <SearchNormal1 size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
+            {!sidebarCollapsed && <span style={navLabelStyle}>بحث</span>}
+            {!sidebarCollapsed && <kbd style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.08)', borderRadius: 4, padding: '1px 5px', marginRight: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>⌘K</kbd>}
+          </button>
+
+          {/* New chat */}
+          <button onClick={handleNewChat} style={{ ...navBtnStyle(sidebarCollapsed), background: 'rgba(255,255,255,0.1)' }}
+            title="محادثة جديدة"
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}
+          >
+            <MessageAdd1 size={16} variant="Outline" color="#fff" />
+            {!sidebarCollapsed && <span style={{ ...navLabelStyle, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+          </button>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 4px' }} />
+
+          {/* Nav links */}
+          {[
+            { to: '/stores', icon: Shop, label: 'متاجري', badge: stores.length > 0 ? stores.length : undefined },
+            { to: '/reports', icon: ChartSquare, label: 'التقارير' },
+            { to: '/team', icon: People, label: 'الفريق' },
+            { to: '/connectors', icon: Electricity, label: 'التطبيقات' },
+            { to: '/notifications', icon: Notification, label: 'الإشعارات', badge: unreadNotifs > 0 ? unreadNotifs : undefined, badgeColor: '#ff5577' },
+          ].map(({ to, icon: Icon, label, badge, badgeColor }) => (
+            <Link key={to} to={to} style={{ ...navBtnStyle(sidebarCollapsed), textDecoration: 'none', position: 'relative' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+            >
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <Icon size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
+                {badge !== undefined && sidebarCollapsed && (
+                  <span style={{ position: 'absolute', top: -4, right: -4, width: 14, height: 14, borderRadius: '50%', background: badgeColor || '#6a4cf5', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{badge > 9 ? '9+' : badge}</span>
+                )}
+              </div>
+              {!sidebarCollapsed && <span style={navLabelStyle}>{label}</span>}
+              {!sidebarCollapsed && badge !== undefined && (
+                <span style={{ marginRight: 'auto', fontSize: 10, fontWeight: 700, color: '#fff', background: badgeColor || '#6a4cf5', borderRadius: 100, padding: '1px 6px', minWidth: 18, textAlign: 'center' }}>{badge}</span>
+              )}
             </Link>
           ))}
-          <button onClick={handleLogout} title="تسجيل خروج" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 4px', borderRadius: 8, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 10, transition: 'color 0.1s', fontFamily: 'inherit' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
-          >
-            <Logout size={13} variant="Outline" />
-            خروج
-          </button>
         </div>
+
+        {/* ── Conversations list */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: sidebarCollapsed ? '6px 8px' : '6px 8px', borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
+          {!sidebarCollapsed && (
+            <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '6px 8px 4px' }}>المحادثات السابقة</div>
+          )}
+          {convList.length === 0 && !sidebarCollapsed && (
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', padding: '8px 10px', textAlign: 'center', marginTop: 8 }}>لا توجد محادثات بعد</div>
+          )}
+          {convList.map(c => (
+            <button key={c.id} onClick={() => setActiveConv(c.id)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: sidebarCollapsed ? '8px 10px' : '7px 10px',
+                borderRadius: 8, border: 'none',
+                background: c.id === activeConv ? 'rgba(255,255,255,0.1)' : 'transparent',
+                cursor: 'pointer', marginBottom: 1, textAlign: 'right', fontFamily: 'inherit',
+                justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+              }}
+              title={sidebarCollapsed ? (c.title || 'محادثة') : undefined}
+            >
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+              {!sidebarCollapsed && (
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#fff' : 'rgba(255,255,255,0.6)' }}>
+                  {c.title || 'محادثة'}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* ── User + collapse/expand */}
+        <div style={{ padding: sidebarCollapsed ? '10px 8px' : '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6a4cf5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>م</div>
+          {!sidebarCollapsed && (
+            <>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {JSON.parse(localStorage.getItem('deema_user') || '{}').name || 'مستخدم'}
+                </div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {JSON.parse(localStorage.getItem('deema_user') || '{}').email || ''}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 2 }}>
+                <button onClick={() => setSidebarCollapsed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }} title="طي"
+                  onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                >
+                  <ArrowDown2 size={13} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
+                </button>
+                <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }} title="خروج"
+                  onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                >
+                  <Logout size={13} variant="Outline" />
+                </button>
+              </div>
+            </>
+          )}
+          {sidebarCollapsed && (
+            <button onClick={() => setSidebarCollapsed(false)} style={{ position: 'absolute', right: 56, top: '50%', transform: 'translateY(-50%)', display: 'none' }} />
+          )}
+        </div>
+
+        {/* Expand button when collapsed */}
+        {sidebarCollapsed && (
+          <button onClick={() => setSidebarCollapsed(false)} style={{ position: 'absolute', bottom: 70, right: 12, width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            title="توسيع الشريط الجانبي"
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+          >
+            <ArrowDown2 size={12} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
+          </button>
+        )}
       </aside>
 
       {/* ── CHAT MAIN ──────────────────────────────────────────────────────── */}
