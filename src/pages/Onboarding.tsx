@@ -371,7 +371,7 @@ export default function Onboarding() {
 
       {/* ── STEP 2: API Key ── */}
       {step === 2 && (
-        <div style={{ width: '100%', maxWidth: 480 }}>
+        <div style={{ width: '100%', maxWidth: 520 }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             <h1 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1.0, margin: '0 0 10px', color: 'var(--ink)' }}>
               ربط {selectedPlatform?.name}
@@ -535,32 +535,55 @@ export default function Onboarding() {
 
           {/* Center: main action button(s) */}
           {step === 1 && (
-            <button
-              disabled={!platform}
-              onClick={() => setStep(2)}
-              style={{
-                width: 700, padding: '13px', borderRadius: 9999, border: 'none',
-                background: platform ? '#1c1c1e' : 'var(--hairline)',
-                color: platform ? '#fff' : 'var(--ink-muted)',
-                cursor: platform ? 'pointer' : 'default',
-                fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                transition: 'background 0.15s',
+            <div style={{ display: 'flex', gap: 10, width: 520 }}>
+              <button onClick={() => navigate(-1)} style={{
+                padding: '13px 24px', borderRadius: 9999, border: '1px solid var(--hairline)',
+                background: 'transparent', color: 'var(--ink-muted)',
+                cursor: 'pointer', fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
+                whiteSpace: 'nowrap', flexShrink: 0,
               }}>
-              التالي <ArrowLeft2 size={15} variant="Outline" />
-            </button>
+                رجوع
+              </button>
+              <button
+                disabled={!platform}
+                onClick={() => setStep(2)}
+                style={{
+                  flex: 1, padding: '13px', borderRadius: 9999, border: 'none',
+                  background: platform ? 'linear-gradient(135deg, #6a4cf5, #d44df0)' : 'var(--hairline)',
+                  color: platform ? '#fff' : 'var(--ink-muted)',
+                  cursor: platform ? 'pointer' : 'default',
+                  fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  transition: 'opacity 0.15s',
+                  opacity: platform ? 1 : 0.5,
+                }}>
+                التالي <ArrowLeft2 size={15} variant="Outline" />
+              </button>
+            </div>
           )}
 
           {step === 2 && (
-            <div style={{ display: 'flex', gap: 10, width: 700 }}>
-              <button onClick={() => setStep(1)} className="btn-secondary" style={{ padding: '12px 20px', borderRadius: 10, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 10, width: 520 }}>
+              <button onClick={() => setStep(1)} style={{
+                padding: '13px 24px', borderRadius: 9999, border: '1px solid var(--hairline)',
+                background: 'transparent', color: 'var(--ink-muted)',
+                cursor: 'pointer', fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
+                whiteSpace: 'nowrap', flexShrink: 0,
+              }}>
                 رجوع
               </button>
               <button
                 disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
                 onClick={() => setStep(3)}
-                className="btn-primary"
-                style={{ flex: 1, justifyContent: 'center', padding: '12px 20px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4 }}
+                style={{
+                  flex: 1, justifyContent: 'center', padding: '13px', borderRadius: 9999, border: 'none',
+                  background: 'linear-gradient(135deg, #6a4cf5, #d44df0)',
+                  color: '#fff', fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  cursor: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 'pointer' : 'default',
+                  opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4,
+                  transition: 'opacity 0.15s',
+                }}
               >
                 التحقق من الـ Key
               </button>
