@@ -113,7 +113,7 @@ export default function Contact() {
                     }}
                   />
                 </div>
-                <button type="submit" className="btn-primary" style={{ cursor: 'pointer' }}>إرسال الرسالة</button>
+                <button type="submit" className="btn-primary" style={{ cursor: 'pointer', width: '100%', justifyContent: 'center' }}>إرسال الرسالة</button>
               </form>
             )}
           </div>
