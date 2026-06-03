@@ -7,8 +7,8 @@ type Mode = 'login' | 'signup' | 'reset'
 
 const INPUT: React.CSSProperties = {
   width: '100%', padding: '11px 14px', borderRadius: 8,
-  border: '1px solid 'var(--hairline-strong)'', background: ''var(--canvas)'',
-  color: ''var(--ink)'', fontSize: 14, fontFamily: 'inherit',
+  border: '1px solid var(--hairline-strong)', background: 'var(--canvas-soft)',
+  color: 'var(--ink)', fontSize: 14, fontFamily: 'inherit',
   outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s',
   height: 44,
 }
@@ -70,32 +70,32 @@ export default function Login() {
   }
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: ''var(--canvas-soft)'', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontFamily: "'Zain', 'Inter', sans-serif" }}>
+    <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontFamily: "'Zain', 'Inter', sans-serif" }}>
 
       {/* back */}
-      <Link to="/" style={{ position: 'absolute', top: 24, right: 32, display: 'flex', alignItems: 'center', gap: 6, color: ''var(--ink-muted)'', fontSize: 13, textDecoration: 'none' }}>
+      <Link to="/" style={{ position: 'absolute', top: 24, right: 32, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', fontSize: 13, textDecoration: 'none' }}>
         <ArrowLeft2 size={14} variant="Outline" style={{ transform: 'rotate(180deg)' }} /> الرئيسية
       </Link>
 
       {/* logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
-        <div style={{ width: 36, height: 36, borderRadius: '50%', background: ''var(--ink)'', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ color: '#ffd02f', fontWeight: 700, fontSize: 16 }}>D</span>
         </div>
-        <span style={{ fontSize: 22, fontWeight: 600, color: ''var(--ink)'', letterSpacing: '-0.5px' }}>Deema</span>
+        <span style={{ fontSize: 22, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.5px' }}>Deema</span>
       </div>
 
-      <div style={{ width: '100%', maxWidth: 420, background: ''var(--canvas)'', borderRadius: 20, border: '1px solid 'var(--hairline)'', padding: '32px 28px', boxShadow: '0 4px 12px rgba(5,0,56,0.06)' }}>
+      <div style={{ width: '100%', maxWidth: 420, background: 'var(--canvas-soft)', borderRadius: 20, border: '1px solid var(--hairline)', padding: '32px 28px' }}>
 
         {/* tabs */}
         {mode !== 'reset' && (
-          <div style={{ display: 'flex', gap: 0, marginBottom: 28, background: ''var(--canvas-soft)'', borderRadius: 9999, padding: 4 }}>
+          <div style={{ display: 'flex', gap: 0, marginBottom: 28, background: 'var(--canvas-soft-2)', borderRadius: 9999, padding: 4 }}>
             {(['login', 'signup'] as const).map(m => (
               <button key={m} onClick={() => { setMode(m); setError('') }} style={{
                 flex: 1, padding: '9px', borderRadius: 9999, border: 'none', cursor: 'pointer',
                 fontFamily: 'inherit', fontSize: 14, fontWeight: 500,
-                background: mode === m ? ''var(--ink)'' : 'transparent',
-                color: mode === m ? '#fff' : ''var(--ink-muted)'',
+                background: mode === m ? 'var(--ink)' : 'transparent',
+                color: mode === m ? 'var(--canvas)' : 'var(--ink-muted)',
                 transition: 'all 0.15s',
               }}>
                 {m === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب'}
@@ -106,57 +106,55 @@ export default function Login() {
 
         {mode === 'reset' && (
           <div style={{ marginBottom: 24 }}>
-            <button onClick={() => { setMode('login'); setResetSent(false) }} style={{ display: 'flex', alignItems: 'center', gap: 6, color: ''var(--ink-muted)'', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', padding: 0, marginBottom: 20 }}>
+            <button onClick={() => { setMode('login'); setResetSent(false) }} style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', padding: 0, marginBottom: 20 }}>
               <ArrowLeft2 size={13} variant="Outline" /> رجوع
             </button>
-            <div style={{ fontSize: 20, fontWeight: 600, color: ''var(--ink)'', marginBottom: 6 }}>استعادة كلمة المرور</div>
-            <div style={{ fontSize: 14, color: ''var(--ink-muted)'' }}>سنرسل لك رابط إعادة التعيين على بريدك الإلكتروني</div>
+            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>استعادة كلمة المرور</div>
+            <div style={{ fontSize: 14, color: 'var(--ink-muted)' }}>سنرسل لك رابط إعادة التعيين على بريدك الإلكتروني</div>
           </div>
         )}
 
         {resetSent ? (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <div style={{ fontSize: 44, marginBottom: 14 }}>📬</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: ''var(--ink)'', marginBottom: 8 }}>تم الإرسال!</div>
-            <div style={{ fontSize: 14, color: ''var(--ink-muted)'', marginBottom: 24, lineHeight: 1.6 }}>تفقد بريدك الإلكتروني وافتح الرابط لإعادة تعيين كلمة المرور</div>
-            <button onClick={() => { setMode('login'); setResetSent(false) }} style={{ fontSize: 14, color: '#4262ff', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 8 }}>تم الإرسال!</div>
+            <div style={{ fontSize: 14, color: 'var(--ink-muted)', marginBottom: 24, lineHeight: 1.6 }}>تفقد بريدك الإلكتروني وافتح الرابط لإعادة تعيين كلمة المرور</div>
+            <button onClick={() => { setMode('login'); setResetSent(false) }} style={{ fontSize: 14, color: 'var(--link)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
               العودة لتسجيل الدخول
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {mode === 'signup' && (
-              <>
-                <div>
-                  <label style={{ fontSize: 13, color: ''var(--ink-muted)'', marginBottom: 6, display: 'block', fontWeight: 500 }}>الاسم الكامل</label>
-                  <input value={name} onChange={e => setName(e.target.value)} placeholder="محمد العمري" style={INPUT} />
-                </div>
-              </>
+              <div>
+                <label style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 6, display: 'block', fontWeight: 500 }}>الاسم الكامل</label>
+                <input value={name} onChange={e => setName(e.target.value)} placeholder="محمد العمري" style={INPUT} />
+              </div>
             )}
 
             <div>
-              <label style={{ fontSize: 13, color: ''var(--ink-muted)'', marginBottom: 6, display: 'block', fontWeight: 500 }}>البريد الإلكتروني</label>
+              <label style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 6, display: 'block', fontWeight: 500 }}>البريد الإلكتروني</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@store.com" style={{ ...INPUT, direction: 'ltr', textAlign: 'right' }} />
             </div>
 
             {mode !== 'reset' && (
               <div style={{ position: 'relative' }}>
-                <label style={{ fontSize: 13, color: ''var(--ink-muted)'', marginBottom: 6, display: 'block', fontWeight: 500 }}>كلمة المرور</label>
+                <label style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 6, display: 'block', fontWeight: 500 }}>كلمة المرور</label>
                 <input type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ ...INPUT, paddingRight: 42, direction: 'ltr', textAlign: 'right' }} />
-                <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 12, bottom: 11, background: 'none', border: 'none', cursor: 'pointer', color: ''var(--ink-disabled)'', padding: 0, display: 'flex', alignItems: 'center' }}>
+                <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 12, bottom: 11, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-disabled)', padding: 0, display: 'flex', alignItems: 'center' }}>
                   {showPass ? <EyeSlash size={16} variant="Outline" /> : <Eye size={16} variant="Outline" />}
                 </button>
               </div>
             )}
 
             {mode === 'login' && (
-              <button type="button" onClick={() => { setMode('reset'); setError('') }} style={{ fontSize: 13, color: '#4262ff', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'right', padding: 0, marginTop: -8 }}>
+              <button type="button" onClick={() => { setMode('reset'); setError('') }} style={{ fontSize: 13, color: 'var(--link)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'right', padding: 0, marginTop: -8 }}>
                 نسيت كلمة المرور؟
               </button>
             )}
 
             {error && (
-              <div style={{ fontSize: 13, color: '#600000', background: '#ffc6c6', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ fontSize: 13, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,85,119,0.2)' }}>
                 {error}
               </div>
             )}
@@ -164,7 +162,7 @@ export default function Login() {
             <button type="submit" disabled={loading} style={{
               width: '100%', padding: '13px', borderRadius: 9999, border: 'none',
               cursor: loading ? 'default' : 'pointer', fontFamily: 'inherit',
-              fontSize: 15, fontWeight: 600, background: ''var(--ink)'', color: '#fff',
+              fontSize: 15, fontWeight: 600, background: 'var(--ink)', color: 'var(--canvas)',
               marginTop: 4, opacity: loading ? 0.6 : 1, transition: 'opacity 0.15s',
             }}>
               {loading ? '...' : mode === 'login' ? 'تسجيل الدخول' : mode === 'signup' ? 'إنشاء الحساب' : 'إرسال الرابط'}
@@ -173,14 +171,14 @@ export default function Login() {
             {mode !== 'reset' && (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '4px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: ''var(--hairline)'' }} />
-                  <span style={{ fontSize: 12, color: ''var(--ink-disabled)'' }}>أو</span>
-                  <div style={{ flex: 1, height: 1, background: ''var(--hairline)'' }} />
+                  <div style={{ flex: 1, height: 1, background: 'var(--hairline)' }} />
+                  <span style={{ fontSize: 12, color: 'var(--ink-disabled)' }}>أو</span>
+                  <div style={{ flex: 1, height: 1, background: 'var(--hairline)' }} />
                 </div>
                 <button type="button" style={{
                   width: '100%', padding: '12px', borderRadius: 9999,
-                  border: '1px solid 'var(--hairline-strong)'', cursor: 'pointer', fontFamily: 'inherit',
-                  fontSize: 14, fontWeight: 500, background: '#fff', color: ''var(--ink)'',
+                  border: '1px solid var(--hairline-strong)', cursor: 'pointer', fontFamily: 'inherit',
+                  fontSize: 14, fontWeight: 500, background: 'var(--canvas-soft-2)', color: 'var(--ink)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                 }}>
                   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -197,11 +195,11 @@ export default function Login() {
         )}
       </div>
 
-      <div style={{ marginTop: 20, fontSize: 13, color: ''var(--ink-disabled)'', textAlign: 'center' }}>
+      <div style={{ marginTop: 20, fontSize: 13, color: 'var(--ink-muted)', textAlign: 'center' }}>
         بالمتابعة أنت توافق على{' '}
-        <Link to="/terms" style={{ color: '#4262ff', textDecoration: 'none' }}>شروط الاستخدام</Link>
+        <Link to="/terms" style={{ color: 'var(--link)', textDecoration: 'none' }}>شروط الاستخدام</Link>
         {' '}و{' '}
-        <Link to="/privacy" style={{ color: '#4262ff', textDecoration: 'none' }}>سياسة الخصوصية</Link>
+        <Link to="/privacy" style={{ color: 'var(--link)', textDecoration: 'none' }}>سياسة الخصوصية</Link>
       </div>
     </div>
   )
