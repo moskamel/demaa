@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/PageLayout'
-import { Shield, Lock, Eye, Server, AlertTriangle, RefreshCw } from 'lucide-react'
+import { ShieldTick, Lock, Eye, Data, Warning2, Refresh2 } from 'iconsax-react'
 
 const practices = [
   {
@@ -15,7 +15,7 @@ const practices = [
     ],
   },
   {
-    icon: Server,
+    icon: Data,
     title: 'تخزين البيانات',
     color: '#d44df0',
     items: [
@@ -37,7 +37,7 @@ const practices = [
     ],
   },
   {
-    icon: Shield,
+    icon: ShieldTick,
     title: 'حماية التطبيق',
     color: '#22c55e',
     items: [
@@ -48,7 +48,7 @@ const practices = [
     ],
   },
   {
-    icon: AlertTriangle,
+    icon: Warning2,
     title: 'الاستجابة للحوادث',
     color: '#f59e0b',
     items: [
@@ -59,7 +59,7 @@ const practices = [
     ],
   },
   {
-    icon: RefreshCw,
+    icon: Refresh2,
     title: 'الامتثال والمراجعات',
     color: '#06b6d4',
     items: [
@@ -78,7 +78,7 @@ export default function Security() {
       <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(106,76,245,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-            <Shield size={32} color="#6a4cf5" />
+            <ShieldTick size={32} color="#6a4cf5" variant="Outline" />
           </div>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>الأمان</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>بياناتك أمانة عندنا — إليك كيف نحميها</p>
@@ -96,7 +96,7 @@ export default function Security() {
             <div key={title} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Icon size={18} color={color} />
+                  <Icon size={18} color={color} variant="Outline" />
                 </div>
                 <h3 style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.3px' }}>{title}</h3>
               </div>

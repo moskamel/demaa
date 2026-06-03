@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/PageLayout'
-import { Check } from 'lucide-react'
+import { TickCircle } from 'iconsax-react'
 
 const platforms = [
   {
@@ -220,7 +220,7 @@ export default function Platforms() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {p.features.map(f => (
                       <div key={f} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <Check size={14} color="#22c55e" strokeWidth={2.5} />
+                        <TickCircle size={14} color="#22c55e" variant="Outline" />
                         <span style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{f}</span>
                       </div>
                     ))}

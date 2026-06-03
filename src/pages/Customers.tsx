@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, Search, Users, TrendingUp, ShoppingBag, Star } from 'lucide-react'
+import { ArrowLeft2, SearchNormal1, People, TrendUp, ShoppingBag, Star1 } from 'iconsax-react'
 import { customers as customersApi, type Customer } from '../lib/api'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
@@ -37,7 +37,7 @@ export default function Customers() {
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>العملاء</span>
@@ -48,14 +48,14 @@ export default function Customers() {
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
           {[
-            { icon: Users, label: 'إجمالي العملاء', value: allCustomers.length, color: '#6a4cf5' },
-            { icon: Star, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
-            { icon: TrendingUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
+            { icon: People, label: 'إجمالي العملاء', value: allCustomers.length, color: '#6a4cf5' },
+            { icon: Star1, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
+            { icon: TrendUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
             { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-EG')} ج.م`, color: '#22c55e' },
           ].map(({ icon: Icon, label, value, color }) => (
             <div key={label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <Icon size={15} color={color} />
+                <Icon size={15} color={color} variant="Outline" />
               </div>
               <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 2 }}>{value}</div>
               <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
@@ -66,7 +66,7 @@ export default function Customers() {
         {/* filters */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-            <Search size={13} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-muted)', pointerEvents: 'none' }} />
+            <SearchNormal1 size={13} variant="Outline" style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-muted)', pointerEvents: 'none' }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث باسم أو رقم جوال أو مدينة..." style={{ width: '100%', padding: '9px 34px 9px 14px', borderRadius: 10, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
           </div>
           <div style={{ display: 'flex', gap: 4, background: 'var(--canvas-soft)', borderRadius: 9, padding: 3 }}>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, Brain, TrendingUp, AlertTriangle, Clock } from 'lucide-react'
+import { ArrowLeft2, Cpu, TrendUp, Warning2, Clock } from 'iconsax-react'
 import { aiApi, type AiMemory, type UsageRecord } from '../lib/api'
 
 const INSIGHT_ICONS: Record<string, string> = {
@@ -68,7 +68,7 @@ export default function Insights() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الذاكرة الذكية</span>
@@ -79,7 +79,7 @@ export default function Insights() {
         {/* header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
           <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Brain size={22} color="#fff" />
+            <Cpu size={22} color="#fff" variant="Outline" />
           </div>
           <div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>الذاكرة الذكية</div>
@@ -96,7 +96,7 @@ export default function Insights() {
               <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px 24px', marginBottom: 28, display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                    <TrendingUp size={14} color="var(--ink-muted)" />
+                    <TrendUp size={14} color="var(--ink-muted)" variant="Outline" />
                     <span style={{ fontSize: 12, color: 'var(--ink-muted)', fontWeight: 500 }}>الاستخدام هذا الشهر</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 8 }}>
@@ -137,7 +137,7 @@ export default function Insights() {
                             <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500 }}>{insight.label || insight.key}</div>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--ink-muted)', fontSize: 10 }}>
-                            <Clock size={9} />
+                            <Clock size={9} variant="Outline" />
                             محدّث
                           </div>
                         </div>
@@ -152,7 +152,7 @@ export default function Insights() {
 
             {insights.length === 0 && !loading && (
               <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>
-                <Brain size={36} style={{ marginBottom: 12, opacity: 0.3 }} />
+                <Cpu size={36} variant="Outline" style={{ marginBottom: 12, opacity: 0.3 }} />
                 <div>لا توجد رؤى بعد — تفاعل مع ديما لتبدأ التعلم</div>
               </div>
             )}
@@ -164,7 +164,7 @@ export default function Insights() {
               const prods = lowStockInsight.value.split(',')
               return (
                 <div style={{ background: 'rgba(255,122,61,0.08)', border: '1px solid rgba(255,122,61,0.25)', borderRadius: 14, padding: '16px 20px', marginTop: 20, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                  <AlertTriangle size={16} color="#ff7a3d" style={{ flexShrink: 0, marginTop: 1 }} />
+                  <Warning2 size={16} color="#ff7a3d" variant="Outline" style={{ flexShrink: 0, marginTop: 1 }} />
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#ff7a3d', marginBottom: 4 }}>تحذير: منتجات على وشك النفاد</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

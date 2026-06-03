@@ -30,7 +30,7 @@ const PAGES: Result[] = [
   { type: 'page', id: '/settings', title: 'الإعدادات', subtitle: 'تخصيص ديما', value: '/settings' },
 ]
 
-const typeIcons: Record<ResultType, React.ElementType> = { order: ShoppingCart, product: Package, customer: Users, page: BarChart2 }
+const typeIcons: Record<ResultType, React.ElementType> = { order: ShoppingCart, product: Box, customer: People, page: ChartSquare }
 const typeColors: Record<ResultType, string> = { order: '#6a4cf5', product: '#22c55e', customer: '#0099ff', page: '#ff7a3d' }
 const typeLabels: Record<ResultType, string> = { order: 'طلب', product: 'منتج', customer: 'عميل', page: 'صفحة' }
 
@@ -102,9 +102,9 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
 
         {/* input */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderBottom: '1px solid var(--hairline)' }}>
-          <Search size={16} color="var(--ink-muted)" />
+          <SearchNormal1 size={16} color="var(--ink-muted)" variant="Outline" />
           <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder="ابحث عن طلب، منتج، عميل، أو صفحة..." style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: 'var(--ink)', fontFamily: 'inherit' }} />
-          {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 0 }}><X size={14} /></button>}
+          {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 0 }}><CloseCircle size={14} variant="Outline" /></button>}
           <kbd style={{ fontSize: 10, color: 'var(--ink-muted)', background: 'var(--canvas-soft-2)', borderRadius: 5, padding: '3px 7px', border: '1px solid var(--hairline)', cursor: 'pointer', flexShrink: 0 }} onClick={onClose}>Esc</kbd>
         </div>
 
@@ -123,7 +123,7 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
                 return (
                   <div key={r.id} onClick={() => handleSelect(r)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 20px', cursor: 'pointer', background: selected === i ? 'var(--canvas-soft-2)' : 'transparent', transition: 'background 0.1s' }} onMouseEnter={() => setSelected(i)}>
                     <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Icon size={14} color={color} />
+                      <Icon size={14} color={color} variant="Outline" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{r.title}</div>

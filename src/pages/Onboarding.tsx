@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ArrowLeft, ExternalLink, Loader, Search } from 'lucide-react'
+import { TickCircle, ArrowLeft2, ExportSquare, Refresh2, SearchNormal1 } from 'iconsax-react'
 import { storesApi } from '../lib/api'
 
 type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | 'woocommerce' | 'wix' | 'bigcommerce' | 'ecwid' | null
@@ -318,7 +318,7 @@ export default function Onboarding() {
 
           {/* Search bar */}
           <div style={{ position: 'relative', marginBottom: 16, flexShrink: 0 }}>
-            <Search size={15} color="var(--ink-muted)" style={{ position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+            <SearchNormal1 size={15} color="var(--ink-muted)" variant="Outline" style={{ position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -355,7 +355,7 @@ export default function Onboarding() {
                   </div>
                   {platform === p.id && (
                     <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#1c1c1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Check size={12} color="#fff" strokeWidth={3} />
+                      <TickCircle size={12} color="#fff" variant="Bold" />
                     </div>
                   )}
                 </button>
@@ -384,7 +384,7 @@ export default function Onboarding() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'background 0.15s',
               }}>
-              التالي <ArrowLeft size={15} />
+              التالي <ArrowLeft2 size={15} variant="Outline" />
             </button>
           </div>
         </div>
@@ -416,7 +416,7 @@ export default function Onboarding() {
             ))}
             <a href={selectedPlatform?.url} target="_blank" rel="noopener noreferrer"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 8, fontSize: 12, color: '#6a4cf5', textDecoration: 'none' }}>
-              <ExternalLink size={11} />
+              <ExportSquare size={11} variant="Outline" />
               فتح {selectedPlatform?.name} في تبويب جديد
             </a>
           </div>
@@ -486,14 +486,14 @@ export default function Onboarding() {
           {connected ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
               <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--semantic-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(34,197,94,0.3)' }}>
-                <Check size={30} color="#000" strokeWidth={3} />
+                <TickCircle size={30} color="#000" variant="Bold" />
               </div>
               <h2 style={{ fontSize: 28, fontWeight: 500, letterSpacing: '-0.05em', color: 'var(--ink)' }}>تم الربط! 🎉</h2>
               <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>
                 {syncing ? 'جاري مزامنة البيانات...' : 'جاري الانتقال للوحة التحكم...'}
               </p>
               {syncing && (
-                <Loader size={18} style={{ animation: 'spin 1s linear infinite', color: 'var(--ink-muted)' }} />
+                <Refresh2 size={18} variant="Outline" style={{ animation: 'spin 1s linear infinite', color: 'var(--ink-muted)' }} />
               )}
             </div>
           ) : (
@@ -514,7 +514,7 @@ export default function Onboarding() {
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 10 }}>الصلاحيات المطلوبة:</div>
                   {['قراءة الطلبات', 'تحديث الطلبات', 'قراءة المنتجات', 'إنشاء الشحنات'].map(perm => (
                     <div key={perm} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'var(--ink-muted)', marginBottom: 7 }}>
-                      <Check size={12} color="var(--semantic-success)" strokeWidth={2.5} />
+                      <TickCircle size={12} color="var(--semantic-success)" variant="Outline" />
                       <span style={{ letterSpacing: '-0.13px' }}>{perm}</span>
                     </div>
                   ))}
@@ -528,7 +528,7 @@ export default function Onboarding() {
                 style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: 15, borderRadius: 10 }}>
                 {loading ? (
                   <>
-                    <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                    <Refresh2 size={14} variant="Outline" style={{ animation: 'spin 1s linear infinite' }} />
                     جارٍ التحقق...
                   </>
                 ) : 'ربط المتجر والبدء'}

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  ArrowLeft, Check, ChevronDown, Zap, Package, BarChart3,
-  MessageSquare, Shield, Globe, Star, Clock, TrendingUp,
-  RefreshCw, Users, Send,
-} from 'lucide-react'
+  ArrowLeft2, TickCircle, ArrowDown2, Flash, Box, ChartSquare,
+  MessageText1, ShieldTick, Global, Star1, Clock, TrendUp,
+  Refresh2, People, Send2,
+} from 'iconsax-react'
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 const T = {
@@ -286,7 +286,7 @@ export default function Landing() {
             <div style={{ padding: '10px 14px', borderTop: `1px solid ${T.hairline}`, background: T.canvas }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: T.surface, borderRadius: 9999, padding: '8px 16px', border: `1px solid ${T.hairline}` }}>
                 <span style={{ fontSize: 12, color: T.slate, flex: 1 }}>اكتب أمرك...</span>
-                <Send size={13} color={T.slate} style={{ transform: 'scaleX(-1)' }} />
+                <Send2 size={13} color={T.slate} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
               </div>
             </div>
           </div>
@@ -298,9 +298,9 @@ export default function Landing() {
       <section style={{ padding: '0 40px 80px', maxWidth: 1200, margin: '0 auto' }}>
         <div ref={statsRef} style={{ background: T.canvas, border: `1px solid ${T.hairline}`, borderRadius: 28, padding: '48px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
           {[
-            { value: countOrders.toLocaleString('ar-EG') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Package size={20} color="#ff7a3d" /> },
-            { value: countRevenue + 'M+', label: 'ج.م حجم المبيعات', sub: 'عبر منصات متعددة', icon: <TrendingUp size={20} color="#22c55e" /> },
-            { value: countMerchants.toLocaleString('ar-EG') + '+', label: 'تاجر يثق بديما', sub: 'في مصر والسعودية والخليج', icon: <Users size={20} color={T.blue} /> },
+            { value: countOrders.toLocaleString('ar-EG') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Box size={20} color="#ff7a3d" variant="Outline" /> },
+            { value: countRevenue + 'M+', label: 'ج.م حجم المبيعات', sub: 'عبر منصات متعددة', icon: <TrendUp size={20} color="#22c55e" variant="Outline" /> },
+            { value: countMerchants.toLocaleString('ar-EG') + '+', label: 'تاجر يثق بديما', sub: 'في مصر والسعودية والخليج', icon: <People size={20} color={T.blue} variant="Outline" /> },
           ].map((s, i) => (
             <div key={s.label} style={{ textAlign: 'center', padding: '0 40px', borderRight: i < 2 ? `1px solid ${T.hairline}` : 'none' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>{s.icon}</div>
@@ -336,25 +336,25 @@ export default function Landing() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
           {[
             {
-              icon: <Package size={26} />, title: 'إدارة الطلبات بالذكاء',
+              icon: <Box size={26} variant="Outline" />, title: 'إدارة الطلبات بالذكاء',
               desc: 'اقبل، ارفض، وتابع طلباتك بجملة واحدة. ديما تكشف الطلبات المشبوهة تلقائياً.',
               demo: '"اقبل الطلبات السليمة وحاسبني على المشبوهة"',
               bg: T.yellow,
             },
             {
-              icon: <Zap size={26} />, title: 'شحن لحظي',
+              icon: <Flash size={26} variant="Outline" />, title: 'شحن لحظي',
               desc: 'ينشئ بوالص الشحن مع أرامكس وSMSA وJ&T ويرسل رقم التتبع للعميل تلقائياً.',
               demo: '"اشحن الطلبات المقبولة مع أرامكس"',
               bg: '#ffc6c6',
             },
             {
-              icon: <BarChart3 size={26} />, title: 'تقارير وذاكرة ذكية',
+              icon: <ChartSquare size={26} variant="Outline" />, title: 'تقارير وذاكرة ذكية',
               desc: 'ملخص يومي شامل كل صباح. ديما تتذكر عملاءك المميزين وتنبهك بالمخزون الناقص.',
               demo: '"وريني مبيعات هذا الأسبوع مقارنة بالأسبوع الفائت"',
               bg: '#c3faf5',
             },
             {
-              icon: <Globe size={26} />, title: 'ربط ١٤ منصة',
+              icon: <Global size={26} variant="Outline" />, title: 'ربط ١٤ منصة',
               desc: 'Shopify، Salla، Zid، WooCommerce، Amazon، Noon، Jumia والمزيد — في لوحة واحدة.',
               demo: '"وريني طلبات Salla وShopify مع بعض"',
               bg: '#fde0f0',
@@ -376,11 +376,11 @@ export default function Landing() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginTop: 16 }}>
           {[
             {
-              icon: <MessageSquare size={22} />, title: 'يفهم كل اللهجات',
+              icon: <MessageText1 size={22} variant="Outline" />, title: 'يفهم كل اللهجات',
               desc: 'مصري، سعودي، خليجي، مغربي — كلهم يشتغلون. اكتب بأي طريقة.',
             },
             {
-              icon: <Shield size={22} />, title: 'أمان تام',
+              icon: <ShieldTick size={22} variant="Outline" />, title: 'أمان تام',
               desc: 'كل إجراء جماعي يطلب تأكيدك. لا تنفيذ مالي بدون موافقتك. بيانات مشفرة.',
             },
           ].map(f => (
@@ -409,7 +409,7 @@ export default function Landing() {
             {['#ff5f57', '#ffbd2e', '#28c940'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
             <span style={{ fontSize: 12, color: T.slate, marginRight: 'auto' }}>Deema · متجرك · Shopify</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <RefreshCw size={11} color={T.slate} />
+              <Refresh2 size={11} color={T.slate} variant="Outline" />
               <span style={{ fontSize: 11, color: T.slate }}>مباشر</span>
             </div>
           </div>
@@ -487,7 +487,7 @@ export default function Landing() {
               />
               <button onClick={() => demoInput.trim() && !typing && sendDemoCommand(demoInput.trim())} disabled={!demoInput.trim() || typing}
                 style={{ width: 38, height: 38, borderRadius: 9999, background: demoInput.trim() && !typing ? T.ink : T.surface, border: 'none', cursor: demoInput.trim() && !typing ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Send size={14} color={demoInput.trim() && !typing ? '#fff' : T.slate} style={{ transform: 'scaleX(-1)' }} />
+                <Send2 size={14} color={demoInput.trim() && !typing ? '#fff' : T.slate} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
               </button>
             </div>
           </div>
@@ -528,7 +528,7 @@ export default function Landing() {
           {TESTIMONIALS.map(t => (
             <div key={t.name} style={{ background: T.canvas, borderRadius: 28, padding: 28, border: `1px solid ${T.hairline}`, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', gap: 4 }}>
-                {Array(5).fill(0).map((_, i) => <Star key={i} size={14} color="#f59e0b" fill="#f59e0b" />)}
+                {Array(5).fill(0).map((_, i) => <Star1 key={i} size={14} color="#f59e0b" variant="Bold" />)}
               </div>
               <p style={{ fontSize: 15, color: T.ink, lineHeight: 1.7, flex: 1 }}>"{t.quote}"</p>
               <div style={{ borderTop: `1px solid ${T.hairline}`, paddingTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -582,7 +582,7 @@ export default function Landing() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
                   {tier.features.map(f => (
                     <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <Check size={14} color={tier.featured ? '#22c55e' : T.muted} strokeWidth={2.5} />
+                      <TickCircle size={14} color={tier.featured ? '#22c55e' : T.muted} variant="Outline" />
                       <span style={{ fontSize: 14, color: tier.featured ? T.ink : T.muted }}>{f}</span>
                     </div>
                   ))}
@@ -613,7 +613,7 @@ export default function Landing() {
               <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 4px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'right', gap: 12 }}>
                 <span style={{ fontSize: 16, fontWeight: 500, color: T.ink, letterSpacing: '-0.3px' }}>{f.q}</span>
-                <ChevronDown size={17} color={T.slate} style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
+                <ArrowDown2 size={17} color={T.slate} variant="Outline" style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
               </button>
               {openFaq === i && (
                 <div style={{ padding: '0 4px 20px', animation: 'fadeIn 0.15s ease-out' }}>
@@ -632,7 +632,7 @@ export default function Landing() {
           <div style={{ position: 'absolute', bottom: -100, right: -60, width: 360, height: 360, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
 
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.08)', borderRadius: 9999, padding: '6px 18px', marginBottom: 28 }}>
-            <Clock size={13} color="rgba(255,255,255,0.6)" />
+            <Clock size={13} color="rgba(255,255,255,0.6)" variant="Outline" />
             <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>ابدأ في دقيقتين</span>
           </div>
 
@@ -646,7 +646,7 @@ export default function Landing() {
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
             <Link to="/signup" style={{ background: '#fff', color: T.ink, borderRadius: 9999, padding: '14px 32px', fontSize: 16, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '-0.3px' }}>
-              ابدأ مجاناً الآن <ArrowLeft size={15} />
+              ابدأ مجاناً الآن <ArrowLeft2 size={15} variant="Outline" />
             </Link>
           </div>
 

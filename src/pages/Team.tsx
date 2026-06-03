@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, Plus, Trash2, Shield, ClipboardList, Headphones } from 'lucide-react'
+import { ArrowLeft2, Add, Trash, ShieldTick, ClipboardText, Headphone } from 'iconsax-react'
 import { teamApi, type TeamMember } from '../lib/api'
 
 type NormRole = 'admin' | 'order_manager' | 'customer_service'
@@ -12,10 +12,10 @@ function normalizeRole(role: string): NormRole {
   return 'customer_service'
 }
 
-const roleConfig: Record<NormRole, { label: string; desc: string; icon: typeof Shield; color: string }> = {
-  admin: { label: 'مدير', desc: 'صلاحيات كاملة', icon: Shield, color: '#6a4cf5' },
-  order_manager: { label: 'مدير طلبات', desc: 'إدارة الطلبات والشحن', icon: ClipboardList, color: '#0099ff' },
-  customer_service: { label: 'خدمة عملاء', desc: 'المراسلة والكوبونات', icon: Headphones, color: '#22c55e' },
+const roleConfig: Record<NormRole, { label: string; desc: string; icon: typeof ShieldTick; color: string }> = {
+  admin: { label: 'مدير', desc: 'صلاحيات كاملة', icon: ShieldTick, color: '#6a4cf5' },
+  order_manager: { label: 'مدير طلبات', desc: 'إدارة الطلبات والشحن', icon: ClipboardText, color: '#0099ff' },
+  customer_service: { label: 'خدمة عملاء', desc: 'المراسلة والكوبونات', icon: Headphone, color: '#22c55e' },
 }
 
 const PERMISSIONS: Record<NormRole, string[]> = {
@@ -65,13 +65,13 @@ export default function Team() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الفريق</span>
         <div style={{ flex: 1 }} />
         <button onClick={() => setShowInvite(true)} className="btn-primary" style={{ fontSize: 13, padding: '8px 16px' }}>
-          <Plus size={13} /> دعوة عضو
+          <Add size={13} variant="Outline" /> دعوة عضو
         </button>
       </div>
 
@@ -88,7 +88,7 @@ export default function Team() {
             return (
               <div key={role} style={{ background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                  <Icon size={13} color={cfg.color} />
+                  <Icon size={13} color={cfg.color} variant="Outline" />
                   <span style={{ fontSize: 12, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
                 </div>
                 {PERMISSIONS[role].map(p => (
@@ -120,7 +120,7 @@ export default function Team() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
                     <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{m.name}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: cfg.color + '18', borderRadius: 4, padding: '2px 7px' }}>
-                      <Icon size={10} color={cfg.color} />
+                      <Icon size={10} color={cfg.color} variant="Outline" />
                       <span style={{ fontSize: 11, color: cfg.color }}>{cfg.label}</span>
                     </div>
                   </div>
@@ -141,7 +141,7 @@ export default function Team() {
 
                 {normRole !== 'admin' && (
                   <button onClick={() => handleRemove(m.id)} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,85,119,0.08)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-                    <Trash2 size={13} color="var(--gradient-coral)" />
+                    <Trash size={13} color="var(--gradient-coral)" variant="Outline" />
                   </button>
                 )}
               </div>

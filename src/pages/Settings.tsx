@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, Sun, Shield, Bell, Zap, Globe, User, Lock } from 'lucide-react'
+import { ArrowLeft2, Sun1, ShieldTick, Notification, Flash, Global, Profile, Lock } from 'iconsax-react'
 import { settingsApi } from '../lib/api'
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -26,11 +26,11 @@ function SettingRow({ label, desc, checked, onChange }: { label: string; desc?: 
   )
 }
 
-function Section({ icon: Icon, title, children }: { icon: typeof Sun; title: string; children: React.ReactNode }) {
+function Section({ icon: Icon, title, children }: { icon: typeof Sun1; title: string; children: React.ReactNode }) {
   return (
     <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', marginBottom: 16, border: '1px solid var(--hairline)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-        <Icon size={14} color="var(--ink-muted)" />
+        <Icon size={14} color="var(--ink-muted)" variant="Outline" />
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</span>
       </div>
       {children}
@@ -115,7 +115,7 @@ export default function Settings() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإعدادات</span>
@@ -125,7 +125,7 @@ export default function Settings() {
         <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 28 }}>الإعدادات</h1>
 
         {/* Profile section */}
-        <Section icon={User} title="الملف الشخصي">
+        <Section icon={Profile} title="الملف الشخصي">
           <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
               <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>الاسم الكامل</label>
@@ -176,7 +176,7 @@ export default function Settings() {
         </Section>
 
         {/* Deema settings */}
-        <Section icon={Zap} title="إعدادات Deema">
+        <Section icon={Flash} title="إعدادات Deema">
           <div style={{ paddingTop: 8 }}>
             <SettingRow
               label="الملخص الصباحي"
@@ -213,7 +213,7 @@ export default function Settings() {
         </Section>
 
         {/* language */}
-        <Section icon={Globe} title="اللغة">
+        <Section icon={Global} title="اللغة">
           <div style={{ paddingTop: 8 }}>
             <div style={{ padding: '10px 0' }}>
               <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', marginBottom: 8 }}>لغة التفاعل</div>
@@ -233,7 +233,7 @@ export default function Settings() {
         </Section>
 
         {/* notifications */}
-        <Section icon={Bell} title="الإشعارات">
+        <Section icon={Notification} title="الإشعارات">
           <div>
             <SettingRow label="مشاكل عاجلة" desc="طلبات مشبوهة، أخطاء دفع" checked={settings.notifUrgent} onChange={v => set('notifUrgent', v)} />
             <SettingRow label="نفاد المخزون" checked={settings.notifStock} onChange={v => set('notifStock', v)} />
@@ -266,7 +266,7 @@ export default function Settings() {
         </Section>
 
         {/* security */}
-        <Section icon={Shield} title="الأمان">
+        <Section icon={ShieldTick} title="الأمان">
           <div>
             <SettingRow label="التحقق بخطوتين" desc="OTP عبر الجوال عند كل تسجيل دخول" checked={settings.twoFactor} onChange={v => set('twoFactor', v)} />
             <SettingRow label="سجل الجلسات" desc="تتبع كل الأجهزة التي سجّلت دخول" checked={settings.sessionLog} onChange={v => set('sessionLog', v)} />

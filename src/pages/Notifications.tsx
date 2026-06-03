@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, AlertCircle, AlertTriangle, Clock, CheckCircle, BarChart2, Plug, Package, Truck, Bell } from 'lucide-react'
+import { ArrowLeft2, InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box, Truck, Notification } from 'iconsax-react'
 import { notifications as notifApi, type Notification } from '../lib/api'
 
-const typeConfig: Record<string, { icon: typeof Bell; color: string; bg: string }> = {
-  low_stock: { icon: Package, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
-  suspicious_order: { icon: AlertTriangle, color: '#ff5577', bg: 'rgba(255,85,119,0.12)' },
-  payment_failed: { icon: AlertCircle, color: '#ff5577', bg: 'rgba(255,85,119,0.12)' },
+const typeConfig: Record<string, { icon: typeof Notification; color: string; bg: string }> = {
+  low_stock: { icon: Box, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
+  suspicious_order: { icon: Warning2, color: '#ff5577', bg: 'rgba(255,85,119,0.12)' },
+  payment_failed: { icon: InfoCircle, color: '#ff5577', bg: 'rgba(255,85,119,0.12)' },
   pending_too_long: { icon: Clock, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
-  weekly_report: { icon: BarChart2, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' },
-  connector_expired: { icon: Plug, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
-  orders_accepted: { icon: CheckCircle, color: '#22c55e', bg: 'rgba(34,197,94,0.12)' },
+  weekly_report: { icon: ChartSquare, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' },
+  connector_expired: { icon: Electricity, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
+  orders_accepted: { icon: TickCircle, color: '#22c55e', bg: 'rgba(34,197,94,0.12)' },
   shipment_created: { icon: Truck, color: '#0099ff', bg: 'rgba(0,153,255,0.12)' },
 }
 
@@ -51,7 +51,7 @@ export default function Notifications() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإشعارات</span>
@@ -93,7 +93,7 @@ export default function Notifications() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {filtered.map((n, i) => {
-              const cfg = typeConfig[n.type] || { icon: Bell, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' }
+              const cfg = typeConfig[n.type] || { icon: Notification, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' }
               const Icon = cfg.icon
               const isRead = n.isRead
               return (
@@ -104,7 +104,7 @@ export default function Notifications() {
                 >
                   {/* icon */}
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={16} color={cfg.color} />
+                    <Icon size={16} color={cfg.color} variant="Outline" />
                   </div>
 
                   {/* text */}

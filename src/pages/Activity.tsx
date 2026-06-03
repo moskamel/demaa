@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Download, Check, X, Package, ArrowRight, Zap } from 'lucide-react'
+import { DocumentDownload, TickCircle, CloseCircle, Box, ArrowRight2, Flash } from 'iconsax-react'
 import { analytics, type ActivityLog } from '../lib/api'
 
 const filters = [
@@ -33,10 +33,10 @@ function getTag(action: string, entity?: string) {
 }
 
 function ActionIcon({ type, color }: { type: string; color: string }) {
-  if (type === 'check') return <Check size={14} color={color} strokeWidth={2.5} />
-  if (type === 'x') return <X size={14} color={color} strokeWidth={2.5} />
-  if (type === 'zap') return <Zap size={14} color={color} />
-  return <Package size={14} color={color} />
+  if (type === 'check') return <TickCircle size={14} color={color} variant="Outline" />
+  if (type === 'x') return <CloseCircle size={14} color={color} variant="Outline" />
+  if (type === 'zap') return <Flash size={14} color={color} variant="Outline" />
+  return <Box size={14} color={color} variant="Outline" />
 }
 
 function ActivityRow({ item, index, total }: { item: { id: string; time: string; icon: string; color: string; title: string; by: string; detail: string }; index: number; total: number }) {
@@ -105,7 +105,7 @@ export default function Activity() {
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', color: 'var(--ink)' }}>
       <nav style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 30px', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowRight size={14} /> الرئيسية
+          <ArrowRight2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ width: 1, height: 14, background: 'var(--hairline)' }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>سجل الأنشطة</span>
@@ -122,7 +122,7 @@ export default function Activity() {
             سجل الأنشطة
           </h1>
           <button className="btn-secondary" style={{ fontSize: 13, padding: '8px 14px', borderRadius: 10 }}>
-            <Download size={13} /> تصدير CSV
+            <DocumentDownload size={13} variant="Outline" /> تصدير CSV
           </button>
         </div>
 
@@ -162,7 +162,7 @@ export default function Activity() {
 
             {today.length === 0 && yesterday.length === 0 && (
               <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)' }}>
-                <Package size={36} style={{ marginBottom: 14, opacity: 0.3 }} />
+                <Box size={36} variant="Outline" style={{ marginBottom: 14, opacity: 0.3 }} />
                 <div style={{ fontSize: 15 }}>لا توجد أنشطة في هذه الفئة</div>
               </div>
             )}

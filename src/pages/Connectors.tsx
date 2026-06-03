@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, CheckCircle, AlertCircle, Clock, Plus, ExternalLink } from 'lucide-react'
+import { ArrowLeft2, TickCircle, InfoCircle, Clock, Add, ExportSquare } from 'iconsax-react'
 import { connectorsApi, type ConnectorData as Connector } from '../lib/api'
 
 const categoryLabels = {
@@ -14,10 +14,10 @@ const categoryLabels = {
 const categoryOrder: (keyof typeof categoryLabels)[] = ['shipping', 'payment', 'messaging', 'ads', 'accounting']
 
 const statusConfig = {
-  connected: { label: 'متصل', color: '#22c55e', bg: 'rgba(34,197,94,0.1)', icon: CheckCircle },
+  connected: { label: 'متصل', color: '#22c55e', bg: 'rgba(34,197,94,0.1)', icon: TickCircle },
   expired: { label: 'منتهي', color: '#ff7a3d', bg: 'rgba(255,122,61,0.1)', icon: Clock },
-  error: { label: 'خطأ', color: '#ff5577', bg: 'rgba(255,85,119,0.1)', icon: AlertCircle },
-  disconnected: { label: 'غير متصل', color: '#555', bg: 'var(--canvas-soft-2)', icon: Plus },
+  error: { label: 'خطأ', color: '#ff5577', bg: 'rgba(255,85,119,0.1)', icon: InfoCircle },
+  disconnected: { label: 'غير متصل', color: '#555', bg: 'var(--canvas-soft-2)', icon: Add },
 }
 
 const connectorColors: Record<string, string> = {
@@ -51,7 +51,7 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
       {/* status + action */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: st.bg, borderRadius: 100, padding: '4px 9px' }}>
-          <StatusIcon size={10} color={st.color} />
+          <StatusIcon size={10} color={st.color} variant="Outline" />
           <span style={{ fontSize: 11, color: st.color }}>{st.label}</span>
         </div>
 
@@ -74,7 +74,7 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
             onClick={() => onToggle(c.type)}
             style={{ fontSize: 11, color: 'var(--ink)', background: 'var(--canvas-soft-2)', border: 'none', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
           >
-            <Plus size={9} /> ربط
+            <Add size={9} variant="Outline" /> ربط
           </button>
         )}
       </div>
@@ -120,7 +120,7 @@ export default function Connectors() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>التطبيقات المتصلة</span>
@@ -176,7 +176,7 @@ export default function Connectors() {
 
         {/* footer note */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '14px 16px', background: 'var(--canvas-soft)', borderRadius: 12 }}>
-          <ExternalLink size={13} color="var(--ink-muted)" />
+          <ExportSquare size={13} color="var(--ink-muted)" variant="Outline" />
           <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>جميع مفاتيح API مشفرة بـ AES-256 ولا تُشارك مع أي طرف ثالث</span>
         </div>
       </div>

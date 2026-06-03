@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/PageLayout'
-import { Check } from 'lucide-react'
+import { TickCircle } from 'iconsax-react'
 
 const allFeatures = [
   'متاجر غير محدودة',
@@ -56,7 +56,7 @@ export default function Pricing() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'right' }}>
               {allFeatures.map(f => (
                 <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <Check size={16} color="#22c55e" strokeWidth={2.5} style={{ flexShrink: 0 }} />
+                  <TickCircle size={16} color="#22c55e" variant="Outline" style={{ flexShrink: 0 }} />
                   <span style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{f}</span>
                 </div>
               ))}

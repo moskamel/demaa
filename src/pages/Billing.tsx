@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ChevronLeft, Zap, Check, Infinity } from 'lucide-react'
+import { ArrowLeft2, Flash, TickCircle, Repeat } from 'iconsax-react'
 
 const FREE_FEATURES = [
   'منصات غير محدودة',
@@ -22,7 +22,7 @@ export default function Billing() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الاشتراك</span>
@@ -33,7 +33,7 @@ export default function Billing() {
         {/* hero banner */}
         <div style={{ background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', borderRadius: 20, padding: '32px 28px', marginBottom: 32, textAlign: 'center' }}>
           <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-            <Zap size={24} color="#fff" />
+            <Flash size={24} color="#fff" variant="Outline" />
           </div>
           <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.5px' }}>
             الوصول الكامل — مجاناً
@@ -42,7 +42,7 @@ export default function Billing() {
             جميع المميزات متاحة لك بدون قيود ولا رسوم
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.15)', borderRadius: 12, padding: '10px 20px' }}>
-            <Infinity size={18} color="#fff" />
+            <Repeat size={18} color="#fff" variant="Outline" />
             <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>غير محدود · مجاناً دائماً</span>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function Billing() {
             {FREE_FEATURES.map(f => (
               <div key={f} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                  <Check size={10} color="#22c55e" />
+                  <TickCircle size={10} color="#22c55e" variant="Outline" />
                 </div>
                 <span style={{ fontSize: 13, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{f}</span>
               </div>

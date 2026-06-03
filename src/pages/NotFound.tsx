@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight2 } from 'iconsax-react'
 import PageLayout from '../components/PageLayout'
 
 export default function NotFound() {
@@ -35,7 +35,7 @@ export default function NotFound() {
       </p>
 
       <Link to="/" className="btn-primary" style={{ padding: '12px 24px', fontSize: 15 }}>
-        <ArrowRight size={15} />
+        <ArrowRight2 size={15} variant="Outline" />
         ارجع للرئيسية
       </Link>
     </div>

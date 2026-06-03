@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, CreditCard, Lock, ArrowLeft, Loader } from 'lucide-react'
+import { TickCircle, Card, Lock, ArrowLeft2, Refresh2 } from 'iconsax-react'
 
 type Plan = 'free' | 'pro'
 
@@ -95,7 +95,7 @@ export default function Subscribe() {
           <span style={{ fontSize: 15, fontWeight: 600, color: '#1c1c1e' }}>Deema</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#8e91a0' }}>
-          <Lock size={12} />
+          <Lock size={12} variant="Outline" />
           دفع آمن ومشفر
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function Subscribe() {
                       background: selectedPlan === plan.id ? '#1c1c1e' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                     }}>
-                      {selectedPlan === plan.id && <Check size={12} color="#fff" strokeWidth={3} />}
+                      {selectedPlan === plan.id && <TickCircle size={12} color="#fff" variant="Bold" />}
                     </div>
                   </div>
 
@@ -152,7 +152,7 @@ export default function Subscribe() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {plan.features.map(f => (
                       <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#2c2c34' }}>
-                        <Check size={13} color="#00b473" strokeWidth={2.5} /> {f}
+                        <TickCircle size={13} color="#00b473" variant="Outline" /> {f}
                       </div>
                     ))}
                   </div>
@@ -165,7 +165,7 @@ export default function Subscribe() {
               background: '#1c1c1e', color: '#fff', fontSize: 16, fontWeight: 600,
               fontFamily: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}>
-              {selectedPlan === 'free' ? 'ابدأ مجاناً' : 'التالي — إدخال بيانات الدفع'} <ArrowLeft size={16} />
+              {selectedPlan === 'free' ? 'ابدأ مجاناً' : 'التالي — إدخال بيانات الدفع'} <ArrowLeft2 size={16} variant="Outline" />
             </button>
 
             {selectedPlan === 'free' && (
@@ -178,7 +178,7 @@ export default function Subscribe() {
         {step === 'payment' && (
           <div style={{ maxWidth: 520, margin: '0 auto' }}>
             <button onClick={() => setStep('plan')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#555a6a', fontSize: 14, fontFamily: 'inherit', marginBottom: 32, padding: 0 }}>
-              <ArrowLeft size={14} style={{ transform: 'rotate(180deg)' }} /> تغيير الخطة
+              <ArrowLeft2 size={14} variant="Outline" style={{ transform: 'rotate(180deg)' }} /> تغيير الخطة
             </button>
 
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -206,7 +206,7 @@ export default function Subscribe() {
             {/* Card form */}
             <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e0e2e8', padding: '24px 20px', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                <CreditCard size={16} color="#555a6a" />
+                <Card size={16} color="#555a6a" variant="Outline" />
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#1c1c1e' }}>بطاقة الدفع</span>
                 <div style={{ marginRight: 'auto', display: 'flex', gap: 6 }}>
                   {['Visa', 'MC', 'Amex'].map(b => (
@@ -287,14 +287,14 @@ export default function Subscribe() {
               transition: 'background 0.15s',
             }}>
               {loading ? (
-                <><Loader size={18} style={{ animation: 'spin 1s linear infinite' }} /> جارٍ المعالجة...</>
+                <><Refresh2 size={18} variant="Outline" style={{ animation: 'spin 1s linear infinite' }} /> جارٍ المعالجة...</>
               ) : (
-                <><Lock size={15} /> ادفع ٤٩.٥ ج.م الآن</>
+                <><Lock size={15} variant="Outline" /> ادفع ٤٩.٥ ج.م الآن</>
               )}
             </button>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 16 }}>
-              <Lock size={12} color="#8e91a0" />
+              <Lock size={12} color="#8e91a0" variant="Outline" />
               <span style={{ fontSize: 12, color: '#8e91a0' }}>مدفوعاتك مشفرة بـ SSL 256-bit</span>
             </div>
           </div>
@@ -304,13 +304,13 @@ export default function Subscribe() {
         {step === 'success' && (
           <div style={{ textAlign: 'center', padding: '60px 24px' }}>
             <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#00b473', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 0 40px rgba(0,180,115,0.25)' }}>
-              <Check size={34} color="#fff" strokeWidth={2.5} />
+              <TickCircle size={34} color="#fff" variant="Bold" />
             </div>
             <h2 style={{ fontSize: 32, fontWeight: 500, letterSpacing: '-0.5px', margin: '0 0 10px', color: '#1c1c1e' }}>تم الاشتراك بنجاح! 🎉</h2>
             <p style={{ fontSize: 16, color: '#555a6a', marginBottom: 8 }}>مرحباً بك في خطة برو</p>
             <p style={{ fontSize: 14, color: '#8e91a0' }}>جارٍ الانتقال للوحة التحكم...</p>
             <div style={{ marginTop: 24 }}>
-              <Loader size={20} color="#8e91a0" style={{ animation: 'spin 1s linear infinite' }} />
+              <Refresh2 size={20} color="#8e91a0" variant="Outline" style={{ animation: 'spin 1s linear infinite' }} />
             </div>
           </div>
         )}

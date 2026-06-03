@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, RefreshCw, Unlink, CheckCircle, Clock, ChevronLeft } from 'lucide-react'
+import { Add, Refresh2, Link, TickCircle, Clock, ArrowLeft2 } from 'iconsax-react'
 import { storesApi, type StoreData } from '../lib/api'
 
 const statusMap = (isActive: boolean, syncStatus: string) => {
   if (syncStatus === 'syncing') return { label: 'جاري التزامن', color: '#0099ff', icon: Clock }
   if (!isActive) return { label: 'يحتاج تجديد', color: '#ff7a3d', icon: Clock }
-  return { label: 'متصل', color: '#22c55e', icon: CheckCircle }
+  return { label: 'متصل', color: '#22c55e', icon: TickCircle }
 }
 
 const platformColors: Record<string, string> = {
@@ -58,14 +58,14 @@ export default function Stores() {
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', padding: '0 0 60px' }}>
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} />
+          <ArrowLeft2 size={14} variant="Outline" />
           الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>متاجري</span>
         <div style={{ flex: 1 }} />
         <Link to="/onboarding" className="btn-primary" style={{ fontSize: 13, padding: '8px 16px' }}>
-          <Plus size={13} /> ربط متجر جديد
+          <Add size={13} variant="Outline" /> ربط متجر جديد
         </Link>
       </div>
 
@@ -100,7 +100,7 @@ export default function Stores() {
                       <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{s.name}</span>
                       <span style={{ fontSize: 11, color: pColor, background: pColor + '18', borderRadius: 4, padding: '2px 7px', fontWeight: 500 }}>{pLabel}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginRight: 'auto' }}>
-                        <StatusIcon size={12} color={st.color} />
+                        <StatusIcon size={12} color={st.color} variant="Outline" />
                         <span style={{ fontSize: 12, color: st.color }}>{st.label}</span>
                       </div>
                     </div>
@@ -124,7 +124,7 @@ export default function Stores() {
                         onClick={() => handleSync(s.id)}
                         style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--canvas-soft-2)', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer' }}
                       >
-                        <RefreshCw size={11} style={{ animation: isSyncing ? 'spin 1s linear infinite' : 'none' }} />
+                        <Refresh2 size={11} variant="Outline" style={{ animation: isSyncing ? 'spin 1s linear infinite' : 'none' }} />
                         {isSyncing ? 'جاري التزامن...' : 'مزامنة'}
                       </button>
                       {!s.isActive && (
@@ -136,7 +136,7 @@ export default function Stores() {
                         onClick={() => handleDisconnect(s.id)}
                         disabled={disconnecting === s.id}
                         style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', marginRight: 'auto', opacity: disconnecting === s.id ? 0.5 : 1 }}>
-                        <Unlink size={11} />
+                        <Link size={11} variant="Outline" />
                         {disconnecting === s.id ? 'جاري الفصل...' : 'فصل'}
                       </button>
                     </div>
@@ -156,7 +156,7 @@ export default function Stores() {
 
         <Link to="/onboarding" style={{ textDecoration: 'none' }}>
           <div style={{ marginTop: 12, background: 'transparent', border: '2px dashed var(--hairline)', borderRadius: 16, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', color: 'var(--ink-muted)' }}>
-            <Plus size={16} />
+            <Add size={16} variant="Outline" />
             <span style={{ fontSize: 14 }}>ربط متجر جديد</span>
           </div>
         </Link>

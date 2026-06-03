@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Bell, Plus, Send, ChevronDown, Settings, History, Package, AlertTriangle,
-  Store, Plug, Users, CreditCard, Lightbulb, MessageSquarePlus, X, Brain, Search,
-  BarChart2,
-} from 'lucide-react'
+  Notification, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
+  Shop, Electricity, People, Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
+  ChartSquare,
+} from 'iconsax-react'
 import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, type Notification as ApiNotif, type StoreData } from '../lib/api'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
@@ -147,7 +147,7 @@ function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; no
       <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid var(--hairline)' }}>
         <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإشعارات</span>
         {unreadCount > 0 && <span style={{ fontSize: 10, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 4, padding: '2px 6px', marginLeft: 8 }}>{unreadCount} جديد</span>}
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 4 }}><X size={13} /></button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 4 }}><CloseCircle size={13} variant="Outline" /></button>
       </div>
       <div style={{ maxHeight: 340, overflowY: 'auto' }}>
         {notifs.slice(0, 5).map(n => (
@@ -280,7 +280,7 @@ export default function Dashboard() {
             </div>
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.4px', flex: 1 }}>Deema</span>
             <button onClick={handleNewChat} style={{ width: 26, height: 26, borderRadius: 7, background: 'var(--canvas-soft)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink-muted)' }} title="محادثة جديدة">
-              <MessageSquarePlus size={12} />
+              <MessageAdd1 size={12} variant="Outline" />
             </button>
           </div>
         </div>
@@ -300,7 +300,7 @@ export default function Dashboard() {
         <div style={{ padding: '10px 12px 6px', borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>متاجري</div>
-            <Link to="/stores" style={{ color: 'var(--ink-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}><Plus size={11} /></Link>
+            <Link to="/stores" style={{ color: 'var(--ink-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}><Add size={11} variant="Outline" /></Link>
           </div>
           {stores.map((s, i) => (
             <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 8px', borderRadius: 7, background: i === 0 ? 'var(--canvas-soft)' : 'transparent', marginBottom: 2, cursor: 'pointer' }}>
@@ -348,7 +348,7 @@ export default function Dashboard() {
         <div style={{ padding: '10px 12px', borderTop: '1px solid var(--hairline)' }}>
           <div style={{ background: 'rgba(0,112,243,0.06)', border: '1px solid rgba(0,112,243,0.15)', borderRadius: 10, padding: '10px 11px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
-              <Lightbulb size={11} color="#6a4cf5" />
+              <Lamp size={11} color="#6a4cf5" variant="Outline" />
               <span style={{ fontSize: 10, fontWeight: 600, color: '#0070f3', letterSpacing: '0.04em' }}>اقتراح اليوم</span>
             </div>
             <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{SUGGESTION}</div>
@@ -361,16 +361,16 @@ export default function Dashboard() {
         {/* bottom nav */}
         <div style={{ padding: '8px', borderTop: '1px solid var(--hairline)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
           {[
-            { to: '/activity', icon: History, label: 'السجل' },
-            { to: '/insights', icon: Brain, label: 'الذاكرة' },
-            { to: '/settings', icon: Settings, label: 'الإعدادات' },
-            { to: '/billing', icon: CreditCard, label: 'الاشتراك' },
+            { to: '/activity', icon: Clock, label: 'السجل' },
+            { to: '/insights', icon: Cpu, label: 'الذاكرة' },
+            { to: '/settings', icon: Setting2, label: 'الإعدادات' },
+            { to: '/billing', icon: Card, label: 'الاشتراك' },
           ].map(({ to, icon: Icon, label }) => (
             <Link key={to} to={to} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 4px', borderRadius: 8, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 10, transition: 'color 0.1s' }}
               onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
             >
-              <Icon size={13} />
+              <Icon size={13} variant="Outline" />
               {label}
             </Link>
           ))}
@@ -385,17 +385,17 @@ export default function Dashboard() {
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{stores[0]?.name ?? '...'}</span>
             <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--canvas-soft)', borderRadius: 4, padding: '2px 8px', textTransform: 'capitalize' }}>{stores[0]?.platform ?? ''}</span>
-            <ChevronDown size={13} color="var(--ink-muted)" />
+            <ArrowDown2 size={13} color="var(--ink-muted)" variant="Outline" />
           </div>
 
           {/* live stats */}
           <div style={{ display: 'flex', gap: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
-              <Package size={12} />
+              <Box size={12} variant="Outline" />
               <span style={{ color: 'var(--gradient-orange)', fontWeight: 600 }}>{orderStats.pending}</span> معلق
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
-              <AlertTriangle size={12} color="var(--gradient-coral)" />
+              <Warning2 size={12} color="var(--gradient-coral)" variant="Outline" />
               <span style={{ color: 'var(--gradient-coral)', fontWeight: 600 }}>—</span> نافد
             </div>
           </div>
@@ -411,30 +411,30 @@ export default function Dashboard() {
 
             {/* search */}
             <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
-              <Search size={12} />
+              <SearchNormal1 size={12} variant="Outline" />
               <span>بحث</span>
               <kbd style={{ fontSize: 9, background: 'var(--canvas-soft-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
             </button>
 
             {/* nav links */}
             {[
-              { to: '/reports', icon: BarChart2, title: 'التقارير' },
-              { to: '/stores', icon: Store, title: 'متاجري' },
-              { to: '/connectors', icon: Plug, title: 'التطبيقات' },
-              { to: '/team', icon: Users, title: 'الفريق' },
+              { to: '/reports', icon: ChartSquare, title: 'التقارير' },
+              { to: '/stores', icon: Shop, title: 'متاجري' },
+              { to: '/connectors', icon: Electricity, title: 'التطبيقات' },
+              { to: '/team', icon: People, title: 'الفريق' },
             ].map(({ to, icon: Icon, title }) => (
               <Link key={to} to={to} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)', textDecoration: 'none', background: 'transparent' }} title={title}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--canvas-soft)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <Icon size={14} />
+                <Icon size={14} variant="Outline" />
               </Link>
             ))}
 
             {/* notifications bell */}
             <div style={{ position: 'relative' }}>
               <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--canvas-soft)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
-                <Bell size={15} />
+                <Notification size={15} variant="Outline" />
               </button>
               {unreadNotifs > 0 && <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, background: 'var(--gradient-coral)', borderRadius: '50%', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadNotifs}</span>}
               {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} notifs={apiNotifs} unreadCount={unreadNotifs} />}
@@ -505,7 +505,7 @@ export default function Dashboard() {
             />
             <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
               style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
-              <Send size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} style={{ transform: 'scaleX(-1)' }} />
+              <Send2 size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
             </button>
           </div>
         </div>

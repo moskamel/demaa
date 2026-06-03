@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { Eye, EyeSlash, ArrowLeft2 } from 'iconsax-react'
 import { auth as authApi, storesApi, setToken } from '../lib/api'
 
 type Mode = 'login' | 'signup' | 'reset'
@@ -71,7 +71,7 @@ export default function Login() {
 
       {/* back */}
       <Link to="/" style={{ position: 'absolute', top: 24, right: 32, display: 'flex', alignItems: 'center', gap: 6, color: '#555a6a', fontSize: 13, textDecoration: 'none' }}>
-        <ArrowLeft size={14} style={{ transform: 'rotate(180deg)' }} /> الرئيسية
+        <ArrowLeft2 size={14} variant="Outline" style={{ transform: 'rotate(180deg)' }} /> الرئيسية
       </Link>
 
       {/* logo */}
@@ -104,7 +104,7 @@ export default function Login() {
         {mode === 'reset' && (
           <div style={{ marginBottom: 24 }}>
             <button onClick={() => { setMode('login'); setResetSent(false) }} style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#555a6a', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', padding: 0, marginBottom: 20 }}>
-              <ArrowLeft size={13} /> رجوع
+              <ArrowLeft2 size={13} variant="Outline" /> رجوع
             </button>
             <div style={{ fontSize: 20, fontWeight: 600, color: '#1c1c1e', marginBottom: 6 }}>استعادة كلمة المرور</div>
             <div style={{ fontSize: 14, color: '#555a6a' }}>سنرسل لك رابط إعادة التعيين على بريدك الإلكتروني</div>
@@ -145,7 +145,7 @@ export default function Login() {
                 <label style={{ fontSize: 13, color: '#555a6a', marginBottom: 6, display: 'block', fontWeight: 500 }}>كلمة المرور</label>
                 <input type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ ...INPUT, paddingLeft: 40, direction: 'ltr', textAlign: 'right' }} />
                 <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', left: 12, bottom: 12, background: 'none', border: 'none', cursor: 'pointer', color: '#8e91a0', padding: 0 }}>
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPass ? <EyeSlash size={16} variant="Outline" /> : <Eye size={16} variant="Outline" />}
                 </button>
               </div>
             )}

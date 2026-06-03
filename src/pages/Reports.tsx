@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, TrendingUp, TrendingDown, Package, ShoppingCart, DollarSign, Download, RefreshCw } from 'lucide-react'
+import { ArrowLeft2, TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, Refresh2 } from 'iconsax-react'
 import { analytics as analyticsApi, products as productsApi, type AnalyticsOverview, type Product } from '../lib/api'
 
 const paymentLabels: Record<string, string> = { card: 'بطاقة', cash: 'كاش', tabby: 'تابby', tamara: 'تمارا' }
@@ -45,11 +45,11 @@ export default function Reports() {
     <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ width: 38, height: 38, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Icon size={17} color={color} />
+          <Icon size={17} color={color} variant="Outline" />
         </div>
         {trend && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: trend === 'up' ? '#22c55e' : '#ff5577' }}>
-            {trend === 'up' ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+            {trend === 'up' ? <TrendUp size={11} variant="Outline" /> : <TrendDown size={11} variant="Outline" />}
           </div>
         )}
       </div>
@@ -64,7 +64,7 @@ export default function Reports() {
       {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ChevronLeft size={14} /> الرئيسية
+          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
         </Link>
         <span style={{ color: 'var(--hairline)' }}>/</span>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>التقارير</span>
@@ -78,10 +78,10 @@ export default function Reports() {
             ))}
           </div>
           <button onClick={handleRefresh} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)' }}>
-            <RefreshCw size={13} style={{ animation: refreshing ? 'spin 0.8s linear' : 'none' }} />
+            <Refresh2 size={13} variant="Outline" style={{ animation: refreshing ? 'spin 0.8s linear' : 'none' }} />
           </button>
           <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, color: 'var(--ink-muted)' }}>
-            <Download size={12} /> تصدير
+            <DocumentDownload size={12} variant="Outline" /> تصدير
           </button>
         </div>
       </div>
@@ -95,10 +95,10 @@ export default function Reports() {
           <>
             {/* KPI grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-              <KPI icon={DollarSign} label="إجمالي الإيرادات" value={`${overview.totalRevenue.toLocaleString('ar-EG')} ج.م`} sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
+              <KPI icon={DollarCircle} label="إجمالي الإيرادات" value={`${overview.totalRevenue.toLocaleString('ar-EG')} ج.م`} sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
               <KPI icon={ShoppingCart} label="إجمالي الطلبات" value={overview.totalOrders.toString()} sub={`${overview.pendingOrders} معلق`} color="#0099ff" trend="up" />
-              <KPI icon={DollarSign} label="متوسط قيمة الطلب" value={`${Math.round(overview.avgOrderValue).toLocaleString('ar-EG')} ج.م`} color="#22c55e" trend="up" />
-              <KPI icon={Package} label="طلبات مرفوضة" value={overview.rejectedOrders.toString()} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" />
+              <KPI icon={DollarCircle} label="متوسط قيمة الطلب" value={`${Math.round(overview.avgOrderValue).toLocaleString('ar-EG')} ج.م`} color="#22c55e" trend="up" />
+              <KPI icon={Box} label="طلبات مرفوضة" value={overview.rejectedOrders.toString()} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
