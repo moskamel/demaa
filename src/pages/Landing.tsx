@@ -98,7 +98,7 @@ function TestimonialsSlider() {
 
   const t = TESTIMONIALS[current]
   return (
-    <section style={{ padding: '96px 40px', maxWidth: 1200, margin: '0 auto' }}>
+    <section style={{ padding: '96px 100px' }}>
       <div style={{ textAlign: 'center', marginBottom: 56 }}>
         <p style={{ fontSize: 13, fontWeight: 600, color: '#9090a2', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>آراء التجار</p>
         <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: '#f0f0f5' }}>تجار حقيقيون، نتائج حقيقية</h2>
@@ -258,7 +258,7 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section style={{ padding: '96px 40px 80px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '96px 100px 80px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
 
           {/* Right: copy (RTL = right is first) */}
@@ -266,7 +266,7 @@ export default function Landing() {
             {/* Badge */}
             <div className="animate-pop-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: T.yellow, borderRadius: 9999, padding: '6px 16px', marginBottom: 28 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', animation: 'pulse 1.5s infinite', flexShrink: 0 }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>+١٢٠٠ تاجر نشط</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#0e0e12' }}>+١٢٠٠ تاجر نشط</span>
             </div>
 
             <h1 style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 500, lineHeight: 1.05, letterSpacing: '-2px', color: T.ink, margin: '0 0 20px' }}>
@@ -339,7 +339,7 @@ export default function Landing() {
       </section>
 
       {/* ── STATS ────────────────────────────────────────────────────────────── */}
-      <section style={{ padding: '0 40px 80px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '0 100px 80px' }}>
         <div ref={statsRef} style={{ background: T.canvas, border: `1px solid ${T.hairline}`, borderRadius: 28, padding: '48px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
           {[
             { value: countOrders.toLocaleString('ar-EG') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Box size={20} color="#ff7a3d" variant="Outline" /> },
@@ -370,7 +370,7 @@ export default function Landing() {
       </section>
 
       {/* ── FEATURES ─────────────────────────────────────────────────────────── */}
-      <section style={{ padding: '96px 40px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '96px 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>المميزات</p>
           <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink, margin: 0 }}>كل ما يحتاجه متجرك</h2>
@@ -440,7 +440,7 @@ export default function Landing() {
       </section>
 
       {/* ── INTERACTIVE DEMO ─────────────────────────────────────────────────── */}
-      <section id="demo" style={{ padding: '0 40px 96px', maxWidth: 1200, margin: '0 auto' }}>
+      <section id="demo" style={{ padding: '0 100px 96px' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>جربها الآن</p>
           <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink }}>كلّم ديما بنفسك</h2>
@@ -647,7 +647,7 @@ export default function Landing() {
       </section>
 
       {/* ── FINAL CTA BANNER ─────────────────────────────────────────────────── */}
-      <section style={{ padding: '0 40px 96px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '0 100px 96px' }}>
         <div style={{ background: T.well, borderRadius: 32, padding: '80px 48px', border: `1px solid ${T.hairline}`, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -80, left: -80, width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -100, right: -60, width: 360, height: 360, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
