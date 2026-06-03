@@ -119,7 +119,14 @@ export default function Activity() {
           <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1 }}>
             سجل الأنشطة
           </h1>
-          <button className="btn-secondary" style={{ fontSize: 13, padding: '8px 14px', borderRadius: 10 }}>
+          <button className="btn-secondary" style={{ fontSize: 13, padding: '8px 14px', borderRadius: 10 }} onClick={() => {
+            const rows = [['الوقت', 'النشاط', 'التفاصيل'], ...mapped.map(a => [a.time, a.title, a.detail])]
+            const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')
+            const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a'); a.href = url; a.download = `activity-${new Date().toISOString().slice(0,10)}.csv`; a.click()
+            URL.revokeObjectURL(url)
+          }}>
             <DocumentDownload size={13} variant="Outline" /> تصدير CSV
           </button>
         </div>

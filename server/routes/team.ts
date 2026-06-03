@@ -25,17 +25,27 @@ router.get('/', async (req: AuthRequest, res) => {
   res.json({ members })
 })
 
+const VALID_ROLES = ['ADMIN', 'ORDER_MANAGER', 'CUSTOMER_SERVICE']
+
 router.patch('/:id/role', async (req: AuthRequest, res) => {
   const { role } = req.body
-  if (!role) { res.status(400).json({ error: { code: 'INVALID_INPUT', message: 'role is required' } }); return }
+  if (!role || !VALID_ROLES.includes(role)) {
+    res.status(400).json({ error: { code: 'INVALID_INPUT', message: 'دور غير صالح' } }); return
+  }
   const membership = await prisma.teamMembership.findFirst({
     where: { id: req.params.id, organizationId: req.orgId },
   })
   if (!membership) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
-  const updated = await prisma.teamMembership.update({
-    where: { id: req.params.id },
-    data: { role },
-  })
+
+  // Prevent downgrading self if last admin
+  if (role !== 'ADMIN' && membership.userId === req.userId) {
+    const adminCount = await prisma.teamMembership.count({ where: { organizationId: req.orgId, role: 'ADMIN' } })
+    if (adminCount <= 1) {
+      res.status(400).json({ error: { code: 'LAST_ADMIN', message: 'لا يمكن تغيير دورك أنت المسؤول الوحيد' } }); return
+    }
+  }
+
+  const updated = await prisma.teamMembership.update({ where: { id: req.params.id }, data: { role } })
   res.json({ membership: updated })
 })
 
@@ -44,6 +54,15 @@ router.delete('/:id', async (req: AuthRequest, res) => {
     where: { id: req.params.id, organizationId: req.orgId },
   })
   if (!membership) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+
+  // Prevent removing last admin
+  if (membership.role === 'ADMIN') {
+    const adminCount = await prisma.teamMembership.count({ where: { organizationId: req.orgId, role: 'ADMIN' } })
+    if (adminCount <= 1) {
+      res.status(400).json({ error: { code: 'LAST_ADMIN', message: 'لا يمكن حذف المسؤول الوحيد' } }); return
+    }
+  }
+
   await prisma.teamMembership.delete({ where: { id: req.params.id } })
   res.json({ deleted: true })
 })

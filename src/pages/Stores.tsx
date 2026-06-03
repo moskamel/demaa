@@ -4,6 +4,8 @@ import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock } from 'iconsax-reac
 import { storesApi, type StoreData } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { useConfirm } from '../hooks/useConfirm'
+import { useToast } from '../components/Toast'
 
 const statusMap = (isActive: boolean, syncStatus: string) => {
   if (syncStatus === 'syncing') return { label: 'جاري التزامن', color: '#0099ff', icon: Clock }
@@ -23,20 +25,24 @@ export default function Stores() {
   const [stores, setStores] = useState<StoreData[]>([])
   const [syncing, setSyncing] = useState<string | null>(null)
   const [disconnecting, setDisconnecting] = useState<string | null>(null)
+  const { confirm, Dialog } = useConfirm()
+  const toast = useToast()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     storesApi.list().then(r => setStores(r.stores)).catch(() => setStores([])).finally(() => setLoading(false))
   }, [])
 
-  const handleDisconnect = async (id: string) => {
-    if (!window.confirm('هل أنت متأكد من فصل هذا المتجر؟')) return
+  const handleDisconnect = async (id: string, name: string) => {
+    const ok = await confirm({ title: 'فصل المتجر', message: `هل أنت متأكد من فصل متجر "${name}"؟ لن تتمكن من استقبال طلبات جديدة منه.`, confirmLabel: 'فصل المتجر', danger: true })
+    if (!ok) return
     setDisconnecting(id)
     try {
       await storesApi.disconnect(id)
       setStores(prev => prev.map(s => s.id === id ? { ...s, isActive: false, syncStatus: 'idle' } : s))
+      toast.success('تم فصل المتجر')
     } catch {
-      // ignore
+      toast.error('فشل فصل المتجر')
     } finally {
       setDisconnecting(null)
     }
@@ -125,7 +131,7 @@ export default function Stores() {
                         </Link>
                       )}
                       <button
-                        onClick={() => handleDisconnect(s.id)}
+                        onClick={() => handleDisconnect(s.id, s.name)}
                         disabled={disconnecting === s.id}
                         style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', marginRight: 'auto', opacity: disconnecting === s.id ? 0.5 : 1 }}>
                         <LinkIcon size={11} variant="Outline" />
@@ -157,5 +163,6 @@ export default function Stores() {
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
+    {Dialog}
   )
 }

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { SearchNormal1, People, TrendUp, ShoppingBag, Star1 } from 'iconsax-react'
 import { customers as customersApi, type Customer } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import { useDebounce } from '../hooks/useDebounce'
 import AppHeader from '../components/AppHeader'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
@@ -16,6 +16,7 @@ export default function Customers() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [segFilter, setSegFilter] = useState<SegFilter>('all')
+  const debouncedSearch = useDebounce(search, 250)
 
   useEffect(() => {
     customersApi.list().then(data => {
@@ -26,7 +27,8 @@ export default function Customers() {
 
   const filtered = allCustomers.filter(c => {
     const matchSeg = segFilter === 'all' || c.segment === segFilter
-    const matchSearch = !search || c.name.includes(search) || (c.phone || '').includes(search) || (c.city || '').includes(search)
+    const q = debouncedSearch.toLowerCase()
+    const matchSearch = !q || c.name.toLowerCase().includes(q) || (c.phone || '').includes(q) || (c.city || '').toLowerCase().includes(q)
     return matchSeg && matchSearch
   })
 

@@ -1,6 +1,8 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 
 import authRouter from './routes/auth.js'
 import conversationsRouter from './routes/conversations.js'
@@ -22,7 +24,30 @@ import { startRetryWorker } from './lib/webhooks/processor.js'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3000'], credentials: true }))
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3000']
+
+app.use(helmet({ contentSecurityPolicy: false }))
+app.use(cors({ origin: allowedOrigins, credentials: true }))
+
+// Auth rate limiting — 20 attempts per 15 minutes per IP
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: { code: 'RATE_LIMIT', message: 'محاولات كثيرة، يرجى الانتظار دقائق ثم المحاولة مجدداً' } },
+})
+
+// General API rate limiting — 300 req per minute per IP
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: { code: 'RATE_LIMIT', message: 'طلبات كثيرة جداً، يرجى التباطؤ' } },
+})
 
 // Webhooks mounted BEFORE express.json() — need raw body for HMAC verification
 app.use('/webhooks', webhooksRouter)
@@ -30,7 +55,8 @@ app.use('/webhooks', webhooksRouter)
 app.use(express.json({ limit: '10mb' }))
 
 // Routes
-app.use('/api/auth', authRouter)
+app.use('/api/auth', authLimiter, authRouter)
+app.use('/api', apiLimiter)
 app.use('/api/conversations', conversationsRouter)
 app.use('/api/orders', ordersRouter)
 app.use('/api/products', productsRouter)

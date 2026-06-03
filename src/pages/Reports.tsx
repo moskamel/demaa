@@ -65,12 +65,27 @@ export default function Reports() {
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
-      <AppHeader />
+      <AppHeader>
+        <div style={{ display: 'flex', gap: 4, background: 'var(--canvas-soft)', borderRadius: 9, padding: 3 }}>
+          {([['7d', '7 أيام'], ['30d', '30 يوم'], ['90d', '3 أشهر']] as [Period, string][]).map(([p, label]) => (
+            <button key={p} onClick={() => setPeriod(p)} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: period === p ? 'var(--ink)' : 'transparent', color: period === p ? 'var(--canvas)' : 'var(--ink-muted)', transition: 'all 0.15s' }}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <button onClick={handleRefresh} disabled={refreshing} style={{ background: 'none', border: '1px solid var(--hairline)', borderRadius: 8, cursor: 'pointer', color: 'var(--ink-muted)', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontFamily: 'inherit' }}>
+          <Refresh2 size={13} variant="Outline" style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} /> تحديث
+        </button>
+      </AppHeader>
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '28px 24px', width: '100%' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
         ) : !overview ? (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)', fontSize: 14 }}>لا توجد بيانات لهذه الفترة</div>
+          <div style={{ textAlign: 'center', padding: '80px 0' }}>
+            <Box size={40} variant="Outline" color="var(--ink-muted)" style={{ marginBottom: 16, opacity: 0.4 }} />
+            <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 8 }}>لا توجد بيانات لهذه الفترة</div>
+            <div style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ بربط متجرك وقبول الطلبات لتظهر التقارير هنا</div>
+          </div>
         ) : (
           <>
             {/* KPI grid */}

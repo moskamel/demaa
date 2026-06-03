@@ -16,9 +16,15 @@ router.get('/profile', async (req: AuthRequest, res) => {
 // PATCH /settings/profile
 router.patch('/profile', async (req: AuthRequest, res) => {
   const { name, phone, avatarUrl } = req.body
+  if (name !== undefined && (typeof name !== 'string' || name.trim().length < 2)) {
+    res.status(400).json({ error: { code: 'INVALID_INPUT', message: 'الاسم يجب أن يكون حرفين على الأقل' } }); return
+  }
+  if (phone !== undefined && phone !== '' && !/^[\d\s+\-()٠-٩]{7,20}$/.test(phone)) {
+    res.status(400).json({ error: { code: 'INVALID_INPUT', message: 'رقم الجوال غير صحيح' } }); return
+  }
   const data: Record<string, unknown> = {}
-  if (name !== undefined) data.name = name
-  if (phone !== undefined) data.phone = phone
+  if (name !== undefined) data.name = name.trim()
+  if (phone !== undefined) data.phone = phone || null
   if (avatarUrl !== undefined) data.avatarUrl = avatarUrl
 
   const user = await prisma.user.update({ where: { id: req.userId }, data })

@@ -11,6 +11,10 @@ interface Toast {
 
 interface ToastContextValue {
   toast: (message: string, type?: ToastType) => void
+  success: (message: string) => void
+  error: (message: string) => void
+  warning: (message: string) => void
+  info: (message: string) => void
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null)
@@ -59,8 +63,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts(prev => [...prev.slice(-3), { id, type, message }])
   }, [])
 
+  const success = useCallback((m: string) => toast(m, 'success'), [toast])
+  const error = useCallback((m: string) => toast(m, 'error'), [toast])
+  const warning = useCallback((m: string) => toast(m, 'warning'), [toast])
+  const info = useCallback((m: string) => toast(m, 'info'), [toast])
+
   return (
-    <ToastContext.Provider value={{ toast }}>
+    <ToastContext.Provider value={{ toast, success, error, warning, info }}>
       {children}
       <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', pointerEvents: 'none' }}>
         {toasts.map(t => (

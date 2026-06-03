@@ -7,7 +7,7 @@ const router = Router()
 router.use(requireAuth)
 
 function getStoreWhere(orgId: string) {
-  return { store: { organizationId: orgId } }
+  return { store: { organizationId: orgId, isActive: true } }
 }
 
 // Load order with its store (needed for platform push-back)

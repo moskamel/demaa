@@ -10,6 +10,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/activity':      'سجل الأنشطة',
   '/settings':      'الإعدادات',
   '/billing':       'الاشتراك والفواتير',
+  '/coupons':       'الكوبونات',
   '/dashboard':     'لوحة التحكم',
 }
 

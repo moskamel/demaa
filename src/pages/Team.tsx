@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { Add, Trash, ShieldTick, ClipboardText, Headphone } from 'iconsax-react'
 import { teamApi, type TeamMember } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { useConfirm } from '../hooks/useConfirm'
+import { useToast } from '../components/Toast'
 
 type NormRole = 'admin' | 'order_manager' | 'customer_service'
 
@@ -33,6 +34,8 @@ export default function Team() {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState<NormRole>('order_manager')
   const [inviting, setInviting] = useState(false)
+  const { confirm, Dialog } = useConfirm()
+  const toast = useToast()
 
   useEffect(() => {
     teamApi.list().then(data => {
@@ -56,14 +59,25 @@ export default function Team() {
     }
   }
 
-  const handleRemove = async (id: string) => {
-    await teamApi.remove(id).catch(() => {})
-    setMembers(prev => prev.filter(m => m.id !== id))
+  const handleRemove = async (id: string, name: string) => {
+    const ok = await confirm({ title: 'إزالة عضو الفريق', message: `هل أنت متأكد من إزالة "${name}" من الفريق؟`, confirmLabel: 'إزالة', danger: true })
+    if (!ok) return
+    try {
+      await teamApi.remove(id)
+      setMembers(prev => prev.filter(m => m.id !== id))
+      toast.success('تم إزالة العضو')
+    } catch (err) {
+      toast.error((err as Error).message || 'فشلت الإزالة')
+    }
   }
 
   const handleRoleChange = async (id: string, role: NormRole) => {
-    await teamApi.updateRole(id, role).catch(() => {})
-    setMembers(prev => prev.map(m => m.id === id ? { ...m, role } : m))
+    try {
+      await teamApi.updateRole(id, role.toUpperCase())
+      setMembers(prev => prev.map(m => m.id === id ? { ...m, role } : m))
+    } catch (err) {
+      toast.error((err as Error).message || 'فشل تغيير الدور')
+    }
   }
 
   return (
@@ -137,7 +151,7 @@ export default function Team() {
                 </select>
 
                 {normRole !== 'admin' && (
-                  <button onClick={() => handleRemove(m.id)} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,85,119,0.08)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                  <button onClick={() => handleRemove(m.id, m.name)} style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,85,119,0.08)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
                     <Trash size={13} color="var(--gradient-coral)" variant="Outline" />
                   </button>
                 )}
@@ -197,5 +211,6 @@ export default function Team() {
       </div>
       </div>
     </div>
+    {Dialog}
   )
 }
