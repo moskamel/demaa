@@ -51,7 +51,7 @@ export default function Cookies() {
   return (
     <PageLayout>
 
-      <main style={{ padding: '64px 100px' }}>
+      <main style={{ padding: '64px 200px' }}>
         <div style={{ marginBottom: 48 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 12 }}>سياسة ملفات تعريف الارتباط</h1>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>آخر تحديث: ١ مارس ٢٠٢٥</p>

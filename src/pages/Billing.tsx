@@ -49,7 +49,7 @@ export default function Billing() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '30px 100px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ padding: '30px 200px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* stats — first */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>

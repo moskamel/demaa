@@ -62,7 +62,7 @@ export default function Changelog() {
   return (
     <PageLayout>
 
-      <main style={{ padding: '64px 100px' }}>
+      <main style={{ padding: '64px 200px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>سجل التحديثات</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>كل جديد في Deema — شفافية كاملة مع مستخدمينا</p>
