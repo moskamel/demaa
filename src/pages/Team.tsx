@@ -39,15 +39,19 @@ export default function Team() {
     }).catch(() => setLoading(false))
   }, [])
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     if (!inviteEmail.trim()) return
     setInviting(true)
-    // Invite is a future feature — for now just close
-    setTimeout(() => {
+    try {
+      const data = await teamApi.invite(inviteEmail.trim(), inviteRole)
+      setMembers(prev => [...prev, data.member])
       setInviteEmail('')
       setShowInvite(false)
+    } catch (err) {
+      alert((err as Error).message || 'حدث خطأ أثناء الدعوة')
+    } finally {
       setInviting(false)
-    }, 1200)
+    }
   }
 
   const handleRemove = async (id: string) => {

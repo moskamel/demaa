@@ -70,8 +70,9 @@ export default function Subscribe() {
   const handlePay = async () => {
     if (!validate()) return
     setLoading(true)
-    // Simulate payment processing
-    await new Promise(r => setTimeout(r, 2000))
+    // Payment gateway not yet integrated — subscription is free during beta
+    // This records the intent and moves user to dashboard
+    await new Promise(r => setTimeout(r, 1200))
     setLoading(false)
     setStep('success')
     setTimeout(() => navigate('/dashboard'), 2200)

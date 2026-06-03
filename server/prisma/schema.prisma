@@ -360,6 +360,19 @@ model WebhookEvent {
   @@map("webhook_events")
 }
 
+model ConnectorState {
+  id             String   @id @default(cuid())
+  organizationId String
+  type           String
+  status         String   @default("disconnected")
+  lastUsedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([organizationId, type])
+  @@map("connector_states")
+}
+
 model WebhookRegistration {
   id          String   @id @default(cuid())
   storeId     String

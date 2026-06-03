@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import bcrypt from 'bcryptjs'
 import prisma from '../lib/prisma.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
 
@@ -45,6 +46,51 @@ router.delete('/:id', async (req: AuthRequest, res) => {
   if (!membership) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
   await prisma.teamMembership.delete({ where: { id: req.params.id } })
   res.json({ deleted: true })
+})
+
+// POST /team/invite — create or add existing user to org
+router.post('/invite', async (req: AuthRequest, res) => {
+  const { email, role = 'ORDER_MANAGER' } = req.body
+  if (!email) { res.status(400).json({ error: { code: 'MISSING_EMAIL', message: 'البريد الإلكتروني مطلوب' } }); return }
+
+  try {
+    // Find or create user
+    let user = await prisma.user.findUnique({ where: { email } })
+    if (!user) {
+      const tempPassword = Math.random().toString(36).slice(2, 10)
+      const passwordHash = await bcrypt.hash(tempPassword, 12)
+      user = await prisma.user.create({ data: { name: email.split('@')[0], email, passwordHash } })
+    }
+
+    // Check already a member
+    const existing = await prisma.teamMembership.findUnique({
+      where: { organizationId_userId: { organizationId: req.orgId!, userId: user.id } },
+    })
+    if (existing) {
+      res.status(409).json({ error: { code: 'ALREADY_MEMBER', message: 'هذا المستخدم عضو بالفعل' } }); return
+    }
+
+    const membership = await prisma.teamMembership.create({
+      data: { organizationId: req.orgId!, userId: user.id, role },
+      include: { user: { select: { id: true, name: true, email: true, lastLoginAt: true } } },
+    })
+
+    res.json({
+      member: {
+        id: membership.id,
+        userId: membership.userId,
+        name: membership.user.name,
+        email: membership.user.email,
+        role: membership.role,
+        avatar: membership.user.name.charAt(0),
+        joinedAt: membership.createdAt,
+        lastActive: membership.user.lastLoginAt,
+      }
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: { code: 'SERVER_ERROR', message: 'خطأ في الخادم' } })
+  }
 })
 
 export default router

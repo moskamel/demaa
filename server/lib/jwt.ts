@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken'
 
-const SECRET = process.env.JWT_SECRET || 'deema-secret-2025'
+if (!process.env.JWT_SECRET) {
+  console.warn('[security] JWT_SECRET not set — using insecure default. Set JWT_SECRET in production!')
+}
+const SECRET = process.env.JWT_SECRET || 'deema-secret-dev-only-change-in-production-48chars+'
 
 export interface JwtPayload {
   userId: string

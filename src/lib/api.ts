@@ -270,6 +270,9 @@ export const teamApi = {
   async remove(id: string) {
     return request(`/team/${id}`, { method: 'DELETE' })
   },
+  async invite(email: string, role: string) {
+    return request<{ member: TeamMember }>('/team/invite', { method: 'POST', body: JSON.stringify({ email, role }) })
+  },
 }
 
 // ── Connectors ───────────────────────────────────────────────

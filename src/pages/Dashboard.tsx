@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Notification, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
   Shop, Electricity, People, Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
-  ChartSquare,
+  ChartSquare, Logout,
 } from 'iconsax-react'
-import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, type Notification as ApiNotif, type StoreData } from '../lib/api'
+import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, clearToken, type Notification as ApiNotif, type StoreData } from '../lib/api'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
 import SearchModal from '../components/SearchModal'
@@ -36,13 +36,6 @@ const QUICK = [
   { label: 'الأنشطة', cmd: 'سجل الأنشطة' },
 ]
 
-// ── Conversations ────────────────────────────────────────────────────────────
-const CONVS = [
-  { id: 1, title: 'طلبات اليوم', time: 'الآن', active: true },
-  { id: 2, title: 'إضافة منتج', time: 'أمس' },
-  { id: 3, title: 'تقرير الأسبوع', time: '٣ أيام' },
-  { id: 4, title: 'كوبون الجمعة', time: '٥ أيام' },
-]
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -170,12 +163,20 @@ function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; no
   )
 }
 
-// ── Daily suggestion ──────────────────────────────────────────────────────────
-const SUGGESTION = 'لديك 5 طلبات من القاهرة جاهزة للشحن. اشحنهم الآن قبل انتهاء وقت أرامكس!'
+// ── Daily suggestion — generated dynamically from order stats ────────────────
+function getDailySuggestion(stats: { pending: number; accepted: number }) {
+  if (stats.accepted > 0) return `لديك ${stats.accepted} طلب مقبول جاهز للشحن. اشحنهم الآن!`
+  if (stats.pending > 5) return `لديك ${stats.pending} طلب معلق. راجعهم وقبل الجاهزين.`
+  if (stats.pending > 0) return `لديك ${stats.pending} طلب معلق يحتاج موافقتك.`
+  return 'كل الطلبات مرتبة! راجع تقرير المبيعات لاكتشاف فرص النمو.'
+}
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
+  const navigate = useNavigate()
+  const handleLogout = () => { clearToken(); navigate('/login') }
+
   const initialMessage: Message = {
     id: 1, role: 'deema', type: 'summary',
     content: 'صباح الخير! 🌅 أنا ديما — جاهز لمساعدتك في إدارة متجرك.',
@@ -288,7 +289,10 @@ export default function Dashboard() {
         {/* conversations */}
         <div style={{ padding: '10px 8px 6px' }}>
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', padding: '0 8px', marginBottom: 4 }}>المحادثات</div>
-          {(convList.length > 0 ? convList : CONVS.map(c => ({ id: String(c.id), title: c.title, updatedAt: c.time }))).map(c => (
+          {convList.length === 0 && (
+            <div style={{ fontSize: 11, color: 'var(--ink-muted)', padding: '6px 10px', opacity: 0.6 }}>لا توجد محادثات بعد</div>
+          )}
+          {convList.map(c => (
             <button key={c.id} onClick={() => setActiveConv(c.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 8, border: 'none', background: c.id === activeConv ? 'var(--canvas-soft)' : 'transparent', color: c.id === activeConv ? 'var(--ink)' : 'var(--ink-muted)', cursor: 'pointer', fontSize: 12, marginBottom: 1, textAlign: 'right', fontFamily: 'inherit' }}>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title || 'محادثة'}</span>
               <span style={{ fontSize: 10, color: 'var(--ink-muted)', flexShrink: 0, marginRight: 6 }}>{c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('ar-SA') : ''}</span>
@@ -351,7 +355,7 @@ export default function Dashboard() {
               <Lamp size={11} color="#6a4cf5" variant="Outline" />
               <span style={{ fontSize: 10, fontWeight: 600, color: '#0070f3', letterSpacing: '0.04em' }}>اقتراح اليوم</span>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{SUGGESTION}</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{getDailySuggestion(orderStats)}</div>
             <button onClick={() => handleSend('اشحن الطلبات المقبولة')} style={{ marginTop: 7, fontSize: 11, color: '#0070f3', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', textDecoration: 'underline' }}>
               اشحن الآن
             </button>
@@ -359,7 +363,7 @@ export default function Dashboard() {
         </div>
 
         {/* bottom nav */}
-        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
+        <div style={{ padding: '8px', borderTop: '1px solid var(--hairline)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 2, marginTop: 'auto' }}>
           {[
             { to: '/activity', icon: Clock, label: 'السجل' },
             { to: '/insights', icon: Cpu, label: 'الذاكرة' },
@@ -374,6 +378,13 @@ export default function Dashboard() {
               {label}
             </Link>
           ))}
+          <button onClick={handleLogout} title="تسجيل خروج" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 4px', borderRadius: 8, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 10, transition: 'color 0.1s', fontFamily: 'inherit' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
+          >
+            <Logout size={13} variant="Outline" />
+            خروج
+          </button>
         </div>
       </aside>
 

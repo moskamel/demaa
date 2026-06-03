@@ -1,10 +1,10 @@
 import { Router } from 'express'
+import { createClient } from '@libsql/client'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
 
 const router = Router()
 router.use(requireAuth)
 
-// Static connector catalog — in a real system this would be in the DB
 const CONNECTOR_CATALOG = [
   { type: 'aramex', name: 'Aramex', nameAr: 'أرامكس', category: 'shipping', logo: 'أ' },
   { type: 'smsa', name: 'SMSA', nameAr: 'SMSA', category: 'shipping', logo: 'S' },
@@ -17,49 +17,63 @@ const CONNECTOR_CATALOG = [
   { type: 'qoyod', name: 'Qoyod', nameAr: 'قيود', category: 'accounting', logo: 'ق' },
 ]
 
-// In-memory connector state per org (would normally be persisted)
-const orgConnectorState: Record<string, Record<string, { status: string; lastUsed?: string }>> = {}
+const VALID_TYPES = new Set(CONNECTOR_CATALOG.map(c => c.type))
 
-function getOrgState(orgId: string) {
-  if (!orgConnectorState[orgId]) {
-    orgConnectorState[orgId] = {
-      aramex: { status: 'connected', lastUsed: 'اليوم' },
-      smsa: { status: 'connected', lastUsed: 'أمس' },
-      jt: { status: 'disconnected' },
-      tabby: { status: 'connected', lastUsed: 'اليوم' },
-      tamara: { status: 'expired' },
-      whatsapp: { status: 'connected', lastUsed: 'منذ ساعة' },
-      meta_ads: { status: 'disconnected' },
-      snapchat: { status: 'disconnected' },
-      qoyod: { status: 'disconnected' },
-    }
-  }
-  return orgConnectorState[orgId]
+function getDb() {
+  const url = process.env.DATABASE_URL || `file://${new URL('../../dev.db', import.meta.url).pathname}`
+  return createClient({ url })
+}
+
+function cuid() {
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
 router.get('/', async (req: AuthRequest, res) => {
-  const state = getOrgState(req.orgId!)
+  const db = getDb()
+  const result = await db.execute({
+    sql: 'SELECT type, status, lastUsedAt FROM connector_states WHERE organizationId = ?',
+    args: [req.orgId!],
+  })
+  const stateMap: Record<string, { status: string; lastUsedAt: string | null }> = {}
+  for (const row of result.rows) {
+    stateMap[row.type as string] = { status: row.status as string, lastUsedAt: row.lastUsedAt as string | null }
+  }
+
   const connectors = CONNECTOR_CATALOG.map(c => ({
     ...c,
-    status: state[c.type]?.status || 'disconnected',
-    lastUsed: state[c.type]?.lastUsed,
+    status: stateMap[c.type]?.status || 'disconnected',
+    lastUsed: stateMap[c.type]?.lastUsedAt
+      ? new Date(stateMap[c.type].lastUsedAt!).toLocaleDateString('ar-SA')
+      : undefined,
   }))
   res.json({ connectors })
 })
 
 router.post('/:type/connect', async (req: AuthRequest, res) => {
   const { type } = req.params
-  const state = getOrgState(req.orgId!)
-  if (!state[type]) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
-  state[type] = { status: 'connected', lastUsed: 'الآن' }
+  if (!VALID_TYPES.has(type)) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  const db = getDb()
+  const now = new Date().toISOString()
+  await db.execute({
+    sql: `INSERT INTO connector_states (id, organizationId, type, status, lastUsedAt, createdAt, updatedAt)
+          VALUES (?, ?, ?, 'connected', ?, ?, ?)
+          ON CONFLICT(organizationId, type) DO UPDATE SET status='connected', lastUsedAt=?, updatedAt=?`,
+    args: [cuid(), req.orgId!, type, now, now, now, now, now],
+  })
   res.json({ connected: true, type })
 })
 
 router.post('/:type/disconnect', async (req: AuthRequest, res) => {
   const { type } = req.params
-  const state = getOrgState(req.orgId!)
-  if (!state[type]) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
-  state[type] = { status: 'disconnected' }
+  if (!VALID_TYPES.has(type)) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+  const db = getDb()
+  const now = new Date().toISOString()
+  await db.execute({
+    sql: `INSERT INTO connector_states (id, organizationId, type, status, createdAt, updatedAt)
+          VALUES (?, ?, ?, 'disconnected', ?, ?)
+          ON CONFLICT(organizationId, type) DO UPDATE SET status='disconnected', updatedAt=?`,
+    args: [cuid(), req.orgId!, type, now, now, now],
+  })
   res.json({ disconnected: true, type })
 })
 

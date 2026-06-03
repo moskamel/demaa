@@ -1,25 +1,49 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, Flash, TickCircle, Repeat } from 'iconsax-react'
+import { ArrowLeft2, Flash, TickCircle, Repeat, Box, Shop, People } from 'iconsax-react'
+import { aiApi, orders as ordersApi, storesApi, teamApi, type Subscription } from '../lib/api'
 
-const FREE_FEATURES = [
+const FEATURES = [
   'منصات غير محدودة',
   'طلبات غير محدودة',
   'تطبيقات وتكاملات غير محدودة',
   'فريق عمل غير محدود',
   'تقارير كاملة ومتقدمة',
-  'ذكاء اصطناعي مدعوم بـ Claude AI',
+  'ذكاء اصطناعي مدعوم بـ Groq AI',
   'إدارة المخزون التلقائية',
-  'كوبونات وإشعارات واتساب',
+  'كوبونات وإشعارات',
   'API Access كامل',
   'أولوية الدعم الفني',
   'تحليلات متقدمة وبيانات حية',
-  'تصدير التقارير PDF / Excel',
+  'تصدير التقارير',
 ]
 
 export default function Billing() {
+  const [sub, setSub] = useState<Subscription | null>(null)
+  const [orderCount, setOrderCount] = useState<number | null>(null)
+  const [storeCount, setStoreCount] = useState<number | null>(null)
+  const [memberCount, setMemberCount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      aiApi.usage(),
+      ordersApi.stats(),
+      storesApi.list(),
+      teamApi.list(),
+    ]).then(([usageData, stats, storesData, teamData]) => {
+      setSub(usageData.subscription)
+      setOrderCount(stats.pending + stats.accepted + stats.shipped + stats.delivered + stats.rejected)
+      setStoreCount(storesData.stores.length)
+      setMemberCount(teamData.members.length)
+    }).catch(() => {}).finally(() => setLoading(false))
+  }, [])
+
+  const planLabel = sub?.planId === 'pro' ? 'Pro' : sub?.planId === 'growth' ? 'Growth' : 'Free'
+  const statusColor = sub?.status === 'active' ? '#22c55e' : '#ff7a3d'
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      {/* top bar */}
       <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
           <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
@@ -36,14 +60,16 @@ export default function Billing() {
             <Flash size={24} color="#fff" variant="Outline" />
           </div>
           <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.5px' }}>
-            الوصول الكامل — مجاناً
+            {loading ? '...' : `باقة ${planLabel}`}
           </div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>
             جميع المميزات متاحة لك بدون قيود ولا رسوم
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.15)', borderRadius: 12, padding: '10px 20px' }}>
             <Repeat size={18} color="#fff" variant="Outline" />
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>غير محدود · مجاناً دائماً</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>
+              {loading ? '...' : sub?.status === 'active' ? 'مفعّل · غير محدود' : 'غير مفعّل'}
+            </span>
           </div>
         </div>
 
@@ -54,10 +80,17 @@ export default function Billing() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)' }}>باقة Pro</span>
+                <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--ink)' }}>
+                  {loading ? '...' : `باقة ${planLabel}`}
+                </span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#6a4cf5', background: 'rgba(106,76,245,0.12)', borderRadius: 6, padding: '3px 8px' }}>باقتك الحالية</span>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-muted)' }}>جميع المميزات مفعّلة · بدون انتهاء</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor }} />
+                <div style={{ fontSize: 13, color: 'var(--ink-muted)' }}>
+                  {loading ? '...' : sub?.status === 'active' ? 'جميع المميزات مفعّلة' : 'الاشتراك غير نشط'}
+                </div>
+              </div>
             </div>
             <div style={{ textAlign: 'left' }}>
               <div style={{ fontSize: 36, fontWeight: 800, color: '#22c55e', letterSpacing: '-1px', lineHeight: 1 }}>مجاناً</div>
@@ -66,7 +99,7 @@ export default function Billing() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {FREE_FEATURES.map(f => (
+            {FEATURES.map(f => (
               <div key={f} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                   <TickCircle size={10} color="#22c55e" variant="Outline" />
@@ -77,17 +110,19 @@ export default function Billing() {
           </div>
         </div>
 
-        {/* usage stats */}
+        {/* real usage stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {[
-            { label: 'الطلبات', value: 'غير محدود', icon: '📦' },
-            { label: 'المنصات', value: 'غير محدود', icon: '🛍️' },
-            { label: 'أعضاء الفريق', value: 'غير محدود', icon: '👥' },
-          ].map(s => (
-            <div key={s.label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: 22, marginBottom: 6 }}>{s.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)', marginBottom: 2 }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{s.label}</div>
+            { label: 'الطلبات المعالجة', value: loading ? '...' : (orderCount ?? 0).toLocaleString('ar-EG'), icon: Box, color: '#6a4cf5' },
+            { label: 'المتاجر المربوطة', value: loading ? '...' : (storeCount ?? 0).toLocaleString('ar-EG'), icon: Shop, color: '#0099ff' },
+            { label: 'أعضاء الفريق', value: loading ? '...' : (memberCount ?? 0).toLocaleString('ar-EG'), icon: People, color: '#22c55e' },
+          ].map(({ label, value, icon: Icon, color }) => (
+            <div key={label} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px', textAlign: 'center' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
+                <Icon size={16} color={color} variant="Outline" />
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 2 }}>{value}</div>
+              <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
             </div>
           ))}
         </div>
