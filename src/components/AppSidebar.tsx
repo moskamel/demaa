@@ -191,8 +191,6 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
             </Link>
           )}
 
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 4px' }} />
-
           {/* Primary nav */}
           {NAV_PRIMARY.map(({ to, icon, label }) => (
             <NavLink key={to} to={to} icon={icon} label={label} />
