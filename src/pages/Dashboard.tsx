@@ -99,8 +99,8 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
 
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
-      <div style={{ maxWidth: '80%' }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+      <div style={{ maxWidth: '70%' }}>
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '14px 4px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
           <p style={{ whiteSpace: 'pre-line', color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{msg.content}</p>
           {msg.stats && (
@@ -397,9 +397,9 @@ export default function Dashboard() {
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
-                    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                        <div className="chat-message-user" style={{ background: '#ffffff', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55vw', color: '#111', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(0,0,0,0.15)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, maxWidth: '50%' }}>
+                        <div className="chat-message-user" style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', borderRadius: '4px 14px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.3)' }}>
                           {msg.content}
                         </div>
                         {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
@@ -410,8 +410,8 @@ export default function Dashboard() {
               ))}
 
               {isTyping && (
-                <div className="animate-fade-in" style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <div style={{ background: 'var(--canvas-soft)', borderRadius: '14px 4px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                <div className="animate-fade-in" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                     {[0, 1, 2].map(i => (
                       <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)', animation: `dotBounce 1.2s ${i * 0.18}s ease-in-out infinite` }} />
                     ))}
