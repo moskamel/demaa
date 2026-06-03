@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  Notification as NotifIcon, Add, Send2, Setting2, Clock, Box, Warning2,
+  Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
   Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
   Logout,
 } from 'iconsax-react'
