@@ -111,7 +111,7 @@ export default function AppSidebar() {
         <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6a4cf5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
           {(user.name || 'م')[0]}
         </div>
-        {!collapsed && (
+        {!collapsed ? (
           <>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'مستخدم'}</div>
@@ -123,13 +123,19 @@ export default function AppSidebar() {
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
                 <ArrowDown2 size={13} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
               </button>
-              <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }}
+              <button onClick={handleLogout} title="تسجيل الخروج" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
                 <Logout size={13} variant="Outline" />
               </button>
             </div>
           </>
+        ) : (
+          <button onClick={handleLogout} title="تسجيل الخروج" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
+            <Logout size={14} variant="Outline" />
+          </button>
         )}
       </div>
 
