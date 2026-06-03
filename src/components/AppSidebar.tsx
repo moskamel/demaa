@@ -82,7 +82,9 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
       <aside style={{
         width: collapsed ? 52 : 240,
         background: '#111',
-        borderLeft: '1px solid rgba(255,255,255,0.07)',
+        borderRadius: 30,
+        margin: '20px 20px 20px 0',
+        boxShadow: '0 8px 48px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3)',
         display: 'flex', flexDirection: 'column', flexShrink: 0,
         transition: 'width 0.2s ease', overflow: 'hidden',
       }}>
