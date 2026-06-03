@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import PageLayout from '../components/PageLayout'
 import { ShieldTick, Lock, Eye, Data, Warning2, Refresh2 } from 'iconsax-react'
 

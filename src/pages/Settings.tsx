@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, Sun1, ShieldTick, Notification, Flash, Global, Profile, Lock } from 'iconsax-react'
+import { ArrowLeft2, Sun1, ShieldTick, Notification, Flash, Global, Profile, Lock, Electricity } from 'iconsax-react'
 import { settingsApi } from '../lib/api'
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -258,7 +258,7 @@ export default function Settings() {
         </Section>
 
         {/* automation */}
-        <Section icon={Zap} title="الأتمتة">
+        <Section icon={Electricity} title="الأتمتة">
           <div>
             <SettingRow label="تأكيد قبل الإجراءات الجماعية" desc="اطلب تأكيد قبل قبول أو رفض أكثر من 5 طلبات" checked={settings.confirmBulk} onChange={v => set('confirmBulk', v)} />
             <SettingRow label="إشعار واتساب عند الشحن" desc="يُرسل تلقائياً لو واتساب مربوط" checked={settings.autoShipNotify} onChange={v => set('autoShipNotify', v)} />
