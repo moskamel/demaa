@@ -30,6 +30,7 @@ const PERMISSIONS: Record<NormRole, string[]> = {
 export default function Team() {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
+  const [showHelp, setShowHelp] = useState(false)
   const [showInvite, setShowInvite] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState<NormRole>('order_manager')
@@ -96,30 +97,53 @@ export default function Team() {
       <AppHeader />
 
       <div style={{ padding: '50px 300px' }}>
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>الفريق والصلاحيات</h1>
-          <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{members.length} أعضاء في الفريق</p>
+        <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <div>
+            <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>الفريق والصلاحيات</h1>
+            <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{members.length} أعضاء في الفريق</p>
+          </div>
+          <button
+            onClick={() => setShowHelp(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 8, padding: '7px 14px', fontSize: 13, color: 'var(--ink-muted)', cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas-soft)' }}
+          >
+            <span style={{ fontSize: 13 }}>؟</span>
+            مساعدة
+          </button>
         </div>
 
-        {/* roles reference */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 28 }}>
-          {(Object.entries(roleConfig) as [NormRole, typeof roleConfig[NormRole]][]).map(([role, cfg]) => {
-            const Icon = cfg.icon
-            return (
-              <div key={role} style={{ background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                  <Icon size={13} color={cfg.color} variant="Outline" />
-                  <span style={{ fontSize: 12, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
-                </div>
-                {PERMISSIONS[role].map(p => (
-                  <div key={p} style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 3, display: 'flex', gap: 5 }}>
-                    <span style={{ color: cfg.color }}>✓</span> {p}
-                  </div>
-                ))}
+        {/* Help popup */}
+        {showHelp && (
+          <div className="animate-backdrop-in" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
+            onClick={e => e.target === e.currentTarget && setShowHelp(false)}
+          >
+            <div className="animate-modal-in" style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '28px', width: 520, border: '1px solid var(--hairline)', fontFamily: "'Zain','Inter',sans-serif", direction: 'rtl', boxShadow: '0 24px 60px rgba(0,0,0,0.3)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 17, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>الصلاحيات والأدوار</h2>
+                <button onClick={() => setShowHelp(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 18, lineHeight: 1, padding: 4 }}>✕</button>
               </div>
-            )
-          })}
-        </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                {(Object.entries(roleConfig) as [NormRole, typeof roleConfig[NormRole]][]).map(([role, cfg]) => {
+                  const Icon = cfg.icon
+                  return (
+                    <div key={role} style={{ background: 'var(--canvas)', borderRadius: 12, padding: '14px', border: '1px solid var(--hairline)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                        <Icon size={13} color={cfg.color} variant="Outline" />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
+                      </div>
+                      {PERMISSIONS[role].map(p => (
+                        <div key={p} style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 4, display: 'flex', gap: 5 }}>
+                          <span style={{ color: cfg.color }}>✓</span> {p}
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* members */}
         {loading && (
