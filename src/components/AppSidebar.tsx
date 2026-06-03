@@ -32,6 +32,7 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
   const [unreadCount, setUnreadCount] = useState(0)
   const [internalConvList, setInternalConvList] = useState<Conversation[]>([])
   const [showSearch, setShowSearch] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [hoveredConv, setHoveredConv] = useState<string | null>(null)
   const [editingConv, setEditingConv] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')
@@ -265,31 +266,69 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
 
           {/* Divider + profile row */}
           <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '0 8px' }} />
-          <button
-            onClick={handleLogout}
-            style={{
-              width: '100%', padding: collapsed ? '10px 8px' : '10px 14px',
-              background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-              display: 'flex', alignItems: 'center', gap: 10,
-              justifyContent: collapsed ? 'center' : 'flex-start',
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '' }}
-          >
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-              {(user.name || 'م')[0]}
+
+          {/* Logout confirm modal */}
+          {showLogoutConfirm && (
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => setShowLogoutConfirm(false)}>
+              <div style={{ background: '#1a1a1a', borderRadius: 16, padding: '24px', width: 300, border: '1px solid rgba(255,255,255,0.1)', fontFamily: "'Zain','Inter',sans-serif", direction: 'rtl', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
+                onClick={e => e.stopPropagation()}>
+                <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 8 }}>تسجيل الخروج</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>هل أنت متأكد أنك تريد تسجيل الخروج؟</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={handleLogout} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: '#ff5577', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    تسجيل الخروج
+                  </button>
+                  <button onClick={() => setShowLogoutConfirm(false)} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    إلغاء
+                  </button>
+                </div>
+              </div>
             </div>
+          )}
+
+          <div style={{
+            padding: collapsed ? '10px 8px' : '10px 14px',
+            display: 'flex', alignItems: 'center', gap: 10,
+            justifyContent: collapsed ? 'center' : 'flex-start',
+          }}>
+            {/* Avatar — click goes to settings */}
+            <button onClick={() => navigate('/settings')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff' }}>
+                {(user.name || 'م')[0]}
+              </div>
+            </button>
             {!collapsed && (
               <>
                 <div style={{ flex: 1, minWidth: 0, textAlign: 'right' }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'مستخدم'}</div>
                   <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email || ''}</div>
                 </div>
-                <Logout size={13} variant="Outline" color="rgba(255,255,255,0.3)" style={{ flexShrink: 0 }} />
+                {/* Logout icon — only this triggers confirm */}
+                <button
+                  onClick={() => setShowLogoutConfirm(true)}
+                  title="تسجيل الخروج"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, display: 'flex', flexShrink: 0, color: 'rgba(255,255,255,0.3)', transition: 'color 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                >
+                  <Logout size={14} variant="Outline" />
+                </button>
               </>
             )}
-          </button>
+            {/* Collapsed: logout icon only */}
+            {collapsed && (
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                title="تسجيل الخروج"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, display: 'flex', color: 'rgba(255,255,255,0.3)', transition: 'color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+              >
+                <Logout size={14} variant="Outline" />
+              </button>
+            )}
+          </div>
         </div>
       </aside>
     </>

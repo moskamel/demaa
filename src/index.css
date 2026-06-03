@@ -244,6 +244,20 @@ input:focus, textarea:focus, select:focus {
 }
 input::placeholder, textarea::placeholder { color: var(--ink-muted); }
 
+/* ── Autofill dark mode fix ───────────────────────────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--canvas-soft-2) inset !important;
+  -webkit-text-fill-color: var(--ink) !important;
+  caret-color: var(--ink);
+  border-color: var(--hairline) !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 /* ── Scrollbar ─────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--hairline); }
