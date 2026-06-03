@@ -49,7 +49,7 @@ export default function Billing() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '50px' }}>
+      <div style={{ padding: '50px 300px' }}>
 
         {/* hero banner */}
         <div className="animate-fade-in-up" style={{ background: 'linear-gradient(135deg, #007cf0 0%, #00dfd8 100%)', borderRadius: 20, padding: '32px 28px', marginBottom: 32, textAlign: 'center' }}>

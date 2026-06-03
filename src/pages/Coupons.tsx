@@ -97,7 +97,7 @@ export default function Coupons() {
           </button>
         </AppHeader>
 
-        <div style={{ padding: '50px', width: '100%' }}>
+        <div style={{ padding: '50px 300px', width: '100%' }}>
 
           {/* Create form */}
           {showForm && (

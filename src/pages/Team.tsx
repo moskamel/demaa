@@ -95,7 +95,7 @@ export default function Team() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '50px' }}>
+      <div style={{ padding: '50px 300px' }}>
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>الفريق والصلاحيات</h1>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{members.length} أعضاء في الفريق</p>

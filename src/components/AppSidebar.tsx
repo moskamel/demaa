@@ -147,7 +147,7 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
         transition: 'width 0.2s ease', overflow: 'hidden', position: 'relative',
       }}>
 
-        {/* Logo + collapse */}
+        {/* Logo + search + collapse */}
         <div style={{ padding: collapsed ? '14px 10px' : '14px 12px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -156,40 +156,38 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
             {!collapsed && <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', letterSpacing: '-0.4px' }}>Deema</span>}
           </div>
           {!collapsed && (
-            <button onClick={() => toggle(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6 }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
-              <ArrowDown2 size={14} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6 }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+                <SearchNormal1 size={14} variant="Outline" />
+              </button>
+              <button onClick={() => toggle(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6 }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+                <ArrowDown2 size={14} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
+              </button>
+            </div>
           )}
         </div>
 
         {/* Nav actions + links */}
         <div style={{ padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
 
-          {/* Search */}
-          <button onClick={() => setShowSearch(true)} style={btn(collapsed)} title="بحث (Ctrl+K)"
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
-            <SearchNormal1 size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
-            {!collapsed && <span style={lbl}>بحث</span>}
-            {!collapsed && <kbd style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.08)', borderRadius: 4, padding: '1px 5px', marginRight: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>⌘K</kbd>}
-          </button>
-
           {/* New chat */}
           {onNewChat ? (
-            <button onClick={onNewChat} style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
-              <MessageAdd1 size={16} variant="Outline" color="#fff" />
-              {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+            <button onClick={onNewChat} style={btn(collapsed)}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+              <MessageAdd1 size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
+              {!collapsed && <span style={lbl}>محادثة جديدة</span>}
             </button>
           ) : (
-            <Link to="/dashboard" style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)', textDecoration: 'none' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
-              <MessageAdd1 size={16} variant="Outline" color="#fff" />
-              {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+            <Link to="/dashboard" style={{ ...btn(collapsed), textDecoration: 'none' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+              <MessageAdd1 size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
+              {!collapsed && <span style={lbl}>محادثة جديدة</span>}
             </Link>
           )}
 
@@ -329,14 +327,22 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
           </button>
         </div>
 
-        {/* Expand when collapsed */}
+        {/* Expand + search when collapsed */}
         {collapsed && (
-          <button onClick={() => toggle(false)}
-            style={{ position: 'absolute', bottom: 80, right: 14, width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
-            <ArrowDown2 size={12} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
-          </button>
+          <div style={{ position: 'absolute', top: 10, right: 0, left: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)"
+              style={{ width: 28, height: 28, borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <SearchNormal1 size={14} variant="Outline" />
+            </button>
+            <button onClick={() => toggle(false)}
+              style={{ width: 28, height: 28, borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <ArrowDown2 size={12} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
+            </button>
+          </div>
         )}
       </aside>
     </>
