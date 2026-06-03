@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ArrowLeft, ExternalLink, Loader } from 'lucide-react'
+import { Check, ArrowLeft, ExternalLink, Loader, Search } from 'lucide-react'
 import { storesApi } from '../lib/api'
 
 type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | 'woocommerce' | 'wix' | 'bigcommerce' | 'ecwid' | null
@@ -229,6 +229,7 @@ const platforms = [
 export default function Onboarding() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [platform, setPlatform] = useState<Platform>(null)
+  const [search, setSearch] = useState('')
   const [apiKey, setApiKey] = useState('')
   const [storeDomain, setStoreDomain] = useState('')
   const [loading, setLoading] = useState(false)
@@ -262,9 +263,12 @@ export default function Onboarding() {
   }
 
   const selectedPlatform = platforms.find(p => p.id === platform)
+  const filteredPlatforms = useMemo(() =>
+    search.trim() ? platforms.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.desc.includes(search)) : platforms
+  , [search])
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: step === 1 ? 'flex-start' : 'center', padding: step === 1 ? '80px 24px 24px' : 24 }}>
 
       {/* logo */}
       <div style={{ position: 'absolute', top: 24, right: 30, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -303,49 +307,86 @@ export default function Onboarding() {
 
       {/* ── STEP 1: Choose platform ── */}
       {step === 1 && (
-        <div style={{ width: '100%', maxWidth: 480 }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1.0, margin: '0 0 12px', color: 'var(--ink)' }}>
+        <div style={{ width: '100%', maxWidth: 520, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 24, flexShrink: 0 }}>
+            <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1.0, margin: '0 0 10px', color: 'var(--ink)' }}>
               ربط متجرك
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--ink-muted)', letterSpacing: '-0.15px' }}>اختر المنصة التي يعمل عليها متجرك</p>
+            <p style={{ fontSize: 15, color: 'var(--ink-muted)' }}>اختر المنصة التي يعمل عليها متجرك</p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {platforms.map(p => (
-              <button key={p.id} onClick={() => setPlatform(p.id as Platform)} style={{
-                display: 'flex', alignItems: 'center', gap: 16,
-                padding: '18px 20px', borderRadius: 15,
-                border: `1px solid ${platform === p.id ? 'rgba(255,255,255,0.3)' : 'var(--hairline)'}`,
-                background: platform === p.id ? 'var(--canvas-soft-2)' : 'var(--canvas-soft)',
-                cursor: 'pointer', textAlign: 'right', width: '100%',
-                boxShadow: platform === p.id ? 'rgba(0,153,255,0.15) 0 0 0 1px' : 'none',
-              }}>
-                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PlatformLogo domain={p.id} name={p.name} /></div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 2, letterSpacing: '-0.3px' }}>{p.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--ink-muted)', letterSpacing: '-0.13px' }}>{p.desc}</div>
-                </div>
-                {platform === p.id && (
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--semantic-success)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Check size={12} color="#000" strokeWidth={3} />
+          {/* Search bar */}
+          <div style={{ position: 'relative', marginBottom: 16, flexShrink: 0 }}>
+            <Search size={15} color="var(--ink-muted)" style={{ position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="ابحث عن المنصة..."
+              style={{
+                width: '100%', padding: '11px 40px 11px 14px', borderRadius: 10,
+                border: '1px solid var(--hairline)', background: 'var(--canvas-soft)',
+                color: 'var(--ink)', fontSize: 14, fontFamily: 'inherit', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => { e.target.style.borderColor = '#1c1c1e'; e.target.style.boxShadow = '0 0 0 3px rgba(28,28,30,0.08)' }}
+              onBlur={e => { e.target.style.borderColor = 'var(--hairline)'; e.target.style.boxShadow = 'none' }}
+            />
+          </div>
+
+          {/* Scrollable platform list */}
+          <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {filteredPlatforms.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ink-muted)', fontSize: 14 }}>لا توجد نتائج لـ "{search}"</div>
+              ) : filteredPlatforms.map(p => (
+                <button key={p.id} onClick={() => setPlatform(p.id as Platform)} style={{
+                  display: 'flex', alignItems: 'center', gap: 16,
+                  padding: '16px 18px', borderRadius: 12,
+                  border: `1.5px solid ${platform === p.id ? '#1c1c1e' : 'var(--hairline)'}`,
+                  background: platform === p.id ? 'var(--canvas-soft-2)' : 'var(--canvas-soft)',
+                  cursor: 'pointer', textAlign: 'right', width: '100%',
+                  transition: 'border-color 0.15s, background 0.15s',
+                }}>
+                  <div style={{ flexShrink: 0 }}><PlatformLogo domain={p.id} name={p.name} /></div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>{p.name}</div>
+                    <div style={{ fontSize: 13, color: 'var(--ink-muted)' }}>{p.desc}</div>
                   </div>
-                )}
-              </button>
-            ))}
+                  {platform === p.id && (
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#1c1c1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Check size={12} color="#fff" strokeWidth={3} />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <button
-            disabled={!platform}
-            onClick={() => setStep(2)}
-            className="btn-primary"
-            style={{
-              marginTop: 20, width: '100%', justifyContent: 'center',
-              padding: '12px 20px', fontSize: 15, borderRadius: 10,
-              opacity: platform ? 1 : 0.4, cursor: platform ? 'pointer' : 'default',
-            }}>
-            التالي <ArrowLeft size={15} />
-          </button>
+          {/* Fixed bottom button */}
+          <div style={{ flexShrink: 0, paddingTop: 16, borderTop: '1px solid var(--hairline)', marginTop: 8 }}>
+            {platform && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, padding: '10px 14px', background: 'var(--canvas-soft)', borderRadius: 10, border: '1px solid var(--hairline)' }}>
+                <PlatformLogo domain={platform} name={selectedPlatform?.name || ''} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', flex: 1 }}>{selectedPlatform?.name}</span>
+                <button onClick={() => setPlatform(null)} style={{ fontSize: 12, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>تغيير</button>
+              </div>
+            )}
+            <button
+              disabled={!platform}
+              onClick={() => setStep(2)}
+              style={{
+                width: '100%', padding: '13px', borderRadius: 9999, border: 'none',
+                background: platform ? '#1c1c1e' : 'var(--hairline)',
+                color: platform ? '#fff' : 'var(--ink-muted)',
+                cursor: platform ? 'pointer' : 'default',
+                fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                transition: 'background 0.15s',
+              }}>
+              التالي <ArrowLeft size={15} />
+            </button>
+          </div>
         </div>
       )}
 
