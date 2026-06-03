@@ -229,13 +229,6 @@ export default function Landing() {
   return (
     <div dir="rtl" style={{ background: T.canvas, color: T.ink, minHeight: '100vh', overflowX: 'hidden', fontFamily: 'Zain, sans-serif' }}>
 
-      {/* ── PROMO BANNER ─────────────────────────────────────────────────────── */}
-      <div style={{ background: T.well, color: '#fff', textAlign: 'center', padding: '10px 20px', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, borderBottom: `1px solid ${T.hairline}` }}>
-        <span style={{ background: T.yellow, color: T.ink, borderRadius: 9999, padding: '2px 10px', fontSize: 12, fontWeight: 700 }}>🎉 عرض الإطلاق</span>
-        <span>أول ٣ أشهر بخصم ٥٠٪ ·</span>
-        <strong>سارع قبل انتهاء العرض</strong>
-        <Link to={ctaTo} style={{ color: T.yellow, fontWeight: 600, textDecoration: 'underline', marginRight: 4 }}>اشترك الآن</Link>
-      </div>
 
       {/* ── NAV ──────────────────────────────────────────────────────────────── */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(14,14,18,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${T.hairline}`, height: 64, display: 'flex', alignItems: 'center', padding: '0 40px', gap: 24 }}>
