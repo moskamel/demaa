@@ -4,6 +4,8 @@ import { TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, 
 import { analytics as analyticsApi, products as productsApi, type AnalyticsOverview, type Product } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import AnimatedNumber from '../components/AnimatedNumber'
+import { SkeletonKPI, SkeletonRow } from '../components/Skeleton'
 
 const paymentLabels: Record<string, string> = { card: 'بطاقة', cash: 'كاش', tabby: 'تابby', tamara: 'تمارا' }
 const paymentColors: Record<string, string> = { card: '#6a4cf5', cash: '#ff7a3d', tabby: '#22c55e', tamara: '#0099ff' }
@@ -41,21 +43,23 @@ export default function Reports() {
 
   const lowStockProducts = allProducts.filter(p => p.stock < p.lowStockAlert)
 
-  const KPI = ({ icon: Icon, label, value, sub, color, trend }: {
-    icon: React.ElementType; label: string; value: string; sub?: string; color: string; trend?: 'up' | 'down'
+  const KPI = ({ icon: Icon, label, numericValue, unit, sub, color, trend }: {
+    icon: React.ElementType; label: string; numericValue: number; unit?: string; sub?: string; color: string; trend?: 'up' | 'down'
   }) => (
-    <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
+    <div className="card-interactive animate-fade-in-up" style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-        <div style={{ width: 38, height: 38, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 38, height: 38, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s' }}>
           <Icon size={17} color={color} variant="Outline" />
         </div>
         {trend && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: trend === 'up' ? '#22c55e' : '#ff5577' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: trend === 'up' ? '#22c55e' : '#ff5577', background: trend === 'up' ? 'rgba(34,197,94,0.1)' : 'rgba(255,85,119,0.1)', borderRadius: 6, padding: '2px 6px' }}>
             {trend === 'up' ? <TrendUp size={11} variant="Outline" /> : <TrendDown size={11} variant="Outline" />}
           </div>
         )}
       </div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 4 }}>{value}</div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 4 }}>
+        <AnimatedNumber value={numericValue} suffix={unit ? ` ${unit}` : ''} decimals={unit === 'ج.م' ? 0 : 0} />
+      </div>
       <div style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{label}</div>
       {sub && <div style={{ fontSize: 11, color, marginTop: 4 }}>{sub}</div>}
     </div>
@@ -79,7 +83,14 @@ export default function Reports() {
       </AppHeader>
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '28px 24px', width: '100%' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+              {[0,1,2,3].map(i => <SkeletonKPI key={i} />)}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {[0,1,2,3,4].map(i => <SkeletonRow key={i} />)}
+            </div>
+          </div>
         ) : !overview ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <Box size={40} variant="Outline" color="var(--ink-muted)" style={{ marginBottom: 16, opacity: 0.4 }} />
@@ -90,10 +101,10 @@ export default function Reports() {
           <>
             {/* KPI grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-              <KPI icon={DollarCircle} label="إجمالي الإيرادات" value={`${overview.totalRevenue.toLocaleString('ar-EG')} ج.م`} sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
-              <KPI icon={ShoppingCart} label="إجمالي الطلبات" value={overview.totalOrders.toString()} sub={`${overview.pendingOrders} معلق`} color="#0099ff" trend="up" />
-              <KPI icon={DollarCircle} label="متوسط قيمة الطلب" value={`${Math.round(overview.avgOrderValue).toLocaleString('ar-EG')} ج.م`} color="#22c55e" trend="up" />
-              <KPI icon={Box} label="طلبات مرفوضة" value={overview.rejectedOrders.toString()} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" />
+              <KPI icon={DollarCircle} label="إجمالي الإيرادات" numericValue={overview.totalRevenue} unit="ج.م" sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
+              <KPI icon={ShoppingCart} label="إجمالي الطلبات" numericValue={overview.totalOrders} sub={`${overview.pendingOrders} معلق`} color="#0099ff" trend="up" />
+              <KPI icon={DollarCircle} label="متوسط قيمة الطلب" numericValue={Math.round(overview.avgOrderValue)} unit="ج.م" color="#22c55e" trend="up" />
+              <KPI icon={Box} label="طلبات مرفوضة" numericValue={overview.rejectedOrders} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
@@ -103,21 +114,40 @@ export default function Reports() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>أعلى المدن</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {overview.topCities.slice(0, 6).map(([city, data], i) => (
-                    <div key={city} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: 6, background: i === 0 ? 'rgba(106,76,245,0.15)' : 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#6a4cf5' : 'var(--ink-muted)', flexShrink: 0 }}>{i + 1}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 12, color: 'var(--ink)', fontWeight: 500 }}>{city}</div>
-                        <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{data.orders} طلب</div>
-                      </div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)' }}>{data.revenue.toLocaleString('ar-EG')} ج.م</div>
+                {(() => {
+                  const cities = overview.topCities.slice(0, 6)
+                  const maxRevenue = Math.max(...cities.map(([, d]) => d.revenue), 1)
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {cities.map(([city, data], i) => {
+                        const pct = Math.round((data.revenue / maxRevenue) * 100)
+                        const colors = ['#6a4cf5','#0099ff','#22c55e','#ff7a3d','#d44df0','#ff5577']
+                        return (
+                          <div key={city} className={`animate-fade-in stagger-${Math.min(i+1,8) as 1}`} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <div style={{ width: 18, height: 18, borderRadius: 5, background: `${colors[i]}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: colors[i] }}>{i + 1}</div>
+                                <span style={{ fontSize: 12, color: 'var(--ink)', fontWeight: 500 }}>{city}</span>
+                                <span style={{ fontSize: 10, color: 'var(--ink-muted)' }}>{data.orders} طلب</span>
+                              </div>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)' }}>{data.revenue.toLocaleString('ar-EG')} ج.م</span>
+                            </div>
+                            <div style={{ height: 5, background: 'var(--canvas-soft-2)', borderRadius: 3, overflow: 'hidden' }}>
+                              <div style={{
+                                height: '100%', borderRadius: 3, background: colors[i],
+                                width: `${pct}%`,
+                                animation: `barGrow 0.7s var(--ease-out-expo) ${i * 80}ms both`,
+                              }} />
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {cities.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--ink-muted)', fontSize: 13 }}>لا توجد بيانات</div>
+                      )}
                     </div>
-                  ))}
-                  {overview.topCities.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--ink-muted)', fontSize: 13 }}>لا توجد بيانات</div>
-                  )}
-                </div>
+                  )
+                })()}
               </div>
 
               {/* payment breakdown */}

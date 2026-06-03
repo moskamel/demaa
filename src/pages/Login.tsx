@@ -70,7 +70,7 @@ export default function Login() {
   }
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontFamily: "'Zain', 'Inter', sans-serif" }}>
+    <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontFamily: "'Zain', 'Inter', sans-serif" }} className="page-enter">
 
       {/* back */}
       <Link to="/" style={{ position: 'absolute', top: 24, right: 32, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', fontSize: 13, textDecoration: 'none' }}>
@@ -154,18 +154,22 @@ export default function Login() {
             )}
 
             {error && (
-              <div style={{ fontSize: 13, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,85,119,0.2)' }}>
+              <div className="animate-wiggle animate-fade-in" style={{ fontSize: 13, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(255,85,119,0.2)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 16 }}>⚠️</span>
                 {error}
               </div>
             )}
 
-            <button type="submit" disabled={loading} style={{
+            <button type="submit" disabled={loading} className="btn-press" style={{
               width: '100%', padding: '13px', borderRadius: 9999, border: 'none',
               cursor: loading ? 'default' : 'pointer', fontFamily: 'inherit',
               fontSize: 15, fontWeight: 600, background: 'var(--ink)', color: 'var(--canvas)',
-              marginTop: 4, opacity: loading ? 0.6 : 1, transition: 'opacity 0.15s',
+              marginTop: 4, opacity: loading ? 0.7 : 1,
+              transition: 'opacity 0.15s, transform 0.12s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}>
-              {loading ? '...' : mode === 'login' ? 'تسجيل الدخول' : mode === 'signup' ? 'إنشاء الحساب' : 'إرسال الرابط'}
+              {loading && <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />}
+              {loading ? 'جاري التحقق...' : mode === 'login' ? 'تسجيل الدخول' : mode === 'signup' ? 'إنشاء الحساب' : 'إرسال الرابط'}
             </button>
 
             {mode !== 'reset' && (

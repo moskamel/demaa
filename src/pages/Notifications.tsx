@@ -71,15 +71,18 @@ export default function Notifications() {
 
         {/* list */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>
-            جاري التحميل...
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[0,1,2,3,4].map(i => (
+              <div key={i} className="skeleton" style={{ height: 72, borderRadius: 12 }} />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>
-            لا توجد إشعارات
+          <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '80px 0' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔔</div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink-muted)' }}>لا توجد إشعارات</div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {filtered.map((n, i) => {
               const cfg = typeConfig[n.type] || { icon: Notification, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' }
               const Icon = cfg.icon
@@ -88,25 +91,43 @@ export default function Notifications() {
                 <div
                   key={n.id}
                   onClick={() => markRead(n.id)}
-                  style={{ background: isRead ? 'transparent' : 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', border: '1px solid', borderColor: isRead ? 'transparent' : 'var(--hairline)', marginBottom: i < filtered.length - 1 ? 2 : 0 }}
+                  className="animate-fade-in-up"
+                  style={{
+                    background: isRead ? 'var(--canvas-soft)' : 'var(--canvas-soft)',
+                    borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer',
+                    border: '1px solid', borderColor: isRead ? 'var(--hairline)' : 'rgba(77,124,255,0.25)',
+                    animationDelay: `${i * 50}ms`,
+                    transition: 'transform 0.15s var(--ease-spring), box-shadow 0.15s ease, border-color 0.2s ease, background 0.2s ease',
+                    opacity: isRead ? 0.75 : 1,
+                    boxShadow: isRead ? 'none' : '0 2px 12px rgba(77,124,255,0.08)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '1' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = isRead ? 'none' : '0 2px 12px rgba(77,124,255,0.08)'; e.currentTarget.style.opacity = isRead ? '0.75' : '1' }}
                 >
                   {/* icon */}
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'transform 0.2s var(--ease-spring)' }}>
                     <Icon size={16} color={cfg.color} variant="Outline" />
                   </div>
 
                   {/* text */}
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                      <span style={{ fontSize: 13, fontWeight: isRead ? 500 : 600, color: 'var(--ink)' }}>{n.title}</span>
-                      <span style={{ fontSize: 10, color: priorityColor[n.priority], background: priorityColor[n.priority] + '18', borderRadius: 4, padding: '1px 6px', marginRight: 'auto' }}>{priorityLabel[n.priority]}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: isRead ? 500 : 700, color: 'var(--ink)' }}>{n.title}</span>
+                      <span style={{ fontSize: 10, color: priorityColor[n.priority], background: priorityColor[n.priority] + '18', borderRadius: 4, padding: '2px 7px', marginRight: 'auto', fontWeight: 600 }}>{priorityLabel[n.priority]}</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{n.body}</div>
-                    <div style={{ fontSize: 11, color: '#555', marginTop: 5 }}>{n.createdAt}</div>
+                    <div style={{ fontSize: 10, color: 'var(--ink-disabled)', marginTop: 6 }}>
+                      {new Date(n.createdAt).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
 
-                  {/* unread dot */}
-                  {!isRead && <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent-blue)', marginTop: 6, flexShrink: 0 }} />}
+                  {/* unread dot with pulse */}
+                  {!isRead && (
+                    <div style={{ position: 'relative', width: 8, height: 8, marginTop: 6, flexShrink: 0 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4d7cff' }} />
+                      <div style={{ position: 'absolute', inset: -2, borderRadius: '50%', border: '2px solid #4d7cff', animation: 'pulseRing 1.8s ease-out infinite' }} />
+                    </div>
+                  )}
                 </div>
               )
             })}

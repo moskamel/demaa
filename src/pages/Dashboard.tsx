@@ -9,6 +9,7 @@ import { conversations as convApi, orders as ordersApi, notifications as notifAp
 import type { Message, OrderRow, ProductRow } from '../types/chat'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
 import SearchModal from '../components/SearchModal'
+import AnimatedNumber from '../components/AnimatedNumber'
 
 // ── Status helpers ───────────────────────────────────────────────────────────
 const statusColors: Record<string, string> = {
@@ -465,7 +466,7 @@ export default function Dashboard() {
           <div style={{ display: 'flex', gap: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
               <Box size={12} variant="Outline" />
-              <span style={{ color: 'var(--gradient-orange)', fontWeight: 600 }}>{orderStats.pending}</span> معلق
+              <span style={{ color: 'var(--gradient-orange)', fontWeight: 600 }}><AnimatedNumber value={orderStats.pending} duration={600} /></span> معلق
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
               <Warning2 size={12} color="var(--gradient-coral)" variant="Outline" />
@@ -519,13 +520,13 @@ export default function Dashboard() {
 
         {/* messages */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
-          {messages.map(msg => (
-            <div key={msg.id}>
+          {messages.map((msg, idx) => (
+            <div key={msg.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 30, 120)}ms` }}>
               {msg.role === 'deema' ? (
                 <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                  <div style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
+                  <div className="chat-message-user" style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
                     {msg.content}
                   </div>
                   {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingRight: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
@@ -535,13 +536,13 @@ export default function Dashboard() {
           ))}
 
           {isTyping && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: 11, fontWeight: 700 }}>D</span>
               </div>
-              <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5 }}>
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                 {[0, 1, 2].map(i => (
-                  <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ink-muted)', animation: `bounce 1s ${i * 0.15}s infinite` }} />
+                  <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)', animation: `dotBounce 1.2s ${i * 0.18}s ease-in-out infinite` }} />
                 ))}
               </div>
             </div>
@@ -555,10 +556,12 @@ export default function Dashboard() {
             <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}
               // @ts-ignore
               onScroll={() => {}}>
-              {QUICK.map(q => (
-                <button key={q.label} onClick={() => handleSend(q.cmd)} style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: 'none', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
+              {QUICK.map((q, i) => (
+                <button key={q.label} onClick={() => handleSend(q.cmd)}
+                  className="animate-fade-in btn-press"
+                  style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit', animationDelay: `${i * 40}ms`, transition: 'background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)'; e.currentTarget.style.background = 'var(--canvas-soft-2)'; e.currentTarget.style.borderColor = 'var(--hairline-strong)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink-muted)'; e.currentTarget.style.background = 'var(--canvas-soft)'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
                 >{q.label}</button>
               ))}
             </div>
