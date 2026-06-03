@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box, Truck, Notification as NotificationIcon } from 'iconsax-react'
+import { InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box, Truck, Notification as NotificationIcon } from 'iconsax-react'
 import { notifications as notifApi, type Notification } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const typeConfig: Record<string, { icon: typeof NotificationIcon; color: string; bg: string }> = {
   low_stock: { icon: Box, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
@@ -47,24 +48,9 @@ export default function Notifications() {
   const unreadCount = notifs.filter(n => !n.isRead).length
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      {/* top bar */}
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإشعارات</span>
-        {unreadCount > 0 && (
-          <span style={{ background: 'var(--gradient-coral)', color: '#fff', borderRadius: 100, fontSize: 10, fontWeight: 700, padding: '2px 7px' }}>{unreadCount}</span>
-        )}
-        <div style={{ flex: 1 }} />
-        {unreadCount > 0 && (
-          <button onClick={markAllRead} style={{ fontSize: 12, color: 'var(--accent-blue)', background: 'none', border: 'none', cursor: 'pointer' }}>
-            تحديد الكل كمقروء
-          </button>
-        )}
-      </div>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 24px' }}>
         {/* filter tabs */}
@@ -124,6 +110,7 @@ export default function Notifications() {
             })}
           </div>
         )}
+      </div>
       </div>
     </div>
   )

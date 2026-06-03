@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock, ArrowLeft2 } from 'iconsax-react'
+import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock } from 'iconsax-react'
 import { storesApi, type StoreData } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const statusMap = (isActive: boolean, syncStatus: string) => {
   if (syncStatus === 'syncing') return { label: 'جاري التزامن', color: '#0099ff', icon: Clock }
@@ -55,19 +56,9 @@ export default function Stores() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', padding: '0 0 60px' }}>
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" />
-          الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>متاجري</span>
-        <div style={{ flex: 1 }} />
-        <Link to="/onboarding" className="btn-primary" style={{ fontSize: 13, padding: '8px 16px' }}>
-          <Add size={13} variant="Outline" /> ربط متجر جديد
-        </Link>
-      </div>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
 
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>
@@ -163,6 +154,7 @@ export default function Stores() {
       </div>
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   )
 }

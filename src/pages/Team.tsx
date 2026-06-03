@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, Add, Trash, ShieldTick, ClipboardText, Headphone } from 'iconsax-react'
+import { Add, Trash, ShieldTick, ClipboardText, Headphone } from 'iconsax-react'
 import { teamApi, type TeamMember } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 type NormRole = 'admin' | 'order_manager' | 'customer_service'
 
@@ -65,19 +66,9 @@ export default function Team() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      {/* top bar */}
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الفريق</span>
-        <div style={{ flex: 1 }} />
-        <button onClick={() => setShowInvite(true)} className="btn-primary" style={{ fontSize: 13, padding: '8px 16px' }}>
-          <Add size={13} variant="Outline" /> دعوة عضو
-        </button>
-      </div>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
 
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>
@@ -201,6 +192,7 @@ export default function Team() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

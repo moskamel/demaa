@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, TickCircle, InfoCircle, Clock, Add, ExportSquare } from 'iconsax-react'
+import { TickCircle, InfoCircle, Clock, Add, ExportSquare } from 'iconsax-react'
 import { connectorsApi, type ConnectorData as Connector } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const categoryLabels = {
   shipping: 'شركات الشحن',
@@ -116,17 +117,9 @@ export default function Connectors() {
   if (loading) return <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      {/* top bar */}
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>التطبيقات المتصلة</span>
-        <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{connected} من {connectors.length} متصل</span>
-      </div>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
 
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>
@@ -182,6 +175,7 @@ export default function Connectors() {
       </div>
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   )
 }

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, Refresh2 } from 'iconsax-react'
+import { TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, Refresh2 } from 'iconsax-react'
 import { analytics as analyticsApi, products as productsApi, type AnalyticsOverview, type Product } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const paymentLabels: Record<string, string> = { card: 'بطاقة', cash: 'كاش', tabby: 'تابby', tamara: 'تمارا' }
 const paymentColors: Record<string, string> = { card: '#6a4cf5', cash: '#ff7a3d', tabby: '#22c55e', tamara: '#0099ff' }
@@ -60,31 +61,9 @@ export default function Reports() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      {/* top bar */}
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>التقارير</span>
-        <div style={{ marginRight: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* period selector */}
-          <div style={{ display: 'flex', gap: 3, background: 'var(--canvas-soft)', borderRadius: 8, padding: 3 }}>
-            {(['7d', '30d', '90d'] as Period[]).map(p => (
-              <button key={p} onClick={() => setPeriod(p)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: period === p ? 'var(--canvas-soft-2)' : 'transparent', color: period === p ? 'var(--ink)' : 'var(--ink-muted)' }}>
-                {p === '7d' ? '٧ أيام' : p === '30d' ? '٣٠ يوم' : '٩٠ يوم'}
-              </button>
-            ))}
-          </div>
-          <button onClick={handleRefresh} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)' }}>
-            <Refresh2 size={13} variant="Outline" style={{ animation: refreshing ? 'spin 0.8s linear' : 'none' }} />
-          </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, color: 'var(--ink-muted)' }}>
-            <DocumentDownload size={12} variant="Outline" /> تصدير
-          </button>
-        </div>
-      </div>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
 
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '28px 24px' }}>
         {loading ? (
@@ -212,6 +191,7 @@ export default function Reports() {
         )}
       </div>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   )
 }
