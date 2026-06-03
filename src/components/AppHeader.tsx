@@ -108,8 +108,8 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
 
   return (
     <div style={{
-      minHeight: 56, borderRadius: 20,
-      margin: '30px 20px 0 30px',
+      minHeight: 56, borderRadius: 15,
+      margin: '20px 20px 0 20px',
       display: 'flex', alignItems: 'center', padding: '0 20px',
       gap: 12, flexShrink: 0, background: 'var(--canvas-soft)',
       boxShadow: '0 4px 24px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)',
