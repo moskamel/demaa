@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  Notification, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
+  Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
   Shop, Electricity, People, Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
   ChartSquare, Logout,
 } from 'iconsax-react'
@@ -355,7 +355,7 @@ export default function Dashboard() {
             { to: '/reports', icon: ChartSquare, label: 'التقارير' },
             { to: '/team', icon: People, label: 'الفريق' },
             { to: '/connectors', icon: Electricity, label: 'التطبيقات' },
-            { to: '/notifications', icon: Notification, label: 'الإشعارات', badge: unreadNotifs > 0 ? unreadNotifs : undefined, badgeColor: '#ff5577' },
+            { to: '/notifications', icon: NotifIcon, label: 'الإشعارات', badge: unreadNotifs > 0 ? unreadNotifs : undefined, badgeColor: '#ff5577' },
           ].map(({ to, icon: Icon, label, badge, badgeColor }) => (
             <Link key={to} to={to} style={{ ...navBtnStyle(sidebarCollapsed), textDecoration: 'none', position: 'relative' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
@@ -507,7 +507,7 @@ export default function Dashboard() {
             {/* notifications bell */}
             <div style={{ position: 'relative' }}>
               <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--canvas-soft)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
-                <Notification size={15} variant="Outline" />
+                <NotifIcon size={15} variant="Outline" />
               </button>
               {unreadNotifs > 0 && <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, background: 'var(--gradient-coral)', borderRadius: '50%', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadNotifs}</span>}
               {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} notifs={apiNotifs} unreadCount={unreadNotifs} />}
