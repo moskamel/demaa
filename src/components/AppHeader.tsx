@@ -192,7 +192,7 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
 
             <div style={{ height: 1, background: 'var(--hairline)', margin: '4px 0' }} />
 
-            <button onClick={() => { navigate('/onboarding'); setShowStores(false) }} style={{
+            <button onClick={() => { navigate('/onboarding', { state: { fromDashboard: true } }); setShowStores(false) }} style={{
               width: '100%', padding: '10px 14px', background: 'none', border: 'none',
               textAlign: 'right', cursor: 'pointer', fontFamily: 'inherit',
               display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink-muted)',

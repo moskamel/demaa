@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { TickCircle, ArrowLeft2, ExportSquare, Refresh2, SearchNormal1 } from 'iconsax-react'
 import { storesApi } from '../lib/api'
 
@@ -237,6 +237,9 @@ export default function Onboarding() {
   const [connected, setConnected] = useState(false)
   const [_error, setError] = useState('')
   const navigate = useNavigate()
+  const location = useLocation()
+  // Hide "تخطي" when user navigated from the add-store button (not first-time signup)
+  const isFromDashboard = (location.state as { fromDashboard?: boolean } | null)?.fromDashboard === true
 
   const handleConnect = async () => {
     if (!apiKey.trim()) return
@@ -268,7 +271,7 @@ export default function Onboarding() {
   , [search])
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: step === 1 ? 'flex-start' : 'center', padding: step === 1 ? '80px 24px 24px' : 24 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: step === 1 ? 'flex-start' : 'center', padding: step === 1 ? '80px 24px 120px' : '24px 24px 120px' }}>
 
       {/* logo */}
       <div style={{ position: 'absolute', top: 24, right: 30, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -363,39 +366,6 @@ export default function Onboarding() {
             </div>
           </div>
 
-          {/* Fixed bottom button */}
-          <div style={{ flexShrink: 0, paddingTop: 16, borderTop: '1px solid var(--hairline)', marginTop: 8 }}>
-            {platform && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, padding: '10px 14px', background: 'var(--canvas-soft)', borderRadius: 10, border: '1px solid var(--hairline)' }}>
-                <PlatformLogo domain={platform} name={selectedPlatform?.name || ''} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', flex: 1 }}>{selectedPlatform?.name}</span>
-                <button onClick={() => setPlatform(null)} style={{ fontSize: 12, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>تغيير</button>
-              </div>
-            )}
-            <button
-              disabled={!platform}
-              onClick={() => setStep(2)}
-              style={{
-                width: '100%', padding: '13px', borderRadius: 9999, border: 'none',
-                background: platform ? '#1c1c1e' : 'var(--hairline)',
-                color: platform ? '#fff' : 'var(--ink-muted)',
-                cursor: platform ? 'pointer' : 'default',
-                fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                transition: 'background 0.15s',
-              }}>
-              التالي <ArrowLeft2 size={15} variant="Outline" />
-            </button>
-            <button
-              onClick={() => navigate('/dashboard')}
-              style={{
-                width: '100%', padding: '11px', borderRadius: 9999, border: 'none',
-                background: 'transparent', color: 'var(--ink-muted)',
-                cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', marginTop: 8,
-              }}>
-              تخطي — ربط لاحقاً
-            </button>
-          </div>
         </div>
       )}
 
@@ -473,19 +443,6 @@ export default function Onboarding() {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setStep(1)} className="btn-secondary" style={{ padding: '11px 18px', borderRadius: 10 }}>
-              رجوع
-            </button>
-            <button
-              disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
-              onClick={() => setStep(3)}
-              className="btn-primary"
-              style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4 }}
-            >
-              التحقق من الـ Key
-            </button>
-          </div>
         </div>
       )}
 
@@ -546,6 +503,83 @@ export default function Onboarding() {
           )}
         </div>
       )}
+
+      {/* ── Fixed bottom action bar ── */}
+      {step !== 3 || !connected ? (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          background: 'var(--canvas)', borderTop: '1px solid var(--hairline)',
+          padding: '16px 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 12, zIndex: 100,
+        }}>
+          <div style={{ width: '100%', maxWidth: 520, display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* تخطي — only during first-time onboarding (not from dashboard) */}
+            {!isFromDashboard && (
+              <button
+                onClick={() => navigate('/dashboard')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '11px 18px', borderRadius: 9999, border: '1px solid var(--hairline)',
+                  background: 'transparent', color: 'var(--ink-muted)',
+                  cursor: 'pointer', fontSize: 14, fontFamily: 'inherit',
+                  whiteSpace: 'nowrap', transition: 'border-color 0.15s, color 0.15s',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--hairline-strong)'; e.currentTarget.style.color = 'var(--ink)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--hairline)'; e.currentTarget.style.color = 'var(--ink-muted)' }}
+              >
+                <ArrowLeft2 size={14} variant="Outline" style={{ transform: 'rotate(180deg)' }} />
+                تخطي — ربط لاحقاً
+              </button>
+            )}
+
+            {/* التالي / رجوع */}
+            {step === 1 && (
+              <>
+                {platform && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, background: 'var(--canvas-soft)', borderRadius: 10, padding: '8px 12px', border: '1px solid var(--hairline)', minWidth: 0 }}>
+                    <PlatformLogo domain={platform} name={selectedPlatform?.name || ''} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedPlatform?.name}</span>
+                    <button onClick={() => setPlatform(null)} style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>تغيير</button>
+                  </div>
+                )}
+                <button
+                  disabled={!platform}
+                  onClick={() => setStep(2)}
+                  style={{
+                    padding: '12px 28px', borderRadius: 9999, border: 'none',
+                    background: platform ? '#1c1c1e' : 'var(--hairline)',
+                    color: platform ? '#fff' : 'var(--ink-muted)',
+                    cursor: platform ? 'pointer' : 'default',
+                    fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    transition: 'background 0.15s',
+                    flexShrink: 0,
+                  }}>
+                  التالي <ArrowLeft2 size={15} variant="Outline" />
+                </button>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <button onClick={() => setStep(1)} className="btn-secondary" style={{ padding: '11px 18px', borderRadius: 10, flexShrink: 0 }}>
+                  رجوع
+                </button>
+                <button
+                  disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
+                  onClick={() => setStep(3)}
+                  className="btn-primary"
+                  style={{ flex: 1, justifyContent: 'center', padding: '11px 18px', borderRadius: 10, opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4 }}
+                >
+                  التحقق من الـ Key
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>

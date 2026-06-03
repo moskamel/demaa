@@ -128,7 +128,7 @@ export default function Stores() {
                         {isSyncing ? 'جاري التزامن...' : 'مزامنة'}
                       </button>
                       {!s.isActive && (
-                        <Link to="/onboarding" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,122,61,0.1)', border: '1px solid rgba(255,122,61,0.25)', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--gradient-orange)', cursor: 'pointer', textDecoration: 'none' }}>
+                        <Link to="/onboarding" state={{ fromDashboard: true }} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,122,61,0.1)', border: '1px solid rgba(255,122,61,0.25)', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--gradient-orange)', cursor: 'pointer', textDecoration: 'none' }}>
                           إعادة الربط
                         </Link>
                       )}
@@ -151,11 +151,11 @@ export default function Stores() {
           <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: 60, color: 'var(--ink-muted)', fontSize: 14 }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🏪</div>
             <p style={{ marginBottom: 16 }}>لا يوجد متاجر مربوطة بعد</p>
-            <Link to="/onboarding" className="btn-primary" style={{ fontSize: 13 }}>ربط متجرك الأول</Link>
+            <Link to="/onboarding" state={{ fromDashboard: true }} className="btn-primary" style={{ fontSize: 13 }}>ربط متجرك الأول</Link>
           </div>
         )}
 
-        <Link to="/onboarding" style={{ textDecoration: 'none' }}>
+        <Link to="/onboarding" state={{ fromDashboard: true }} style={{ textDecoration: 'none' }}>
           <div className="hover-lift" style={{ marginTop: 12, background: 'transparent', border: '2px dashed var(--hairline)', borderRadius: 16, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', color: 'var(--ink-muted)', transition: 'border-color 0.2s, color 0.2s' }}>
             <Add size={16} variant="Outline" />
             <span style={{ fontSize: 14 }}>ربط متجر جديد</span>
