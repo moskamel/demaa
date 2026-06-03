@@ -397,8 +397,8 @@ export default function Dashboard() {
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
-                    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3, maxWidth: '50%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, maxWidth: '50%' }}>
                         <div className="chat-message-user" style={{ background: '#6a4cf5', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.25)' }}>
                           {msg.content}
                         </div>
