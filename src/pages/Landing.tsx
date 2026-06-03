@@ -240,9 +240,6 @@ export default function Landing() {
               <Link to="/signup" style={{ ...btnPrimary, padding: '14px 28px', fontSize: 15 }}>
                 ابدأ مجاناً ←
               </Link>
-              <a href="#demo" style={{ ...btnOutline, padding: '14px 28px', fontSize: 15 }}>
-                شاهد الديمو
-              </a>
             </div>
 
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>

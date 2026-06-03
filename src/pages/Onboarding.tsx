@@ -255,7 +255,7 @@ export default function Onboarding() {
           // Sync errors are non-blocking
         }
       }
-      setTimeout(() => navigate('/dashboard'), 1800)
+      setTimeout(() => navigate('/subscribe'), 1800)
     } catch (err: unknown) {
       setLoading(false)
       setError(err instanceof Error ? err.message : 'فشل الاتصال، تحقق من المفتاح')

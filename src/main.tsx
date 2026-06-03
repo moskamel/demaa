@@ -25,6 +25,7 @@ import Billing from './pages/Billing'
 import Insights from './pages/Insights'
 import Reports from './pages/Reports'
 import Customers from './pages/Customers'
+import Subscribe from './pages/Subscribe'
 import NotFound from './pages/NotFound'
 import Features from './pages/Features'
 import Pricing from './pages/Pricing'
@@ -59,6 +60,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/insights" element={<PrivateRoute><Insights /></PrivateRoute>} />
         <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
         <Route path="/customers" element={<PrivateRoute><Customers /></PrivateRoute>} />
+        <Route path="/subscribe" element={<PrivateRoute><Subscribe /></PrivateRoute>} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/platforms" element={<Platforms />} />
