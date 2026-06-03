@@ -542,11 +542,16 @@ export default function Dashboard() {
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                      <div className="chat-message-user" style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
-                        {msg.content}
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                        <div className="chat-message-user" style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55vw', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
+                          {msg.content}
+                        </div>
+                        {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
                       </div>
-                      {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingRight: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
+                      <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                        {(JSON.parse(localStorage.getItem('deema_user') || '{}').name || 'م')[0]}
+                      </div>
                     </div>
                   )}
                 </div>
