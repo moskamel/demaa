@@ -197,6 +197,7 @@ export default function Dashboard() {
   const [isTyping, setIsTyping] = useState(false)
   const [showNotifs, setShowNotifs] = useState(false)
   const [activeConv, setActiveConv] = useState<string | null>(null)
+  const skipLoadRef = useRef(false)
   const [convList, setConvList] = useState<{ id: string; title?: string; updatedAt: string }[]>([])
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [showSearch, setShowSearch] = useState(false)
@@ -215,11 +216,23 @@ export default function Dashboard() {
     // Load conversations
     convApi.list().then(r => {
       setConvList(r.conversations)
-      if (r.conversations.length > 0) {
-        setActiveConv(r.conversations[0].id)
-      }
     }).catch(() => {})
   }, [])
+
+  // Load messages when switching conversations
+  useEffect(() => {
+    if (!activeConv) return
+    if (skipLoadRef.current) { skipLoadRef.current = false; return }
+    convApi.messages(activeConv).then(r => {
+      if (r.messages.length === 0) { setMessages([initialMessage]); return }
+      setMessages(r.messages.map((m: { id: string; role: string; content: string; createdAt?: string }) => ({
+        id: m.id,
+        role: m.role === 'assistant' ? 'deema' : 'user',
+        content: m.content,
+        createdAt: m.createdAt,
+      } as Message)))
+    }).catch(() => {})
+  }, [activeConv])
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, isTyping])
 
@@ -245,6 +258,7 @@ export default function Dashboard() {
       if (!convId) {
         const { conversation } = await convApi.create(trimmed.slice(0, 40))
         convId = conversation.id
+        skipLoadRef.current = true
         setActiveConv(convId)
         setConvList(prev => [conversation, ...prev])
       }
