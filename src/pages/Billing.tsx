@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowLeft2, Flash, TickCircle, Repeat, Box, Shop, People } from 'iconsax-react'
+import { Flash, TickCircle, Repeat, Box, Shop, People } from 'iconsax-react'
 import { aiApi, orders as ordersApi, storesApi, teamApi, type Subscription } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const FEATURES = [
   'منصات غير محدودة',
@@ -43,14 +43,9 @@ export default function Billing() {
   const statusColor = sub?.status === 'active' ? '#22c55e' : '#ff7a3d'
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الاشتراك</span>
-      </div>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)' }}>
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '40px 24px' }}>
 
@@ -127,6 +122,7 @@ export default function Billing() {
           ))}
         </div>
 
+      </div>
       </div>
     </div>
   )

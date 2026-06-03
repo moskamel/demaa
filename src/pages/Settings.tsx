@@ -268,6 +268,7 @@ export default function Settings() {
           </div>
         </Section>
       </div>
+      </div>
     </div>
   )
 }
