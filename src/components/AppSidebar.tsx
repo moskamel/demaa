@@ -97,10 +97,11 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
           borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0,
         }}>
           {collapsed ? (
-            <button onClick={() => toggle(false)} style={{ ...iconBtn, color: 'rgba(255,255,255,0.5)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
-              <ArrowDown2 size={14} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
+            <button onClick={() => toggle(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}
+              title="توسيع">
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>D</span>
+              </div>
             </button>
           ) : (
             <>
@@ -132,33 +133,33 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
             <button onClick={onNewChat} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 8,
               padding: collapsed ? '9px' : '9px 12px',
-              borderRadius: 10, border: '1px solid rgba(106,76,245,0.4)',
-              background: 'rgba(106,76,245,0.12)', cursor: 'pointer',
-              color: 'rgba(255,255,255,0.85)', fontSize: 13, fontFamily: 'inherit',
+              borderRadius: 10, border: 'none',
+              background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', cursor: 'pointer',
+              color: '#fff', fontSize: 13, fontFamily: 'inherit',
               justifyContent: collapsed ? 'center' : 'flex-start',
-              transition: 'background 0.15s, border-color 0.15s',
+              transition: 'opacity 0.15s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(106,76,245,0.22)'; e.currentTarget.style.borderColor = 'rgba(106,76,245,0.6)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(106,76,245,0.12)'; e.currentTarget.style.borderColor = 'rgba(106,76,245,0.4)' }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
             >
-              <MessageAdd1 size={15} variant="Outline" color="#a78bfa" />
-              {!collapsed && <span style={{ fontWeight: 500, color: '#c4b5fd' }}>محادثة جديدة</span>}
+              <MessageAdd1 size={15} variant="Outline" color="#fff" />
+              {!collapsed && <span style={{ fontWeight: 500, color: '#fff' }}>محادثة جديدة</span>}
             </button>
           ) : (
             <button onClick={() => navigate('/dashboard')} style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: 8,
               padding: collapsed ? '9px' : '9px 12px',
-              borderRadius: 10, border: '1px solid rgba(106,76,245,0.4)',
-              background: 'rgba(106,76,245,0.12)', cursor: 'pointer',
-              color: 'rgba(255,255,255,0.85)', fontSize: 13, fontFamily: 'inherit',
+              borderRadius: 10, border: 'none',
+              background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', cursor: 'pointer',
+              color: '#fff', fontSize: 13, fontFamily: 'inherit',
               justifyContent: collapsed ? 'center' : 'flex-start',
-              transition: 'background 0.15s, border-color 0.15s',
+              transition: 'opacity 0.15s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(106,76,245,0.22)'; e.currentTarget.style.borderColor = 'rgba(106,76,245,0.6)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(106,76,245,0.12)'; e.currentTarget.style.borderColor = 'rgba(106,76,245,0.4)' }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
             >
-              <MessageAdd1 size={15} variant="Outline" color="#a78bfa" />
-              {!collapsed && <span style={{ fontWeight: 500, color: '#c4b5fd' }}>محادثة جديدة</span>}
+              <MessageAdd1 size={15} variant="Outline" color="#fff" />
+              {!collapsed && <span style={{ fontWeight: 500, color: '#fff' }}>محادثة جديدة</span>}
             </button>
           )}
         </div>
@@ -203,7 +204,7 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
                     justifyContent: collapsed ? 'center' : 'flex-start',
                     transition: 'background 0.12s',
                   }}>
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: c.id === activeConv ? '#a78bfa' : 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                  {!collapsed && <div style={{ width: 5, height: 5, borderRadius: '50%', background: c.id === activeConv ? '#a78bfa' : 'rgba(255,255,255,0.2)', flexShrink: 0 }} />}
                   {!collapsed && (
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#c4b5fd' : 'rgba(255,255,255,0.55)' }}>
                       {c.title || 'محادثة'}
@@ -317,18 +318,6 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
                   <Logout size={14} variant="Outline" />
                 </button>
               </>
-            )}
-            {/* Collapsed: logout icon only */}
-            {collapsed && (
-              <button
-                onClick={() => setShowLogoutConfirm(true)}
-                title="تسجيل الخروج"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, display: 'flex', color: 'rgba(255,255,255,0.3)', transition: 'color 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
-              >
-                <Logout size={14} variant="Outline" />
-              </button>
             )}
           </div>
         </div>
