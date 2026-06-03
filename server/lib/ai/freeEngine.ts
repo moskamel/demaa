@@ -270,7 +270,7 @@ const INTENTS: Intent[] = [
   // help
   {
     name: 'help',
-    patterns: [/مساعدة|ايش تقدر|شو تقدر|قدراتك|أوامر/i],
+    patterns: [/مساعدة|ايش تقدر|شو تقدر|قدراتك|أوامر|كيف أستخدمك|شو تعرف تسوي/i],
     async handler() {
       return `أنا ديما، مساعدك الذكي لإدارة المتجر. إليك ما أقدر أفعله:\n\n` +
         `📦 **الطلبات**\n• "الطلبات المعلقة" — عرض الطلبات\n• "اقبل كل الطلبات" — قبول جماعي\n• "اشحن الطلبات المقبولة" — إنشاء شحنات\n• "ارفض طلب #10233" — رفض طلب\n\n` +
@@ -281,7 +281,108 @@ const INTENTS: Intent[] = [
         `🧠 **الذاكرة**\n• "ايش تعرف عن متجري؟"`
     }
   },
+
+  // General questions about today / status
+  {
+    name: 'today_summary',
+    patterns: [/كيف حال المتجر|وضع المتجر|ملخص اليوم|ايش صار اليوم|احوال|أخبار المتجر/i],
+    async handler(_msg, ctx) {
+      const [pending, analytics, lowStock] = await Promise.all([
+        executeTool('get_orders', { status: 'pending', limit: 5 }, ctx) as any,
+        executeTool('get_analytics', { period: 'today' }, ctx) as any,
+        executeTool('get_products', { lowStock: true, limit: 5 }, ctx) as any,
+      ])
+      const pendingCount = pending.count ?? pending.orders?.length ?? 0
+      const revenue = analytics.totalRevenue ?? 0
+      const lowStockCount = lowStock.products?.length ?? 0
+      return `📊 **ملخص متجرك اليوم:**\n\n` +
+        `📦 طلبات معلقة تنتظرك: **${pendingCount}**\n` +
+        `💰 إيراد اليوم: **${fmt(revenue * 100)}**\n` +
+        `⚠️ منتجات قاربت النفاد: **${lowStockCount}**\n\n` +
+        (pendingCount > 0 ? `💡 ابدأ بـ "اقبل كل الطلبات" لمعالجة الطلبات المعلقة.` : '✅ كل شيء تمام!')
+    }
+  },
+
+  // Questions about what to do / recommendations
+  {
+    name: 'recommendations',
+    patterns: [/ايش أسوي|وش أسوي|ماذا أفعل|نصيحة|توصية|اقترح|ايش تنصح/i],
+    async handler(_msg, ctx) {
+      const [pending, lowStock] = await Promise.all([
+        executeTool('get_orders', { status: 'pending', limit: 100 }, ctx) as any,
+        executeTool('get_products', { lowStock: true, limit: 10 }, ctx) as any,
+      ])
+      const pendingCount = pending.count ?? pending.orders?.length ?? 0
+      const lowStockCount = lowStock.products?.length ?? 0
+      const tips: string[] = []
+      if (pendingCount > 0) tips.push(`📦 عندك **${pendingCount} طلب معلق** — اقبلهم وابدأ الشحن`)
+      if (lowStockCount > 0) tips.push(`⚠️ **${lowStockCount} منتج** مخزونه منخفض — أعد التعبئة قبل ما ينفد`)
+      if (tips.length === 0) tips.push('✅ متجرك بوضع ممتاز! جرب "تقرير المبيعات" لتحليل أعمق')
+      return `💡 **توصياتي لك الآن:**\n\n${tips.join('\n\n')}`
+    }
+  },
+
+  // Thank you / appreciation
+  {
+    name: 'thanks',
+    patterns: [/شكر|ممتاز|عظيم|حلو|تمام|مشكور|برافو|أحسنت|يسلمو|الله يعطيك/i],
+    async handler() {
+      const replies = [
+        'العفو! دائماً في خدمتك 😊',
+        'يسعدني! في أي شيء آخر أقدر أساعدك؟',
+        'شكراً لك! هل تحتاج شيء آخر؟',
+        'الشكر لله! متجرك يشتغل عال العال 💪',
+      ]
+      return replies[Math.floor(Math.random() * replies.length)]
+    }
+  },
+
+  // Who are you
+  {
+    name: 'identity',
+    patterns: [/من أنت|من انت|عرّف نفسك|ايش اسمك|شو اسمك|انت من|انت ايش/i],
+    async handler() {
+      return `أنا **ديما** 🤖 — مساعدك الذكي لإدارة متجرك الإلكتروني!\n\nأقدر أساعدك في إدارة الطلبات، تحليل المبيعات، متابعة المخزون، وإنشاء كوبونات الخصم — كل ذلك بالعربية.\n\nكيف أقدر أساعدك اليوم؟`
+    }
+  },
 ]
+
+// ── Smart contextual fallback ─────────────────────────────────────────────────
+
+async function smartFallback(msg: string, ctx: ChatCtx): Promise<string> {
+  try {
+    const [pendingR, analyticsR, lowStockR] = await Promise.all([
+      executeTool('get_orders', { status: 'pending', limit: 100 }, ctx).catch(() => ({ orders: [], count: 0 })) as any,
+      executeTool('get_analytics', { period: '7d' }, ctx).catch(() => null) as any,
+      executeTool('get_products', { lowStock: true, limit: 5 }, ctx).catch(() => ({ products: [] })) as any,
+    ])
+
+    const pendingCount = pendingR.count ?? pendingR.orders?.length ?? 0
+    const revenue = analyticsR?.totalRevenue ?? 0
+    const lowStockCount = lowStockR.products?.length ?? 0
+
+    const storeCtx = [
+      pendingCount > 0 ? `📦 عندك **${pendingCount} طلب معلق**` : null,
+      revenue > 0 ? `💰 إيراد آخر 7 أيام: **${fmt(revenue * 100)}**` : null,
+      lowStockCount > 0 ? `⚠️ **${lowStockCount} منتج** بمخزون منخفض` : null,
+    ].filter(Boolean).join('\n')
+
+    const suggestions = [
+      pendingCount > 0 ? '"اقبل كل الطلبات"' : null,
+      lowStockCount > 0 ? '"مخزون منخفض"' : null,
+      '"تقرير المبيعات"',
+      '"مساعدة"',
+    ].filter(Boolean).slice(0, 3).map(s => `• ${s}`).join('\n')
+
+    let response = `فهمت! دعني أفيدك بما يخص متجرك:\n\n`
+    if (storeCtx) response += `${storeCtx}\n\n`
+    response += `هل تريد أن أساعدك في شيء من هذا؟\n${suggestions}`
+
+    return response
+  } catch {
+    return `أنا ديما وأنا هنا لمساعدتك! 😊\n\nجرّب:\n• "الطلبات المعلقة"\n• "تقرير المبيعات"\n• "مساعدة" — لعرض كل ما أقدر أفعله`
+  }
+}
 
 // ── Main dispatch ─────────────────────────────────────────────────────────────
 
@@ -303,20 +404,6 @@ export async function freeChat(
     }
   }
 
-  // Fallback — show pending orders as default helpful context
-  try {
-    const r = await executeTool('get_orders', { status: 'pending', limit: 5 }, ctx) as any
-    const count = r.count || 0
-    if (count > 0) {
-      return {
-        response: `ما فهمت طلبك تماماً، لكن عندك **${count} طلب معلق** يحتاج اهتمامك.\n\nأكتب "مساعدة" لقائمة الأوامر المتاحة، أو جرب:\n• "الطلبات المعلقة"\n• "تقرير المبيعات"\n• "مخزون منخفض"`,
-        toolsUsed: ['get_orders'],
-      }
-    }
-  } catch { /* silent */ }
-
-  return {
-    response: 'أكتب "مساعدة" لعرض قائمة الأوامر المتاحة.',
-    toolsUsed: [],
-  }
+  const response = await smartFallback(msg, ctx)
+  return { response, toolsUsed: ['context_lookup'] }
 }
