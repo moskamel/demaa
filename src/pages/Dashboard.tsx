@@ -127,6 +127,7 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
             </div>
           )}
         </div>
+      </div>
     </div>
   )
 }
