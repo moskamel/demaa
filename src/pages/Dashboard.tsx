@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
   Shop, Electricity, People, ChartSquare,
-  Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
+  Card, Lamp, MessageAdd1, CloseCircle, Cpu,
   Logout,
 } from 'iconsax-react'
 import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, clearToken, type Notification as ApiNotif, type StoreData } from '../lib/api'
@@ -12,6 +12,7 @@ import OrderDetailDrawer from '../components/OrderDetailDrawer'
 import SearchModal from '../components/SearchModal'
 import AnimatedNumber from '../components/AnimatedNumber'
 import AppHeader from '../components/AppHeader'
+import AppSidebar from '../components/AppSidebar'
 
 // ── Status helpers ───────────────────────────────────────────────────────────
 const statusColors: Record<string, string> = {
@@ -270,34 +271,12 @@ export default function Dashboard() {
     setActiveConv(null)
   }
 
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-
-  const navBtnStyle = (collapsed: boolean): React.CSSProperties => ({
-    width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-    padding: collapsed ? '8px 10px' : '7px 10px',
-    borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer',
-    color: 'rgba(255,255,255,0.65)', fontSize: 13, fontFamily: 'inherit',
-    justifyContent: collapsed ? 'center' : 'flex-start', transition: 'background 0.15s',
-  })
-
-  const navLabelStyle: React.CSSProperties = {
-    fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 400,
-  }
-
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--canvas)', overflow: 'hidden' }}>
 
       {/* ── SIDEBAR ──────────────────────────────────────────────────────────── */}
-      <aside style={{
-        width: sidebarCollapsed ? 56 : 240,
-        background: '#111',
-        borderLeft: '1px solid rgba(255,255,255,0.07)',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-        transition: 'width 0.2s ease',
-        overflow: 'hidden',
-      }}>
+      <AppSidebar convList={convList} activeConv={activeConv} onSelectConv={setActiveConv} onNewChat={handleNewChat} />
+      {false && <aside style={{ display: 'none' }}>
 
         {/* ── Top: logo + collapse toggle */}
         <div style={{ padding: sidebarCollapsed ? '14px 10px' : '14px 12px', display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
@@ -451,7 +430,7 @@ export default function Dashboard() {
             <ArrowDown2 size={12} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
           </button>
         )}
-      </aside>
+      </aside>}
 
       {/* ── CHAT MAIN ──────────────────────────────────────────────────────── */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>

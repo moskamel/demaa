@@ -27,7 +27,16 @@ const NAV_BOTTOM = [
   { to: '/billing', icon: Receipt21, label: 'الاشتراك' },
 ]
 
-export default function AppSidebar() {
+interface Conversation { id: string; title?: string }
+
+interface AppSidebarProps {
+  convList?: Conversation[]
+  activeConv?: string | null
+  onSelectConv?: (id: string) => void
+  onNewChat?: () => void
+}
+
+export default function AppSidebar({ convList, activeConv, onSelectConv, onNewChat }: AppSidebarProps = {}) {
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('sidebar_collapsed') === '1' } catch { return false }
   })
@@ -126,12 +135,21 @@ export default function AppSidebar() {
         </button>
 
         {/* New chat */}
-        <Link to="/dashboard" style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)', textDecoration: 'none' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
-          <MessageAdd1 size={16} variant="Outline" color="#fff" />
-          {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
-        </Link>
+        {onNewChat ? (
+          <button onClick={onNewChat} style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
+            <MessageAdd1 size={16} variant="Outline" color="#fff" />
+            {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+          </button>
+        ) : (
+          <Link to="/dashboard" style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)', textDecoration: 'none' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
+            <MessageAdd1 size={16} variant="Outline" color="#fff" />
+            {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+          </Link>
+        )}
 
         <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 4px' }} />
 
@@ -148,8 +166,27 @@ export default function AppSidebar() {
         ))}
       </div>
 
-      {/* Spacer */}
-      <div style={{ flex: 1 }} />
+      {/* Conversations list (Dashboard only) */}
+      {convList !== undefined && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 8px', borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
+          {!collapsed && <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '6px 8px 4px' }}>المحادثات السابقة</div>}
+          {convList.length === 0 && !collapsed && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', padding: '8px 10px', textAlign: 'center', marginTop: 8 }}>لا توجد محادثات بعد</div>}
+          {convList.map(c => (
+            <button key={c.id} onClick={() => onSelectConv?.(c.id)} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: collapsed ? '8px 10px' : '7px 10px',
+              borderRadius: 8, border: 'none', background: c.id === activeConv ? 'rgba(255,255,255,0.1)' : 'transparent',
+              cursor: 'pointer', marginBottom: 1, textAlign: 'right', fontFamily: 'inherit',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+            }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+              {!collapsed && <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#fff' : 'rgba(255,255,255,0.6)' }}>{c.title || 'محادثة'}</span>}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Spacer (only when no convList) */}
+      {convList === undefined && <div style={{ flex: 1 }} />}
 
       {/* Bottom nav */}
       <div style={{ padding: '6px 8px', borderTop: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
