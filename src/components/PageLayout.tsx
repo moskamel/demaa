@@ -34,7 +34,7 @@ export default function PageLayout({ children }: Props) {
         borderBottom: '1px solid rgba(255,255,255,0.08)',
         height: 64,
         display: 'flex', alignItems: 'center',
-        padding: '0 40px', gap: 24,
+        padding: '0 100px', gap: 24,
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none', flexShrink: 0 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -73,7 +73,7 @@ export default function PageLayout({ children }: Props) {
       </main>
 
       {/* FOOTER */}
-      <footer style={{ background: '#1c1c1e', color: '#fff', padding: '64px 40px 40px' }}>
+      <footer style={{ background: '#1c1c1e', color: '#fff', padding: '64px 100px 40px' }}>
         <div style={{ maxWidth: 1160, margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
             {/* Brand column */}
