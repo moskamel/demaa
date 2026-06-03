@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
-  Shop, Electricity, People, Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
-  ChartSquare, Logout,
+  Notification as NotifIcon, Add, Send2, Setting2, Clock, Box, Warning2,
+  Card, Lamp, MessageAdd1, CloseCircle, Cpu, SearchNormal1,
+  Logout,
 } from 'iconsax-react'
 import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, clearToken, type Notification as ApiNotif, type StoreData } from '../lib/api'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
 import SearchModal from '../components/SearchModal'
 import AnimatedNumber from '../components/AnimatedNumber'
+import AppHeader from '../components/AppHeader'
 
 // ── Status helpers ───────────────────────────────────────────────────────────
 const statusColors: Record<string, string> = {
@@ -455,68 +456,22 @@ export default function Dashboard() {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* top bar */}
-        <div style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 10, flexShrink: 0 }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>{stores[0]?.name ?? '...'}</span>
-            <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--canvas-soft)', borderRadius: 4, padding: '2px 8px', textTransform: 'capitalize' }}>{stores[0]?.platform ?? ''}</span>
-            <ArrowDown2 size={13} color="var(--ink-muted)" variant="Outline" />
-          </div>
-
-          {/* live stats */}
-          <div style={{ display: 'flex', gap: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
-              <Box size={12} variant="Outline" />
-              <span style={{ color: 'var(--gradient-orange)', fontWeight: 600 }}><AnimatedNumber value={orderStats.pending} duration={600} /></span> معلق
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--ink-muted)' }}>
-              <Warning2 size={12} color="var(--gradient-coral)" variant="Outline" />
-              <span style={{ color: 'var(--gradient-coral)', fontWeight: 600 }}>—</span> نافد
-            </div>
-          </div>
-
-          {/* top-right actions */}
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {false && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,122,61,0.12)', borderRadius: 100, padding: '4px 12px' }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gradient-orange)', animation: 'pulse 1.5s infinite' }} />
-                <span style={{ fontSize: 11, color: 'var(--gradient-orange)' }}>في انتظار تأكيدك</span>
-              </div>
-            )}
-
-            {/* search */}
-            <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
-              <SearchNormal1 size={12} variant="Outline" />
-              <span>بحث</span>
-              <kbd style={{ fontSize: 9, background: 'var(--canvas-soft-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
+        <AppHeader title="لوحة التحكم">
+          {/* search */}
+          <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
+            <SearchNormal1 size={12} variant="Outline" />
+            <span>بحث</span>
+            <kbd style={{ fontSize: 9, background: 'var(--canvas-soft-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
+          </button>
+          {/* notifications bell */}
+          <div style={{ position: 'relative' }}>
+            <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--canvas-soft)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
+              <NotifIcon size={15} variant="Outline" />
             </button>
-
-            {/* nav links */}
-            {[
-              { to: '/reports', icon: ChartSquare, title: 'التقارير' },
-              { to: '/stores', icon: Shop, title: 'متاجري' },
-              { to: '/connectors', icon: Electricity, title: 'التطبيقات' },
-              { to: '/team', icon: People, title: 'الفريق' },
-            ].map(({ to, icon: Icon, title }) => (
-              <Link key={to} to={to} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)', textDecoration: 'none', background: 'transparent' }} title={title}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--canvas-soft)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <Icon size={14} variant="Outline" />
-              </Link>
-            ))}
-
-            {/* notifications bell */}
-            <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--canvas-soft)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
-                <NotifIcon size={15} variant="Outline" />
-              </button>
-              {unreadNotifs > 0 && <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, background: 'var(--gradient-coral)', borderRadius: '50%', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadNotifs}</span>}
-              {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} notifs={apiNotifs} unreadCount={unreadNotifs} />}
-            </div>
-
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: 'var(--ink)' }}>م</div>
+            {unreadNotifs > 0 && <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, background: 'var(--gradient-coral)', borderRadius: '50%', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{unreadNotifs}</span>}
+            {showNotifs && <NotifFlyout onClose={() => setShowNotifs(false)} notifs={apiNotifs} unreadCount={unreadNotifs} />}
           </div>
-        </div>
+        </AppHeader>
 
         {/* messages */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
