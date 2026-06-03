@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Eye, EyeOff, ArrowLeft, Zap } from 'lucide-react'
-import { auth as authApi, setToken } from '../lib/api'
+import { auth as authApi, storesApi, setToken } from '../lib/api'
 
 type Mode = 'login' | 'signup' | 'reset'
 
@@ -40,7 +40,18 @@ export default function Login() {
       setToken(res.token)
       localStorage.setItem('deema_user', JSON.stringify(res.user))
       localStorage.setItem('deema_org', JSON.stringify(res.org))
-      navigate(mode === 'signup' ? '/onboarding' : '/dashboard')
+
+      if (mode === 'signup') {
+        navigate('/onboarding')
+      } else {
+        // Check if user already has connected stores
+        try {
+          const { stores } = await storesApi.list()
+          navigate(stores.length > 0 ? '/dashboard' : '/onboarding')
+        } catch {
+          navigate('/onboarding')
+        }
+      }
     } catch (err) {
       setError((err as Error).message || 'حدث خطأ، يرجى المحاولة مجدداً')
     } finally {

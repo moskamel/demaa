@@ -1,8 +1,16 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import { ToastProvider } from './components/Toast'
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  return localStorage.getItem('deema_token') ? <>{children}</> : <Navigate to="/login" replace />
+}
+
+function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
+  return localStorage.getItem('deema_token') ? <Navigate to="/dashboard" replace /> : <>{children}</>
+}
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -37,20 +45,20 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/activity" element={<Activity />} />
-        <Route path="/stores" element={<Stores />} />
-        <Route path="/connectors" element={<Connectors />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/team" element={<Team />} />
-        <Route path="/billing" element={<Billing />} />
-        <Route path="/insights" element={<Insights />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/customers" element={<Customers />} />
+        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+        <Route path="/signup" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/onboarding" element={<PrivateRoute><Onboarding /></PrivateRoute>} />
+        <Route path="/activity" element={<PrivateRoute><Activity /></PrivateRoute>} />
+        <Route path="/stores" element={<PrivateRoute><Stores /></PrivateRoute>} />
+        <Route path="/connectors" element={<PrivateRoute><Connectors /></PrivateRoute>} />
+        <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="/team" element={<PrivateRoute><Team /></PrivateRoute>} />
+        <Route path="/billing" element={<PrivateRoute><Billing /></PrivateRoute>} />
+        <Route path="/insights" element={<PrivateRoute><Insights /></PrivateRoute>} />
+        <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+        <Route path="/customers" element={<PrivateRoute><Customers /></PrivateRoute>} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/platforms" element={<Platforms />} />
