@@ -337,42 +337,42 @@ export default function Landing() {
           <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink, margin: 0 }}>كل ما يحتاجه متجرك</h2>
         </div>
 
-        {/* 4-card pastel grid */}
+        {/* 4-card grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
           {[
             {
               icon: <Box size={26} variant="Outline" />, title: 'إدارة الطلبات بالذكاء',
               desc: 'اقبل، ارفض، وتابع طلباتك بجملة واحدة. ديما تكشف الطلبات المشبوهة تلقائياً.',
               demo: '"اقبل الطلبات السليمة وحاسبني على المشبوهة"',
-              bg: T.yellow,
+              bg: '#1a1400', accent: '#c8960a', iconBg: 'rgba(200,150,10,0.15)',
             },
             {
               icon: <Flash size={26} variant="Outline" />, title: 'شحن لحظي',
               desc: 'ينشئ بوالص الشحن مع أرامكس وSMSA وJ&T ويرسل رقم التتبع للعميل تلقائياً.',
               demo: '"اشحن الطلبات المقبولة مع أرامكس"',
-              bg: '#ffc6c6',
+              bg: '#1a0a0a', accent: '#e05555', iconBg: 'rgba(224,85,85,0.15)',
             },
             {
               icon: <ChartSquare size={26} variant="Outline" />, title: 'تقارير وذاكرة ذكية',
               desc: 'ملخص يومي شامل كل صباح. ديما تتذكر عملاءك المميزين وتنبهك بالمخزون الناقص.',
               demo: '"وريني مبيعات هذا الأسبوع مقارنة بالأسبوع الفائت"',
-              bg: '#c3faf5',
+              bg: '#001a18', accent: '#1ab8ae', iconBg: 'rgba(26,184,174,0.15)',
             },
             {
               icon: <Global size={26} variant="Outline" />, title: 'ربط ١٤ منصة',
               desc: 'Shopify، Salla، Zid، WooCommerce، Amazon، Noon، Jumia والمزيد — في لوحة واحدة.',
               demo: '"وريني طلبات Salla وShopify مع بعض"',
-              bg: '#fde0f0',
+              bg: '#12001a', accent: '#b060e0', iconBg: 'rgba(176,96,224,0.15)',
             },
           ].map((f, i) => (
-            <div key={f.title} className="animate-fade-in-up" style={{ background: f.bg, borderRadius: 28, padding: 32, transition: 'transform 0.2s var(--ease-spring), box-shadow 0.2s ease', animationDelay: `${i * 80}ms` }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 48px rgba(0,0,0,0.1)' }}
+            <div key={f.title} className="animate-fade-in-up" style={{ background: f.bg, borderRadius: 28, padding: 32, border: `1px solid ${f.accent}22`, transition: 'transform 0.2s var(--ease-spring), box-shadow 0.2s ease', animationDelay: `${i * 80}ms` }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 20px 48px rgba(0,0,0,0.4)` }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
             >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(28,28,30,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: T.ink }}>{f.icon}</div>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: f.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: f.accent }}>{f.icon}</div>
               <h3 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px', color: T.ink, marginBottom: 10 }}>{f.title}</h3>
-              <p style={{ fontSize: 15, color: T.ink, lineHeight: 1.6, marginBottom: 20, opacity: 0.75 }}>{f.desc}</p>
-              <div style={{ background: 'rgba(28,28,30,0.07)', borderRadius: 12, padding: '10px 14px', fontSize: 12.5, color: T.ink, opacity: 0.65, fontFamily: 'monospace' }}>{f.demo}</div>
+              <p style={{ fontSize: 15, color: T.slate, lineHeight: 1.6, marginBottom: 20 }}>{f.desc}</p>
+              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px', fontSize: 12.5, color: T.slate, fontFamily: 'monospace', border: `1px solid ${T.hairline}` }}>{f.demo}</div>
             </div>
           ))}
         </div>
