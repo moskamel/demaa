@@ -472,73 +472,141 @@ export default function Dashboard() {
           </div>
         </AppHeader>
 
-        {/* messages */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
-          {messages.map((msg, idx) => (
-            <div key={msg.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 30, 120)}ms` }}>
-              {msg.role === 'deema' ? (
-                <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                  <div className="chat-message-user" style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
-                    {msg.content}
-                  </div>
-                  {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingRight: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
-                </div>
-              )}
-            </div>
-          ))}
+        {/* ── NEW CHAT (Grok-style) ── */}
+        {!activeConv ? (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', background: '#0a0a0a' }}>
+            {/* Star dots */}
+            {Array.from({ length: 40 }).map((_, i) => (
+              <div key={i} style={{
+                position: 'absolute',
+                width: i % 5 === 0 ? 2.5 : 1.5,
+                height: i % 5 === 0 ? 2.5 : 1.5,
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.4)',
+                top: `${Math.sin(i * 137.508) * 50 + 50}%`,
+                left: `${Math.cos(i * 137.508) * 50 + 50}%`,
+                animation: `pulse ${2 + (i % 3)}s ${i * 0.15}s ease-in-out infinite`,
+              }} />
+            ))}
 
-          {isTyping && (
-            <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 11, fontWeight: 700 }}>D</span>
+            {/* Logo */}
+            <div className="animate-fade-in-scale" style={{ marginBottom: 40, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: '#fff', fontWeight: 800, fontSize: 22, letterSpacing: '-1px' }}>D</span>
               </div>
-              <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                {[0, 1, 2].map(i => (
-                  <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)', animation: `dotBounce 1.2s ${i * 0.18}s ease-in-out infinite` }} />
+              <span style={{ fontSize: 36, fontWeight: 700, color: '#fff', letterSpacing: '-1.5px' }}>ديما</span>
+            </div>
+
+            {/* Center input */}
+            <div className="animate-fade-in-up" style={{ width: '100%', maxWidth: 600, padding: '0 24px', boxSizing: 'border-box' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 16, padding: '14px 16px',
+                boxShadow: '0 0 0 0 rgba(106,76,245,0)',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+              }}
+                onFocusCapture={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(106,76,245,0.5)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(106,76,245,0.15)' }}
+                onBlurCapture={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
+              >
+                <Add size={18} color="rgba(255,255,255,0.4)" variant="Outline" style={{ flexShrink: 0 }} />
+                <input
+                  autoFocus
+                  type="text"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
+                  placeholder="ما الذي يدور في ذهنك؟"
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#fff', fontSize: 16, fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.2px' }}
+                />
+                <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
+                  style={{ width: 34, height: 34, borderRadius: '50%', border: 'none', flexShrink: 0, background: input.trim() ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() ? 'pointer' : 'default', transition: 'background 0.2s' }}>
+                  <Send2 size={14} color={input.trim() ? '#fff' : 'rgba(255,255,255,0.3)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
+                </button>
+              </div>
+
+              {/* Quick prompts */}
+              <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+                {QUICK.map((q, i) => (
+                  <button key={q.label} onClick={() => handleSend(q.cmd)}
+                    className="animate-fade-in btn-press"
+                    style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', animationDelay: `${i * 50}ms`, transition: 'background 0.15s, color 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+                  >{q.label}</button>
                 ))}
               </div>
             </div>
-          )}
-          <div ref={bottomRef} />
-        </div>
-
-        {/* input area */}
-        <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 20px 14px', flexShrink: 0 }}>
-          <div style={{ position: 'relative', marginBottom: 10 }}>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}
-              // @ts-ignore
-              onScroll={() => {}}>
-              {QUICK.map((q, i) => (
-                <button key={q.label} onClick={() => handleSend(q.cmd)}
-                  className="animate-fade-in btn-press"
-                  style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit', animationDelay: `${i * 40}ms`, transition: 'background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)'; e.currentTarget.style.background = 'var(--canvas-soft-2)'; e.currentTarget.style.borderColor = 'var(--hairline-strong)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink-muted)'; e.currentTarget.style.background = 'var(--canvas-soft)'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
-                >{q.label}</button>
+          </div>
+        ) : (
+          <>
+            {/* messages */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
+              {messages.map((msg, idx) => (
+                <div key={msg.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 30, 120)}ms` }}>
+                  {msg.role === 'deema' ? (
+                    <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+                      <div className="chat-message-user" style={{ background: 'var(--canvas-soft-2)', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55%', color: 'var(--ink)', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
+                        {msg.content}
+                      </div>
+                      {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingRight: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
+                    </div>
+                  )}
+                </div>
               ))}
+
+              {isTyping && (
+                <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--canvas-soft-2)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700 }}>D</span>
+                  </div>
+                  <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                    {[0, 1, 2].map(i => (
+                      <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)', animation: `dotBounce 1.2s ${i * 0.18}s ease-in-out infinite` }} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div ref={bottomRef} />
             </div>
-            <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 32, background: 'linear-gradient(to left, transparent, var(--canvas))', pointerEvents: 'none' }} />
-          </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
-              placeholder='اكتب أمرك...'
-              disabled={isTyping}
-              style={{ flex: 1, background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
-              onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
-              onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
-            />
-            <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
-              style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
-              <Send2 size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
-            </button>
-          </div>
-        </div>
+
+            {/* input area */}
+            <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 20px 14px', flexShrink: 0 }}>
+              <div style={{ position: 'relative', marginBottom: 10 }}>
+                <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
+                  {QUICK.map((q, i) => (
+                    <button key={q.label} onClick={() => handleSend(q.cmd)}
+                      className="animate-fade-in btn-press"
+                      style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit', animationDelay: `${i * 40}ms`, transition: 'background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)'; e.currentTarget.style.background = 'var(--canvas-soft-2)'; e.currentTarget.style.borderColor = 'var(--hairline-strong)' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink-muted)'; e.currentTarget.style.background = 'var(--canvas-soft)'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
+                    >{q.label}</button>
+                  ))}
+                </div>
+                <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 32, background: 'linear-gradient(to left, transparent, var(--canvas))', pointerEvents: 'none' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
+                  placeholder='اكتب أمرك...'
+                  disabled={isTyping}
+                  style={{ flex: 1, background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.14px', opacity: isTyping ? 0.7 : 1 }}
+                  onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
+                  onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
+                />
+                <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
+                  style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
+                  <Send2 size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       <style>{`
