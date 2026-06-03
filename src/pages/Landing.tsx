@@ -8,14 +8,15 @@ import {
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 const T = {
-  ink: '#1c1c1e',
-  slate: '#555a6a',
-  canvas: '#ffffff',
-  surface: '#f7f8fa',
-  hairline: '#e0e2e8',
+  ink: '#f0f0f5',
+  slate: '#9090a2',
+  canvas: '#0e0e12',
+  surface: '#18181e',
+  hairline: 'rgba(255,255,255,0.08)',
   yellow: '#ffd02f',
-  blue: '#4262ff',
-  muted: '#a5a8b5',
+  blue: '#5a7af5',
+  muted: '#5e5e72',
+  well: '#080810',
 } as const
 
 // ── Interactive demo data ────────────────────────────────────────────────────
@@ -146,8 +147,8 @@ export default function Landing() {
 
   // Shared button styles
   const btnPrimary: React.CSSProperties = {
-    background: T.ink,
-    color: '#fff',
+    background: '#fff',
+    color: '#0e0e12',
     borderRadius: 9999,
     padding: '12px 24px',
     fontSize: 14,
@@ -173,7 +174,7 @@ export default function Landing() {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
-    border: `1.5px solid ${T.hairline}`,
+    border: `1.5px solid rgba(255,255,255,0.18)`,
     cursor: 'pointer',
     fontFamily: 'inherit',
     letterSpacing: '-0.14px',
@@ -183,7 +184,7 @@ export default function Landing() {
     <div dir="rtl" style={{ background: T.canvas, color: T.ink, minHeight: '100vh', overflowX: 'hidden', fontFamily: 'Zain, sans-serif' }}>
 
       {/* ── PROMO BANNER ─────────────────────────────────────────────────────── */}
-      <div style={{ background: T.ink, color: '#fff', textAlign: 'center', padding: '10px 20px', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+      <div style={{ background: T.well, color: '#fff', textAlign: 'center', padding: '10px 20px', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, borderBottom: `1px solid ${T.hairline}` }}>
         <span style={{ background: T.yellow, color: T.ink, borderRadius: 9999, padding: '2px 10px', fontSize: 12, fontWeight: 700 }}>🎉 عرض الإطلاق</span>
         <span>أول ٣ أشهر بخصم ٥٠٪ ·</span>
         <strong>سارع قبل انتهاء العرض</strong>
@@ -191,7 +192,7 @@ export default function Landing() {
       </div>
 
       {/* ── NAV ──────────────────────────────────────────────────────────────── */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${T.hairline}`, height: 64, display: 'flex', alignItems: 'center', padding: '0 40px', gap: 24 }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(14,14,18,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${T.hairline}`, height: 64, display: 'flex', alignItems: 'center', padding: '0 40px', gap: 24 }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: T.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -254,9 +255,9 @@ export default function Landing() {
           </div>
 
           {/* Left: chat mockup */}
-          <div className="animate-fade-in-up" style={{ background: T.canvas, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 12px 32px -4px rgba(5,0,56,0.08)', animationDelay: '120ms' }}>
+          <div className="animate-fade-in-up" style={{ background: T.surface, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', animationDelay: '120ms' }}>
             {/* Window chrome */}
-            <div style={{ background: T.surface, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${T.hairline}` }}>
+            <div style={{ background: T.well, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${T.hairline}` }}>
               {['#ff5f57', '#ffbd2e', '#28c940'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
               <span style={{ color: T.slate, fontSize: 12, marginRight: 'auto' }}>Deema · متجر النور</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -272,18 +273,18 @@ export default function Landing() {
               ].map((m, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: m.isAi ? 'flex-end' : 'flex-start' }}>
                   <div style={{
-                    background: m.isAi ? T.surface : T.ink,
-                    color: m.isAi ? T.ink : '#fff',
+                    background: m.isAi ? 'rgba(255,255,255,0.06)' : '#6a4cf5',
+                    color: '#f0f0f5',
                     borderRadius: m.isAi ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
                     padding: '10px 14px', fontSize: 13, maxWidth: '82%',
-                    boxShadow: m.isAi ? `0 1px 4px rgba(0,0,0,0.06)` : 'none',
+                    border: `1px solid ${T.hairline}`,
                     lineHeight: 1.55, whiteSpace: 'pre-line',
                   }}>{m.text}</div>
                 </div>
               ))}
               <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                 {['نعم، نفّذ ✓', 'التفاصيل'].map((a, ai) => (
-                  <div key={a} style={{ background: ai === 0 ? T.ink : T.canvas, color: ai === 0 ? '#fff' : T.slate, borderRadius: 9999, padding: '5px 14px', fontSize: 11, fontWeight: 500, cursor: 'default', border: `1px solid ${T.hairline}` }}>{a}</div>
+                  <div key={a} style={{ background: ai === 0 ? '#6a4cf5' : 'transparent', color: ai === 0 ? '#fff' : T.slate, borderRadius: 9999, padding: '5px 14px', fontSize: 11, fontWeight: 500, cursor: 'default', border: `1px solid ${T.hairline}` }}>{a}</div>
                 ))}
               </div>
             </div>
@@ -317,7 +318,7 @@ export default function Landing() {
       </section>
 
       {/* ── PLATFORMS TICKER ─────────────────────────────────────────────────── */}
-      <section style={{ borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '28px 0', overflow: 'hidden', background: T.surface }}>
+      <section style={{ borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '28px 0', overflow: 'hidden', background: T.well }}>
         <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 18 }}>يتصل بـ ١٤ منصة</p>
         <div style={{ display: 'flex', gap: 0, animation: 'ticker 22s linear infinite', width: 'max-content' }}>
           {[...PLATFORMS, ...PLATFORMS].map((p, i) => (
@@ -333,7 +334,7 @@ export default function Landing() {
       <section style={{ padding: '96px 40px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>المميزات</p>
-          <h2 style={{ fontSize: 48, fontWeight: 500, letterSpacing: '-1px', color: T.ink, margin: 0 }}>كل ما يحتاجه متجرك</h2>
+          <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink, margin: 0 }}>كل ما يحتاجه متجرك</h2>
         </div>
 
         {/* 4-card pastel grid */}
@@ -369,7 +370,7 @@ export default function Landing() {
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
             >
               <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(28,28,30,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: T.ink }}>{f.icon}</div>
-              <h3 style={{ fontSize: 22, fontWeight: 500, letterSpacing: '-0.5px', color: T.ink, marginBottom: 10 }}>{f.title}</h3>
+              <h3 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px', color: T.ink, marginBottom: 10 }}>{f.title}</h3>
               <p style={{ fontSize: 15, color: T.ink, lineHeight: 1.6, marginBottom: 20, opacity: 0.75 }}>{f.desc}</p>
               <div style={{ background: 'rgba(28,28,30,0.07)', borderRadius: 12, padding: '10px 14px', fontSize: 12.5, color: T.ink, opacity: 0.65, fontFamily: 'monospace' }}>{f.demo}</div>
             </div>
@@ -391,7 +392,7 @@ export default function Landing() {
             <div key={f.title} style={{ background: T.surface, borderRadius: 16, padding: '24px 28px', border: `1px solid ${T.hairline}`, display: 'flex', alignItems: 'flex-start', gap: 18 }}>
               <div style={{ width: 42, height: 42, borderRadius: 12, background: T.canvas, border: `1px solid ${T.hairline}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: T.ink }}>{f.icon}</div>
               <div>
-                <h3 style={{ fontSize: 17, fontWeight: 500, letterSpacing: '-0.3px', color: T.ink, marginBottom: 8 }}>{f.title}</h3>
+                <h3 style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.3px', color: T.ink, marginBottom: 8 }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.6 }}>{f.desc}</p>
               </div>
             </div>
@@ -403,7 +404,7 @@ export default function Landing() {
       <section id="demo" style={{ padding: '0 40px 96px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>جربها الآن</p>
-          <h2 style={{ fontSize: 48, fontWeight: 500, letterSpacing: '-1px', color: T.ink }}>كلّم ديما بنفسك</h2>
+          <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink }}>كلّم ديما بنفسك</h2>
           <p style={{ fontSize: 16, color: T.slate, marginTop: 12, lineHeight: 1.5 }}>اضغط على أي أمر أو اكتب بحرية</p>
         </div>
 
@@ -422,9 +423,9 @@ export default function Landing() {
           <div style={{ padding: '12px 20px', borderBottom: `1px solid ${T.hairline}`, display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none' }}>
             {DEMO_COMMANDS.map(d => (
               <button key={d.cmd} onClick={() => sendDemoCommand(d.cmd)} disabled={typing}
-                style={{ background: T.canvas, border: `1px solid ${T.hairline}`, borderRadius: 9999, padding: '7px 16px', fontSize: 12, fontWeight: 500, cursor: typing ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0, color: T.slate, fontFamily: 'inherit', opacity: typing ? 0.5 : 1, transition: 'all 0.15s' }}
-                onMouseEnter={e => { if (!typing) { e.currentTarget.style.background = T.surface; e.currentTarget.style.color = T.ink } }}
-                onMouseLeave={e => { e.currentTarget.style.background = T.canvas; e.currentTarget.style.color = T.slate }}
+                style={{ background: T.surface, border: `1px solid ${T.hairline}`, borderRadius: 9999, padding: '7px 16px', fontSize: 12, fontWeight: 500, cursor: typing ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0, color: T.slate, fontFamily: 'inherit', opacity: typing ? 0.5 : 1, transition: 'all 0.15s' }}
+                onMouseEnter={e => { if (!typing) { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = T.ink } }}
+                onMouseLeave={e => { e.currentTarget.style.background = T.surface; e.currentTarget.style.color = T.slate }}
               >{d.cmd}</button>
             ))}
           </div>
@@ -434,7 +435,7 @@ export default function Landing() {
             {demoMessages.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-start' : 'flex-end', gap: 10 }}>
                 {m.role === 'ai' && (
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: T.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'flex-start', marginTop: 2 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, alignSelf: 'flex-start', marginTop: 2 }}>
                     <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>D</span>
                   </div>
                 )}
@@ -449,7 +450,7 @@ export default function Landing() {
                   {m.stats && (
                     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${m.stats.length}, 1fr)`, gap: 6, marginTop: 8 }}>
                       {m.stats.map(s => (
-                        <div key={s.l} style={{ background: T.canvas, borderRadius: 12, padding: '9px 11px', border: `1px solid ${T.hairline}` }}>
+                        <div key={s.l} style={{ background: T.surface, borderRadius: 12, padding: '9px 11px', border: `1px solid ${T.hairline}` }}>
                           <div style={{ fontSize: 16, fontWeight: 700, color: s.c, fontVariantNumeric: 'tabular-nums' }}>{s.n}</div>
                           <div style={{ fontSize: 10, color: T.slate, marginTop: 2 }}>{s.l}</div>
                         </div>
@@ -460,7 +461,7 @@ export default function Landing() {
                     <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
                       {m.actions.map((a, ai) => (
                         <button key={a} onClick={() => sendDemoCommand(a)} disabled={typing}
-                          style={{ background: ai === 0 ? T.ink : T.canvas, color: ai === 0 ? '#fff' : T.slate, border: `1px solid ${T.hairline}`, borderRadius: 9999, padding: '6px 14px', fontSize: 12, fontWeight: 500, cursor: typing ? 'default' : 'pointer', fontFamily: 'inherit' }}>{a}</button>
+                          style={{ background: ai === 0 ? '#6a4cf5' : 'transparent', color: ai === 0 ? '#fff' : T.slate, border: `1px solid ${ai === 0 ? '#6a4cf5' : T.hairline}`, borderRadius: 9999, padding: '6px 14px', fontSize: 12, fontWeight: 500, cursor: typing ? 'default' : 'pointer', fontFamily: 'inherit' }}>{a}</button>
                       ))}
                     </div>
                   )}
@@ -469,7 +470,7 @@ export default function Landing() {
             ))}
             {typing && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: T.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>D</span>
                 </div>
                 <div style={{ background: T.canvas, borderRadius: '4px 16px 16px 16px', padding: '12px 16px', display: 'flex', gap: 4, border: `1px solid ${T.hairline}` }}>
@@ -490,7 +491,7 @@ export default function Landing() {
                 style={{ flex: 1, background: T.surface, border: `1px solid ${T.hairline}`, borderRadius: 9999, padding: '10px 18px', fontSize: 14, color: T.ink, outline: 'none', fontFamily: 'inherit', direction: 'rtl', opacity: typing ? 0.6 : 1 }}
               />
               <button onClick={() => demoInput.trim() && !typing && sendDemoCommand(demoInput.trim())} disabled={!demoInput.trim() || typing}
-                style={{ width: 38, height: 38, borderRadius: 9999, background: demoInput.trim() && !typing ? T.ink : T.surface, border: 'none', cursor: demoInput.trim() && !typing ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                style={{ width: 38, height: 38, borderRadius: 9999, background: demoInput.trim() && !typing ? '#6a4cf5' : T.surface, border: 'none', cursor: demoInput.trim() && !typing ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Send2 size={14} color={demoInput.trim() && !typing ? '#fff' : T.slate} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
               </button>
             </div>
@@ -499,11 +500,11 @@ export default function Landing() {
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────────── */}
-      <section style={{ background: T.surface, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '96px 40px' }}>
+      <section style={{ background: T.well, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '96px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>كيف تعمل</p>
-            <h2 style={{ fontSize: 48, fontWeight: 500, letterSpacing: '-1px', color: T.ink }}>تبدأ في ٣ خطوات</h2>
+            <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink }}>تبدأ في ٣ خطوات</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {[
@@ -511,10 +512,10 @@ export default function Landing() {
               { n: '٢', icon: '💬', title: 'تكلمها بالعربي', desc: 'اكتب بأي لهجة — هي تفهمك وتقترح الخطوات.' },
               { n: '٣', icon: '⚡', title: 'تنفذ فوراً', desc: 'تطلب تأكيدك للكبيرة وتنفذ الباقي لحالها.' },
             ].map((s, i) => (
-              <div key={s.n} style={{ background: T.canvas, borderRadius: 16, padding: '32px 28px', border: `1px solid ${T.hairline}` }}>
-                <div style={{ width: 40, height: 40, borderRadius: 9999, background: T.ink, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 16, marginBottom: 20 }}>{i + 1}</div>
+              <div key={s.n} style={{ background: T.surface, borderRadius: 16, padding: '32px 28px', border: `1px solid ${T.hairline}` }}>
+                <div style={{ width: 40, height: 40, borderRadius: 9999, background: '#6a4cf5', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 16, marginBottom: 20 }}>{i + 1}</div>
                 <div style={{ fontSize: 36, marginBottom: 14 }}>{s.icon}</div>
-                <h3 style={{ fontSize: 20, fontWeight: 500, letterSpacing: '-0.4px', marginBottom: 8, color: T.ink }}>{s.title}</h3>
+                <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.4px', marginBottom: 8, color: T.ink }}>{s.title}</h3>
                 <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.6 }}>{s.desc}</p>
               </div>
             ))}
@@ -526,7 +527,7 @@ export default function Landing() {
       <section style={{ padding: '96px 40px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>آراء التجار</p>
-          <h2 style={{ fontSize: 48, fontWeight: 500, letterSpacing: '-1px', color: T.ink }}>تجار حقيقيون، نتائج حقيقية</h2>
+          <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink }}>تجار حقيقيون، نتائج حقيقية</h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {TESTIMONIALS.map(t => (
@@ -549,11 +550,11 @@ export default function Landing() {
       </section>
 
       {/* ── PRICING ──────────────────────────────────────────────────────────── */}
-      <section style={{ background: T.ink, padding: '96px 40px' }}>
+      <section style={{ background: T.well, padding: '96px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: T.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>الأسعار</p>
-            <h2 style={{ fontSize: 48, fontWeight: 500, letterSpacing: '-1px', color: '#fff', marginBottom: 12 }}>ادفع على قد استخدامك</h2>
+            <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: '#fff', marginBottom: 12 }}>ادفع على قد استخدامك</h2>
             <p style={{ fontSize: 15, color: T.muted }}>ابدأ مجاناً — سعّد في أي وقت · إلغاء وقتما تريد</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, maxWidth: 720, margin: '0 auto' }}>
@@ -568,26 +569,26 @@ export default function Landing() {
               },
             ].map(tier => (
               <div key={tier.name} style={{
-                background: tier.featured ? '#fff' : 'rgba(255,255,255,0.06)',
+                background: tier.featured ? 'linear-gradient(135deg,rgba(106,76,245,0.2),rgba(212,77,240,0.12))' : 'rgba(255,255,255,0.04)',
                 borderRadius: 28, padding: 32, position: 'relative',
-                border: tier.featured ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                boxShadow: tier.featured ? '0 20px 60px rgba(0,0,0,0.3)' : 'none',
+                border: tier.featured ? '1px solid rgba(106,76,245,0.4)' : `1px solid ${T.hairline}`,
+                boxShadow: tier.featured ? '0 20px 60px rgba(106,76,245,0.2)' : 'none',
               }}>
                 {tier.tag && (
                   <div style={{ position: 'absolute', top: -14, right: 24 }}>
-                    <span style={{ background: T.yellow, color: T.ink, borderRadius: 9999, padding: '4px 14px', fontSize: 11, fontWeight: 700 }}>{tier.tag}</span>
+                    <span style={{ background: T.yellow, color: '#0e0e12', borderRadius: 9999, padding: '4px 14px', fontSize: 11, fontWeight: 700 }}>{tier.tag}</span>
                   </div>
                 )}
-                <div style={{ fontSize: 14, fontWeight: 600, color: tier.featured ? T.slate : T.muted, marginBottom: 10 }}>{tier.name}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: T.slate, marginBottom: 10 }}>{tier.name}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 24 }}>
-                  <span style={{ fontSize: 52, fontWeight: 500, color: tier.featured ? T.ink : '#fff', fontVariantNumeric: 'tabular-nums', letterSpacing: '-3px' }}>{tier.price}</span>
-                  <span style={{ fontSize: 13, color: tier.featured ? T.slate : T.muted }}>{tier.period}</span>
+                  <span style={{ fontSize: 52, fontWeight: 500, color: '#fff', fontVariantNumeric: 'tabular-nums', letterSpacing: '-3px' }}>{tier.price}</span>
+                  <span style={{ fontSize: 13, color: T.slate }}>{tier.period}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
                   {tier.features.map(f => (
                     <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                       <TickCircle size={14} color={tier.featured ? '#22c55e' : T.muted} variant="Outline" />
-                      <span style={{ fontSize: 14, color: tier.featured ? T.ink : T.muted }}>{f}</span>
+                      <span style={{ fontSize: 14, color: tier.featured ? T.ink : T.slate }}>{f}</span>
                     </div>
                   ))}
                 </div>
@@ -595,8 +596,8 @@ export default function Landing() {
                   display: 'flex', justifyContent: 'center', textDecoration: 'none',
                   borderRadius: 9999, padding: '12px 24px', fontSize: 14, fontWeight: 500,
                   ...(tier.featured
-                    ? { background: T.ink, color: '#fff' }
-                    : { background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }
+                    ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff' }
+                    : { background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }
                   ),
                 }}>ابدأ الآن</Link>
               </div>
@@ -609,7 +610,7 @@ export default function Landing() {
       <section style={{ padding: '96px 40px', maxWidth: 800, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>الأسئلة الشائعة</p>
-          <h2 style={{ fontSize: 48, fontWeight: 500, letterSpacing: '-1px', color: T.ink }}>عندك سؤال؟</h2>
+          <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink }}>عندك سؤال؟</h2>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {FAQS.map((f, i) => (
@@ -631,7 +632,7 @@ export default function Landing() {
 
       {/* ── FINAL CTA BANNER ─────────────────────────────────────────────────── */}
       <section style={{ padding: '0 40px 96px', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ background: T.ink, borderRadius: 32, padding: '80px 48px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: T.well, borderRadius: 32, padding: '80px 48px', border: `1px solid ${T.hairline}`, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -80, left: -80, width: 400, height: 400, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -100, right: -60, width: 360, height: 360, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
 
@@ -640,7 +641,7 @@ export default function Landing() {
             <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>ابدأ في دقيقتين</span>
           </div>
 
-          <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 500, letterSpacing: '-2px', lineHeight: 1.05, color: '#fff', margin: '0 0 16px' }}>
+          <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 700, letterSpacing: '-2px', lineHeight: 1.05, color: '#fff', margin: '0 0 16px' }}>
             وقفت تضيع وقتك؟
           </h2>
           <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', marginBottom: 40, maxWidth: 440, margin: '0 auto 40px', lineHeight: 1.5 }}>
@@ -663,7 +664,7 @@ export default function Landing() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
-      <footer style={{ background: T.ink, padding: '64px 40px 40px' }}>
+      <footer style={{ background: T.well, padding: '64px 40px 40px', borderTop: `1px solid ${T.hairline}` }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
             <div>
