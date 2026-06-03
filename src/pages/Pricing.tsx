@@ -35,7 +35,7 @@ export default function Pricing() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 960, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ padding: '64px 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--canvas-soft)', borderRadius: 9999, padding: '6px 16px', marginBottom: 24, border: '1px solid var(--hairline)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />

@@ -64,7 +64,7 @@ export default function Terms() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ padding: '64px 100px' }}>
         <div style={{ marginBottom: 48 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 12 }}>شروط الاستخدام</h1>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>آخر تحديث: ١ مارس ٢٠٢٥</p>

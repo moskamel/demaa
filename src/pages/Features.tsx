@@ -21,7 +21,7 @@ export default function Features() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ padding: '64px 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>كل مميزات Deema</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>كل ما تحتاجه لإدارة متجرك بكفاءة — بجملة واحدة بالعربي</p>

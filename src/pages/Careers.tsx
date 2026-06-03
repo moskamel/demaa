@@ -34,7 +34,7 @@ export default function Careers() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ padding: '64px 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>الوظائف المتاحة</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>ابنِ مستقبل التجارة الإلكترونية العربية معنا</p>

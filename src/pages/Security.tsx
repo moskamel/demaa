@@ -74,7 +74,7 @@ export default function Security() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ padding: '64px 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(106,76,245,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <ShieldTick size={32} color="#6a4cf5" variant="Outline" />
