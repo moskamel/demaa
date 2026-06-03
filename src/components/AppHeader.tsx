@@ -112,10 +112,6 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
       display: 'flex', alignItems: 'center', padding: '0 20px',
       gap: 12, flexShrink: 0, background: 'var(--canvas)',
     }}>
-      {/* User avatar — leftmost */}
-      <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-        {(user.name || 'م')[0]}
-      </div>
 
       {/* Page title + optional back arrow */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>

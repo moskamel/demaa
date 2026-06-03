@@ -117,7 +117,7 @@ export default function Stores() {
       <AppSidebar />
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
-      <div style={{ padding: '50px 200px', width: '100%' }}>
+      <div style={{ padding: '50px 150px', width: '100%' }}>
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>متاجري</h1>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{stores.length} متجر مربوط بـ Deema</p>

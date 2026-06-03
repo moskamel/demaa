@@ -546,7 +546,7 @@ export default function Dashboard() {
         ) : (
           <>
             {/* messages */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 200px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 150px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
               {messages.length === 0 && !isTyping && (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>
@@ -588,7 +588,7 @@ export default function Dashboard() {
             </div>
 
             {/* input area */}
-            <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 200px 14px', flexShrink: 0 }}>
+            <div style={{ borderTop: '1px solid var(--hairline)', padding: '10px 150px 14px', flexShrink: 0 }}>
               <div style={{ position: 'relative', marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
                   {QUICK.map((q, i) => (
