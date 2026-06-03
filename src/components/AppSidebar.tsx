@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
   Shop, ChartSquare, People, Electricity,
@@ -7,6 +7,7 @@ import {
   Setting2, Receipt21,
 } from 'iconsax-react'
 import { clearToken, notifications as notifApi } from '../lib/api'
+import SearchModal from './SearchModal'
 
 const NAV_PRIMARY = [
   { to: '/stores', icon: Shop, label: 'متاجري' },
@@ -14,17 +15,6 @@ const NAV_PRIMARY = [
   { to: '/customers', icon: Profile2User, label: 'العملاء' },
   { to: '/team', icon: People, label: 'الفريق' },
   { to: '/connectors', icon: Electricity, label: 'التطبيقات' },
-]
-
-const NAV_SECONDARY = [
-  { to: '/notifications', icon: NotifIcon, label: 'الإشعارات' },
-  { to: '/activity', icon: Activity, label: 'سجل الأنشطة' },
-  { to: '/coupons', icon: PercentageSquare, label: 'الكوبونات' },
-]
-
-const NAV_BOTTOM = [
-  { to: '/settings', icon: Setting2, label: 'الإعدادات' },
-  { to: '/billing', icon: Receipt21, label: 'الاشتراك' },
 ]
 
 interface Conversation { id: string; title?: string }
@@ -41,6 +31,9 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
     try { return localStorage.getItem('sidebar_collapsed') === '1' } catch { return false }
   })
   const [unreadCount, setUnreadCount] = useState(0)
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -54,6 +47,22 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
       notifApi.list().then(d => setUnreadCount(d.unreadCount)).catch(() => {})
     }, 30000)
     return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setShowProfileMenu(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setShowSearch(true) }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
   }, [])
 
   const toggle = (v: boolean) => {
@@ -78,7 +87,7 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
   const NavLink = ({ to, icon: Icon, label, badge }: { to: string; icon: typeof Shop; label: string; badge?: number }) => {
     const active = location.pathname === to
     return (
-      <Link key={to} to={to}
+      <Link to={to}
         style={{ ...btn(collapsed), background: active ? 'rgba(255,255,255,0.12)' : 'transparent', textDecoration: 'none', position: 'relative' }}
         onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
         onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
@@ -96,147 +105,174 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
     )
   }
 
+  const profileMenuItem = (label: string, onClick: () => void, danger = false) => (
+    <button onClick={onClick} style={{
+      width: '100%', padding: '10px 14px', background: 'none', border: 'none',
+      textAlign: 'right', fontSize: 13, color: danger ? '#ff5577' : 'rgba(255,255,255,0.85)',
+      cursor: 'pointer', fontFamily: 'inherit', display: 'block', transition: 'background 0.12s',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.background = danger ? 'rgba(255,85,119,0.12)' : 'rgba(255,255,255,0.08)' }}
+      onMouseLeave={e => { e.currentTarget.style.background = '' }}
+    >
+      {label}
+    </button>
+  )
+
   return (
-    <aside style={{
-      width: collapsed ? 56 : 240,
-      background: '#111',
-      borderLeft: '1px solid rgba(255,255,255,0.07)',
-      display: 'flex', flexDirection: 'column', flexShrink: 0,
-      transition: 'width 0.2s ease', overflow: 'hidden', position: 'relative',
-    }}>
+    <>
+      {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
 
-      {/* Logo + collapse */}
-      <div style={{ padding: collapsed ? '14px 10px' : '14px 12px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ color: '#000', fontWeight: 700, fontSize: 12 }}>D</span>
+      <aside style={{
+        width: collapsed ? 56 : 240,
+        background: '#111',
+        borderLeft: '1px solid rgba(255,255,255,0.07)',
+        display: 'flex', flexDirection: 'column', flexShrink: 0,
+        transition: 'width 0.2s ease', overflow: 'hidden', position: 'relative',
+      }}>
+
+        {/* Logo + collapse */}
+        <div style={{ padding: collapsed ? '14px 10px' : '14px 12px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ color: '#000', fontWeight: 700, fontSize: 12 }}>D</span>
+            </div>
+            {!collapsed && <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', letterSpacing: '-0.4px' }}>Deema</span>}
           </div>
-          {!collapsed && <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', letterSpacing: '-0.4px' }}>Deema</span>}
-        </div>
-        {!collapsed && (
-          <button onClick={() => toggle(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6 }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
-            <ArrowDown2 size={14} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
-          </button>
-        )}
-      </div>
-
-      {/* Nav actions + links */}
-      <div style={{ padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
-
-        {/* Search */}
-        <button style={btn(collapsed)} title="بحث"
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
-          <SearchNormal1 size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
-          {!collapsed && <span style={lbl}>بحث</span>}
-          {!collapsed && <kbd style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.08)', borderRadius: 4, padding: '1px 5px', marginRight: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>⌘K</kbd>}
-        </button>
-
-        {/* New chat */}
-        {onNewChat ? (
-          <button onClick={onNewChat} style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
-            <MessageAdd1 size={16} variant="Outline" color="#fff" />
-            {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
-          </button>
-        ) : (
-          <Link to="/dashboard" style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)', textDecoration: 'none' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
-            <MessageAdd1 size={16} variant="Outline" color="#fff" />
-            {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
-          </Link>
-        )}
-
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 4px' }} />
-
-        {/* Primary nav */}
-        {NAV_PRIMARY.map(({ to, icon, label }) => (
-          <NavLink key={to} to={to} icon={icon} label={label} />
-        ))}
-
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 4px' }} />
-
-        {/* Secondary nav */}
-        {NAV_SECONDARY.map(({ to, icon, label }) => (
-          <NavLink key={to} to={to} icon={icon} label={label} badge={to === '/notifications' ? unreadCount : undefined} />
-        ))}
-      </div>
-
-      {/* Conversations list (Dashboard only) */}
-      {convList !== undefined && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 8px', borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
-          {!collapsed && <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '6px 8px 4px' }}>المحادثات السابقة</div>}
-          {convList.length === 0 && !collapsed && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', padding: '8px 10px', textAlign: 'center', marginTop: 8 }}>لا توجد محادثات بعد</div>}
-          {convList.map(c => (
-            <button key={c.id} onClick={() => onSelectConv?.(c.id)} style={{
-              width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: collapsed ? '8px 10px' : '7px 10px',
-              borderRadius: 8, border: 'none', background: c.id === activeConv ? 'rgba(255,255,255,0.1)' : 'transparent',
-              cursor: 'pointer', marginBottom: 1, textAlign: 'right', fontFamily: 'inherit',
-              justifyContent: collapsed ? 'center' : 'flex-start',
-            }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
-              {!collapsed && <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#fff' : 'rgba(255,255,255,0.6)' }}>{c.title || 'محادثة'}</span>}
+          {!collapsed && (
+            <button onClick={() => toggle(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6 }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <ArrowDown2 size={14} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
             </button>
+          )}
+        </div>
+
+        {/* Nav actions + links */}
+        <div style={{ padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
+
+          {/* Search */}
+          <button onClick={() => setShowSearch(true)} style={btn(collapsed)} title="بحث (Ctrl+K)"
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+            <SearchNormal1 size={16} variant="Outline" color="rgba(255,255,255,0.7)" />
+            {!collapsed && <span style={lbl}>بحث</span>}
+            {!collapsed && <kbd style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.08)', borderRadius: 4, padding: '1px 5px', marginRight: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>⌘K</kbd>}
+          </button>
+
+          {/* New chat */}
+          {onNewChat ? (
+            <button onClick={onNewChat} style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
+              <MessageAdd1 size={16} variant="Outline" color="#fff" />
+              {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+            </button>
+          ) : (
+            <Link to="/dashboard" style={{ ...btn(collapsed), background: 'rgba(255,255,255,0.1)', textDecoration: 'none' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)' }}>
+              <MessageAdd1 size={16} variant="Outline" color="#fff" />
+              {!collapsed && <span style={{ ...lbl, color: '#fff', fontWeight: 500 }}>محادثة جديدة</span>}
+            </Link>
+          )}
+
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 4px' }} />
+
+          {/* Primary nav */}
+          {NAV_PRIMARY.map(({ to, icon, label }) => (
+            <NavLink key={to} to={to} icon={icon} label={label} />
           ))}
         </div>
-      )}
 
-      {/* Spacer (only when no convList) */}
-      {convList === undefined && <div style={{ flex: 1 }} />}
+        {/* Conversations list (Dashboard only) */}
+        {convList !== undefined && (
+          <div style={{ flex: 1, overflowY: 'auto', padding: '6px 8px', borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
+            {!collapsed && <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '6px 8px 4px' }}>المحادثات السابقة</div>}
+            {convList.length === 0 && !collapsed && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', padding: '8px 10px', textAlign: 'center', marginTop: 8 }}>لا توجد محادثات بعد</div>}
+            {convList.map(c => (
+              <button key={c.id} onClick={() => onSelectConv?.(c.id)} style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: collapsed ? '8px 10px' : '7px 10px',
+                borderRadius: 8, border: 'none', background: c.id === activeConv ? 'rgba(255,255,255,0.1)' : 'transparent',
+                cursor: 'pointer', marginBottom: 1, textAlign: 'right', fontFamily: 'inherit',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+              }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+                {!collapsed && <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: c.id === activeConv ? '#fff' : 'rgba(255,255,255,0.6)' }}>{c.title || 'محادثة'}</span>}
+              </button>
+            ))}
+          </div>
+        )}
 
-      {/* Bottom nav */}
-      <div style={{ padding: '6px 8px', borderTop: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
-        {NAV_BOTTOM.map(({ to, icon, label }) => (
-          <NavLink key={to} to={to} icon={icon} label={label} />
-        ))}
-      </div>
+        {convList === undefined && <div style={{ flex: 1 }} />}
 
-      {/* User + logout */}
-      <div style={{ padding: collapsed ? '10px 8px' : '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6a4cf5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-          {(user.name || 'م')[0]}
+        {/* Profile section with popup menu */}
+        <div ref={profileRef} style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+
+          {/* Profile menu popup */}
+          {showProfileMenu && (
+            <div style={{
+              position: 'absolute', bottom: '100%', right: 0, left: 0,
+              background: '#1a1a1a', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 -8px 32px rgba(0,0,0,0.5)',
+              marginBottom: 4, overflow: 'hidden', zIndex: 300,
+              fontFamily: "'Zain','Inter',sans-serif", direction: 'rtl',
+            }}>
+              {/* User info */}
+              {!collapsed && (
+                <div style={{ padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{user.name || 'مستخدم'}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', direction: 'ltr', textAlign: 'right' }}>{user.email || ''}</div>
+                </div>
+              )}
+              {profileMenuItem('الإشعارات', () => { navigate('/notifications'); setShowProfileMenu(false) })}
+              {profileMenuItem('سجل الأنشطة', () => { navigate('/activity'); setShowProfileMenu(false) })}
+              {profileMenuItem('الكوبونات', () => { navigate('/coupons'); setShowProfileMenu(false) })}
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+              {profileMenuItem('الإعدادات', () => { navigate('/settings'); setShowProfileMenu(false) })}
+              {profileMenuItem('الاشتراك', () => { navigate('/billing'); setShowProfileMenu(false) })}
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+              {profileMenuItem('تسجيل الخروج', () => { handleLogout() }, true)}
+            </div>
+          )}
+
+          {/* Profile trigger */}
+          <button
+            onClick={() => setShowProfileMenu(v => !v)}
+            style={{
+              width: '100%', padding: collapsed ? '10px 8px' : '10px 12px',
+              background: showProfileMenu ? 'rgba(255,255,255,0.06)' : 'none',
+              border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', gap: 8,
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+            onMouseLeave={e => { if (!showProfileMenu) e.currentTarget.style.background = '' }}
+          >
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6a4cf5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+              {(user.name || 'م')[0]}
+            </div>
+            {!collapsed && (
+              <>
+                <div style={{ flex: 1, minWidth: 0, textAlign: 'right' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'مستخدم'}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email || ''}</div>
+                </div>
+                <ArrowDown2 size={12} variant="Outline" color="rgba(255,255,255,0.3)" style={{ flexShrink: 0, transform: showProfileMenu ? 'rotate(180deg)' : '', transition: 'transform 0.2s' }} />
+              </>
+            )}
+          </button>
         </div>
-        {!collapsed ? (
-          <>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'مستخدم'}</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email || ''}</div>
-            </div>
-            <div style={{ display: 'flex', gap: 2 }}>
-              <button onClick={() => toggle(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
-                <ArrowDown2 size={13} variant="Outline" style={{ transform: 'rotate(90deg)' }} />
-              </button>
-              <button onClick={handleLogout} title="تسجيل الخروج" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
-                <Logout size={13} variant="Outline" />
-              </button>
-            </div>
-          </>
-        ) : (
-          <button onClick={handleLogout} title="تسجيل الخروج" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 4, borderRadius: 6, display: 'flex' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#ff5577')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
-            <Logout size={14} variant="Outline" />
+
+        {/* Expand when collapsed */}
+        {collapsed && (
+          <button onClick={() => toggle(false)}
+            style={{ position: 'absolute', bottom: 80, right: 14, width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
+            <ArrowDown2 size={12} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
           </button>
         )}
-      </div>
-
-      {/* Expand when collapsed */}
-      {collapsed && (
-        <button onClick={() => toggle(false)}
-          style={{ position: 'absolute', bottom: 80, right: 14, width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
-          <ArrowDown2 size={12} variant="Outline" style={{ transform: 'rotate(-90deg)' }} />
-        </button>
-      )}
-    </aside>
+      </aside>
+    </>
   )
 }
