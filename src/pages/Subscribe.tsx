@@ -96,15 +96,13 @@ export default function Subscribe() {
   return (
     <div dir="rtl" style={{ minHeight: '100vh', background: '#f7f8fa', fontFamily: "'Zain', 'Inter', sans-serif" }}>
       {/* Top bar */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e0e2e8', height: 60, display: 'flex', alignItems: 'center', padding: '0 32px', justifyContent: 'space-between' }}>
+      <div style={{ background: '#fff', borderBottom: '1px solid #e0e2e8', height: 60, display: 'flex', alignItems: 'center', padding: '0 32px', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#1c1c1e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: '#ffd02f', fontWeight: 700, fontSize: 12 }}>D</span>
           </div>
           <span style={{ fontSize: 15, fontWeight: 600, color: '#1c1c1e' }}>Deema</span>
         </div>
-        {/* avatar placeholder */}
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1c1c1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff' }}>D</div>
       </div>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
