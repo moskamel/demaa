@@ -58,7 +58,12 @@ export default function Login() {
         }
       }
     } catch (err) {
-      setError((err as Error).message || 'حدث خطأ، يرجى المحاولة مجدداً')
+      const msg = (err as Error).message || ''
+      if (msg.includes('502') || msg.includes('fetch') || msg.includes('network') || msg.includes('Failed')) {
+        setError('تعذّر الاتصال بالخادم — تأكد من تشغيل السيرفر ثم أعد المحاولة')
+      } else {
+        setError(msg || 'حدث خطأ، يرجى المحاولة مجدداً')
+      }
     } finally {
       setLoading(false)
     }
@@ -137,8 +142,8 @@ export default function Login() {
             {mode !== 'reset' && (
               <div style={{ position: 'relative' }}>
                 <label style={{ fontSize: 13, color: '#555a6a', marginBottom: 6, display: 'block', fontWeight: 500 }}>كلمة المرور</label>
-                <input type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ ...INPUT, paddingLeft: 40, direction: 'ltr', textAlign: 'right' }} />
-                <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', left: 12, bottom: 12, background: 'none', border: 'none', cursor: 'pointer', color: '#8e91a0', padding: 0 }}>
+                <input type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ ...INPUT, paddingRight: 42, direction: 'ltr', textAlign: 'right' }} />
+                <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 12, bottom: 11, background: 'none', border: 'none', cursor: 'pointer', color: '#8e91a0', padding: 0, display: 'flex', alignItems: 'center' }}>
                   {showPass ? <EyeSlash size={16} variant="Outline" /> : <Eye size={16} variant="Outline" />}
                 </button>
               </div>
