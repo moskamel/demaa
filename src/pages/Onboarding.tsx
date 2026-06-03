@@ -539,7 +539,7 @@ export default function Onboarding() {
               disabled={!platform}
               onClick={() => setStep(2)}
               style={{
-                width: 400, padding: '13px', borderRadius: 9999, border: 'none',
+                width: 700, padding: '13px', borderRadius: 9999, border: 'none',
                 background: platform ? '#1c1c1e' : 'var(--hairline)',
                 color: platform ? '#fff' : 'var(--ink-muted)',
                 cursor: platform ? 'pointer' : 'default',
@@ -552,7 +552,7 @@ export default function Onboarding() {
           )}
 
           {step === 2 && (
-            <div style={{ display: 'flex', gap: 10, width: 400 }}>
+            <div style={{ display: 'flex', gap: 10, width: 700 }}>
               <button onClick={() => setStep(1)} className="btn-secondary" style={{ padding: '12px 20px', borderRadius: 10, flexShrink: 0 }}>
                 رجوع
               </button>
