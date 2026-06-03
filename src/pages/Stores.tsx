@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Add, Refresh2, Link, TickCircle, Clock, ArrowLeft2 } from 'iconsax-react'
+import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock, ArrowLeft2 } from 'iconsax-react'
 import { storesApi, type StoreData } from '../lib/api'
 
 const statusMap = (isActive: boolean, syncStatus: string) => {
@@ -136,7 +136,7 @@ export default function Stores() {
                         onClick={() => handleDisconnect(s.id)}
                         disabled={disconnecting === s.id}
                         style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'transparent', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: 'var(--ink-muted)', cursor: 'pointer', marginRight: 'auto', opacity: disconnecting === s.id ? 0.5 : 1 }}>
-                        <Link size={11} variant="Outline" />
+                        <LinkIcon size={11} variant="Outline" />
                         {disconnecting === s.id ? 'جاري الفصل...' : 'فصل'}
                       </button>
                     </div>
