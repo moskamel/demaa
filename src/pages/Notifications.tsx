@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box, Truck, Notification } from 'iconsax-react'
+import { ArrowLeft2, InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box, Truck, Notification as NotificationIcon } from 'iconsax-react'
 import { notifications as notifApi, type Notification } from '../lib/api'
 
-const typeConfig: Record<string, { icon: typeof Notification; color: string; bg: string }> = {
+const typeConfig: Record<string, { icon: typeof NotificationIcon; color: string; bg: string }> = {
   low_stock: { icon: Box, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
   suspicious_order: { icon: Warning2, color: '#ff5577', bg: 'rgba(255,85,119,0.12)' },
   payment_failed: { icon: InfoCircle, color: '#ff5577', bg: 'rgba(255,85,119,0.12)' },
