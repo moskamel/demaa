@@ -22,7 +22,6 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [storeName, setStoreName] = useState('')
   const [resetSent, setResetSent] = useState(false)
   const [error, setError] = useState('')
 
@@ -38,13 +37,12 @@ export default function Login() {
 
     if (!email || !password) { setError('يرجى إدخال البريد الإلكتروني وكلمة المرور'); return }
     if (mode === 'signup' && !name) { setError('يرجى إدخال اسمك'); return }
-    if (mode === 'signup' && !storeName) { setError('يرجى إدخال اسم متجرك'); return }
 
     setLoading(true)
     try {
       const res = mode === 'login'
         ? await authApi.login(email, password)
-        : await authApi.signup(name, email, password, storeName)
+        : await authApi.signup(name, email, password, '')
       setToken(res.token)
       localStorage.setItem('deema_user', JSON.stringify(res.user))
       localStorage.setItem('deema_org', JSON.stringify(res.org))
@@ -127,10 +125,6 @@ export default function Login() {
                 <div>
                   <label style={{ fontSize: 13, color: '#555a6a', marginBottom: 6, display: 'block', fontWeight: 500 }}>الاسم الكامل</label>
                   <input value={name} onChange={e => setName(e.target.value)} placeholder="محمد العمري" style={INPUT} />
-                </div>
-                <div>
-                  <label style={{ fontSize: 13, color: '#555a6a', marginBottom: 6, display: 'block', fontWeight: 500 }}>اسم المتجر</label>
-                  <input value={storeName} onChange={e => setStoreName(e.target.value)} placeholder="متجر النور" style={INPUT} />
                 </div>
               </>
             )}
