@@ -1,51 +1,58 @@
 @import "tailwindcss";
 
-/* ── Miro Design System Tokens ──────────────────────────────────────────────── */
+/* ── Dark Design System Tokens ──────────────────────────────────────────────── */
 :root {
-  /* Canvas */
-  --canvas:         #ffffff;
-  --canvas-soft:    #f7f8fa;
-  --canvas-soft-2:  #f0f1f4;
+  /* Canvas — dark */
+  --canvas:         #0f0f0f;
+  --canvas-soft:    #171717;
+  --canvas-soft-2:  #1f1f1f;
 
   /* Text */
-  --ink:            #1c1c1e;
-  --ink-sub:        #2c2c34;
-  --ink-muted:      #555a6a;
-  --ink-disabled:   #a5a8b5;
+  --ink:            #f2f2f2;
+  --ink-sub:        #d4d4d4;
+  --ink-muted:      #a3a3a3;
+  --ink-disabled:   #525252;
 
   /* Borders */
-  --hairline:       #e0e2e8;
-  --hairline-soft:  #eef0f3;
-  --hairline-strong: #c7cad5;
+  --hairline:       rgba(255,255,255,0.08);
+  --hairline-soft:  rgba(255,255,255,0.05);
+  --hairline-strong: rgba(255,255,255,0.14);
 
   /* Brand / CTA */
-  --primary:        #1c1c1e;
-  --on-primary:     #ffffff;
-  --accent:         #1c1c1e;
+  --primary:        #ffffff;
+  --on-primary:     #000000;
+  --accent:         #ffffff;
 
   /* Brand accents */
   --brand-yellow:   #ffd02f;
-  --brand-blue:     #4262ff;
-  --brand-coral:    #ffc6c6;
-  --brand-teal:     #c3faf5;
-  --brand-rose:     #fde0f0;
-  --footer-bg:      #1c1c1e;
+  --brand-blue:     #4d7cff;
+  --brand-coral:    rgba(255,85,119,0.25);
+  --brand-teal:     rgba(0,212,200,0.2);
+  --brand-rose:     rgba(255,100,180,0.2);
+  --footer-bg:      #0f0f0f;
+
+  /* Gradient accents kept */
+  --gradient-coral:   #ff5577;
+  --gradient-orange:  #ff7a3d;
+  --gradient-purple:  #6a4cf5;
+  --gradient-blue:    #0099ff;
+  --gradient-green:   #22c55e;
 
   /* Link */
-  --link:           #4262ff;
-  --accent-blue:    #4262ff;
+  --link:           #4d7cff;
+  --accent-blue:    #4d7cff;
 
   /* Semantic */
-  --semantic-success:  #00b473;
+  --semantic-success:  #22c55e;
   --semantic-warning:  #f5a623;
-  --semantic-error:    #ee0000;
-  --semantic-info:     #4262ff;
+  --semantic-error:    #ff5577;
+  --semantic-info:     #4d7cff;
 
   /* Surface aliases */
-  --surface-1:      #f7f8fa;
-  --surface-2:      #f0f1f4;
-  --surface-3:      #e0e2e8;
-  --surface-hover:  #f0f1f4;
+  --surface-1:      #171717;
+  --surface-2:      #1f1f1f;
+  --surface-3:      rgba(255,255,255,0.08);
+  --surface-hover:  rgba(255,255,255,0.06);
 }
 
 /* ── Reset ────────────────────────────────────────────────────────────────── */
@@ -138,7 +145,7 @@ html {
 .btn-primary-sm:hover { opacity: 0.85; }
 
 .btn-secondary {
-  background: #ffffff;
+  background: var(--canvas-soft);
   color: var(--ink);
   border: 1px solid var(--hairline);
   border-radius: 100px;
@@ -178,11 +185,10 @@ html {
 
 /* ── Cards ────────────────────────────────────────────────────────────────── */
 .card {
-  background: #ffffff;
+  background: var(--canvas-soft);
   border: 1px solid var(--hairline);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0px 1px 1px rgba(0,0,0,0.02), 0px 2px 2px rgba(0,0,0,0.04);
 }
 .card-2 {
   background: var(--canvas-soft);
@@ -219,7 +225,7 @@ html {
 
 /* ── Inputs ───────────────────────────────────────────────────────────────── */
 input, textarea, select {
-  background: #ffffff;
+  background: var(--canvas-soft);
   border: 1px solid var(--hairline);
   border-radius: 6px;
   height: 40px;
@@ -292,7 +298,7 @@ input::placeholder, textarea::placeholder { color: var(--ink-muted); }
 
 /* ── Chat input bar ──────────────────────────────────────────────────────── */
 .chat-input-bar {
-  background: #ffffff;
+  background: var(--canvas-soft);
   border: 1px solid var(--hairline);
   border-radius: 12px;
   transition: border-color 0.15s;
