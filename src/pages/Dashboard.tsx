@@ -514,7 +514,6 @@ export default function Dashboard() {
                 onFocusCapture={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(106,76,245,0.5)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(106,76,245,0.15)' }}
                 onBlurCapture={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
               >
-                <Add size={18} color="rgba(255,255,255,0.4)" variant="Outline" style={{ flexShrink: 0 }} />
                 <input
                   autoFocus
                   type="text"
