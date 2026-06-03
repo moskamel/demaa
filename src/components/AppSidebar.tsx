@@ -6,6 +6,16 @@ import {
   SearchNormal1, Activity, Profile2User, PercentageSquare,
   Setting2, Receipt21, Edit2, Trash,
 } from 'iconsax-react'
+
+const PROFILE_MENU = [
+  { label: 'الإشعارات',   path: '/notifications', icon: NotifIcon },
+  { label: 'سجل الأنشطة', path: '/activity',       icon: Activity },
+  { label: 'الكوبونات',   path: '/coupons',        icon: PercentageSquare },
+]
+const PROFILE_BOTTOM = [
+  { label: 'الإعدادات',  path: '/settings', icon: Setting2 },
+  { label: 'الاشتراك',   path: '/billing',  icon: Receipt21 },
+]
 import { clearToken, notifications as notifApi } from '../lib/api'
 import SearchModal from './SearchModal'
 
@@ -110,15 +120,17 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
     )
   }
 
-  const profileMenuItem = (label: string, onClick: () => void, danger = false) => (
+  const profileMenuItem = (label: string, onClick: () => void, Icon?: React.ElementType, danger = false) => (
     <button onClick={onClick} style={{
-      width: '100%', padding: '10px 14px', background: 'none', border: 'none',
+      width: '100%', padding: '9px 14px', background: 'none', border: 'none',
       textAlign: 'right', fontSize: 13, color: danger ? '#ff5577' : 'rgba(255,255,255,0.85)',
-      cursor: 'pointer', fontFamily: 'inherit', display: 'block', transition: 'background 0.12s',
+      cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center',
+      gap: 10, transition: 'background 0.12s', direction: 'rtl',
     }}
       onMouseEnter={e => { e.currentTarget.style.background = danger ? 'rgba(255,85,119,0.12)' : 'rgba(255,255,255,0.08)' }}
       onMouseLeave={e => { e.currentTarget.style.background = '' }}
     >
+      {Icon && <Icon size={15} variant="Outline" color={danger ? '#ff5577' : 'rgba(255,255,255,0.5)'} />}
       {label}
     </button>
   )
@@ -271,21 +283,21 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
               marginBottom: 4, overflow: 'hidden', zIndex: 300,
               fontFamily: "'Zain','Inter',sans-serif", direction: 'rtl',
             }}>
-              {/* User info */}
-              {!collapsed && (
-                <div style={{ padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{user.name || 'مستخدم'}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', direction: 'ltr', textAlign: 'right' }}>{user.email || ''}</div>
+              {/* User info with avatar */}
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 10, direction: 'rtl' }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                  {(user.name || 'م')[0]}
                 </div>
-              )}
-              {profileMenuItem('الإشعارات', () => { navigate('/notifications'); setShowProfileMenu(false) })}
-              {profileMenuItem('سجل الأنشطة', () => { navigate('/activity'); setShowProfileMenu(false) })}
-              {profileMenuItem('الكوبونات', () => { navigate('/coupons'); setShowProfileMenu(false) })}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || 'مستخدم'}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', direction: 'ltr', textAlign: 'right' }}>{user.email || ''}</div>
+                </div>
+              </div>
+              {PROFILE_MENU.map(({ label, path, icon }) => profileMenuItem(label, () => { navigate(path); setShowProfileMenu(false) }, icon))}
               <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
-              {profileMenuItem('الإعدادات', () => { navigate('/settings'); setShowProfileMenu(false) })}
-              {profileMenuItem('الاشتراك', () => { navigate('/billing'); setShowProfileMenu(false) })}
+              {PROFILE_BOTTOM.map(({ label, path, icon }) => profileMenuItem(label, () => { navigate(path); setShowProfileMenu(false) }, icon))}
               <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
-              {profileMenuItem('تسجيل الخروج', () => { handleLogout() }, true)}
+              {profileMenuItem('تسجيل الخروج', () => { handleLogout() }, Logout, true)}
             </div>
           )}
 
