@@ -181,17 +181,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const handleLogout = () => { clearToken(); navigate('/login') }
 
-  const initialMessage: Message = {
-    id: 1, role: 'deema', type: 'summary',
-    content: 'صباح الخير! 🌅 أنا ديما — جاهز لمساعدتك في إدارة متجرك.',
-    actions: [
-      { label: 'وريني الطلبات المعلقة', variant: 'primary', cmd: 'وريني الطلبات المعلقة' },
-      { label: 'مبيعات اليوم', variant: 'secondary', cmd: 'تقرير مبيعات اليوم' },
-      { label: 'المنتجات المنخفضة', variant: 'translucent', cmd: 'وريني المنتجات المنخفضة' },
-    ],
-  }
-
-  const [messages, setMessages] = useState<Message[]>([initialMessage])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [counter, setCounter] = useState(2)
   const [isTyping, setIsTyping] = useState(false)
@@ -224,7 +214,7 @@ export default function Dashboard() {
     if (!activeConv) return
     if (skipLoadRef.current) { skipLoadRef.current = false; return }
     convApi.messages(activeConv).then(r => {
-      if (r.messages.length === 0) { setMessages([initialMessage]); return }
+      if (r.messages.length === 0) { setMessages([]); return }
       setMessages(r.messages.map((m: { id: string; role: string; content: string; createdAt?: string }) => ({
         id: m.id,
         role: m.role === 'assistant' ? 'deema' : 'user',
@@ -280,7 +270,7 @@ export default function Dashboard() {
   }
 
   const handleNewChat = () => {
-    setMessages([initialMessage])
+    setMessages([])
     setCounter(2)
     setActiveConv(null)
   }
@@ -542,6 +532,11 @@ export default function Dashboard() {
           <>
             {/* messages */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
+              {messages.length === 0 && !isTyping && (
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>
+                </div>
+              )}
               {messages.map((msg, idx) => (
                 <div key={msg.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 30, 120)}ms` }}>
                   {msg.role === 'deema' ? (
