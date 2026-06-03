@@ -543,7 +543,7 @@ export default function Dashboard() {
         ) : (
           <>
             {/* messages */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 200px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
               {messages.length === 0 && !isTyping && (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>

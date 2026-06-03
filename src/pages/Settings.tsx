@@ -118,7 +118,7 @@ export default function Settings() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '50px 300px' }}>
+      <div style={{ padding: '50px 200px' }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 28 }}>الإعدادات</h1>
 
         {/* Profile section */}

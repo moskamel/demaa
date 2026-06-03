@@ -119,7 +119,7 @@ export default function Activity() {
         )}
       </AppHeader>
 
-      <div style={{ padding: '50px 300px' }}>
+      <div style={{ padding: '50px 200px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
           <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1 }}>
             سجل الأنشطة
