@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import PageLayout from '../components/PageLayout'
 
 const cookieTypes = [
   {
@@ -49,26 +50,7 @@ const sections = [
 
 export default function Cookies() {
   return (
-    <div dir="rtl" style={{ background: 'var(--canvas)', color: 'var(--ink)', minHeight: '100vh' }}>
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(255,255,255,0.9)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--hairline)',
-        height: 56,
-        display: 'flex', alignItems: 'center',
-        padding: '0 30px',
-        justifyContent: 'space-between',
-      }}>
-        <Link to="/" style={{ color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 14 }}>→ الرئيسية</Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#000', fontWeight: 700, fontSize: 12 }}>D</span>
-          </div>
-          <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.5px' }}>Deema</span>
-        </div>
-      </nav>
+    <PageLayout>
 
       <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
         <div style={{ marginBottom: 48 }}>
@@ -114,9 +96,6 @@ export default function Cookies() {
         </div>
       </main>
 
-      <footer style={{ borderTop: '1px solid var(--hairline)', padding: '24px 30px', textAlign: 'center' }}>
-        <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>© Deema 2025</span>
-      </footer>
-    </div>
+    </PageLayout>
   )
 }

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import PageLayout from '../components/PageLayout'
 
 export default function NotFound() {
   return (
