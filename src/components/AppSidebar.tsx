@@ -134,15 +134,15 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
               width: '100%', display: 'flex', alignItems: 'center', gap: 8,
               padding: collapsed ? '9px' : '9px 12px',
               borderRadius: 10, border: 'none',
-              background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', cursor: 'pointer',
-              color: '#fff', fontSize: 13, fontFamily: 'inherit',
+              background: 'transparent', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.75)', fontSize: 13, fontFamily: 'inherit',
               justifyContent: collapsed ? 'center' : 'flex-start',
-              transition: 'opacity 0.15s',
+              transition: 'background 0.15s, color 0.15s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}
             >
-              <MessageAdd1 size={15} variant="Outline" color="#fff" />
+              <MessageAdd1 size={15} variant="Outline" />
               {!collapsed && <span style={{ fontWeight: 500, color: '#fff' }}>محادثة جديدة</span>}
             </button>
           ) : (
@@ -150,15 +150,15 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
               width: '100%', display: 'flex', alignItems: 'center', gap: 8,
               padding: collapsed ? '9px' : '9px 12px',
               borderRadius: 10, border: 'none',
-              background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', cursor: 'pointer',
-              color: '#fff', fontSize: 13, fontFamily: 'inherit',
+              background: 'transparent', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.75)', fontSize: 13, fontFamily: 'inherit',
               justifyContent: collapsed ? 'center' : 'flex-start',
-              transition: 'opacity 0.15s',
+              transition: 'background 0.15s, color 0.15s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}
             >
-              <MessageAdd1 size={15} variant="Outline" color="#fff" />
+              <MessageAdd1 size={15} variant="Outline" />
               {!collapsed && <span style={{ fontWeight: 500, color: '#fff' }}>محادثة جديدة</span>}
             </button>
           )}
