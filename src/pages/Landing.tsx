@@ -673,7 +673,7 @@ export default function Landing() {
           </p>
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            <Link to={ctaTo} style={{ background: '#fff', color: T.ink, borderRadius: 9999, padding: '14px 32px', fontSize: 16, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '-0.3px' }}>
+            <Link to={ctaTo} style={{ background: '#fff', color: '#0e0e12', borderRadius: 9999, padding: '14px 32px', fontSize: 16, fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '-0.3px' }}>
               ابدأ مجاناً الآن <ArrowLeft2 size={15} variant="Outline" />
             </Link>
           </div>
