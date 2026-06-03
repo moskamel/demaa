@@ -59,6 +59,14 @@ export default function Coupons() {
   }
 
   const toggleActive = async (c: CouponData) => {
+    const action = c.isActive ? 'تعطيل' : 'تفعيل'
+    const ok = await confirm({
+      title: `${action} الكوبون`,
+      message: `هل تريد ${action} كوبون "${c.code}"؟`,
+      confirmLabel: action,
+      risk: 'medium',
+    })
+    if (!ok) return
     try {
       await couponsApi.update(c.id, { isActive: !c.isActive })
       setCoupons(prev => prev.map(x => x.id === c.id ? { ...x, isActive: !x.isActive } : x))
@@ -68,7 +76,7 @@ export default function Coupons() {
   }
 
   const handleDelete = async (c: CouponData) => {
-    const ok = await confirm({ title: 'حذف الكوبون', message: `هل أنت متأكد من حذف كوبون "${c.code}"؟ هذا الإجراء لا يمكن التراجع عنه.`, confirmLabel: 'حذف', danger: true })
+    const ok = await confirm({ title: 'حذف الكوبون', message: `هل أنت متأكد من حذف كوبون "${c.code}"؟`, confirmLabel: 'حذف الكوبون', danger: true, risk: 'high', consequence: 'لا يمكن التراجع عن الحذف. لن يتمكن العملاء من استخدام هذا الكوبون بعد الآن.' })
     if (!ok) return
     try {
       await couponsApi.delete(c.id)

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { CloseCircle, Box, Location, Call, Card, Clock, Truck, Warning2, TickCircle, Refresh2 } from 'iconsax-react'
 import { orders as ordersApi, type Order } from '../lib/api'
 import { useToast } from './Toast'
+import { useConfirm } from '../hooks/useConfirm'
 
 interface Props {
   orderId: string | null
@@ -22,8 +23,8 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState<'accept' | 'reject' | 'ship' | null>(null)
-  const [confirmReject, setConfirmReject] = useState(false)
   const { toast } = useToast()
+  const { confirm, Dialog: ConfirmDialog } = useConfirm()
 
   useEffect(() => {
     if (!orderId) { setOrder(null); return }
@@ -35,12 +36,10 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   }, [orderId])
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { if (confirmReject) setConfirmReject(false); else onClose() }
-    }
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [onClose, confirmReject])
+  }, [onClose])
 
   if (!orderId) return null
 
@@ -61,6 +60,14 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
   const statusColor = statusColors[order.status] || '#999'
 
   const handleAccept = async () => {
+    const ok = await confirm({
+      title: 'قبول الطلب',
+      message: `هل تريد قبول طلب #${order.externalRef || order.id} للعميل ${order.customerName}؟`,
+      confirmLabel: 'قبول الطلب',
+      risk: 'medium',
+      consequence: 'سيتم إخطار العميل وانتقال الطلب لمرحلة التجهيز.',
+    })
+    if (!ok) return
     setActionLoading('accept')
     try {
       await ordersApi.accept(order.id)
@@ -68,13 +75,19 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
       toast('تم قبول الطلب بنجاح', 'success')
     } catch {
       toast('حدث خطأ أثناء قبول الطلب', 'error')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   const handleReject = async () => {
-    setConfirmReject(false)
+    const ok = await confirm({
+      title: 'رفض الطلب',
+      message: `هل تريد رفض طلب #${order.externalRef || order.id} للعميل ${order.customerName}؟`,
+      confirmLabel: 'رفض الطلب',
+      risk: 'high',
+      danger: true,
+      consequence: 'لا يمكن التراجع عن هذا الإجراء. سيتم إخطار العميل بالرفض.',
+    })
+    if (!ok) return
     setActionLoading('reject')
     try {
       await ordersApi.reject(order.id)
@@ -82,12 +95,18 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
       toast('تم رفض الطلب', 'warning')
     } catch {
       toast('حدث خطأ أثناء رفض الطلب', 'error')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   const handleShip = async () => {
+    const ok = await confirm({
+      title: 'إنشاء شحنة',
+      message: `هل تريد إنشاء شحنة للطلب #${order.externalRef || order.id}؟`,
+      confirmLabel: 'إنشاء الشحنة',
+      risk: 'medium',
+      consequence: 'سيتم إنشاء شحنة عبر SMSA وإخطار العميل برقم التتبع.',
+    })
+    if (!ok) return
     setActionLoading('ship')
     try {
       const result = await ordersApi.ship(order.id, 'smsa')
@@ -95,9 +114,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
       toast('تم إنشاء الشحنة بنجاح', 'success')
     } catch {
       toast('حدث خطأ أثناء إنشاء الشحنة', 'error')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   return (
@@ -187,7 +204,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                 label="قبول"
               />
               <ActionBtn
-                onClick={() => setConfirmReject(true)}
+                onClick={handleReject}
                 loading={actionLoading === 'reject'}
                 disabled={!!actionLoading}
                 bg="rgba(255,85,119,0.08)" color="#ff5577"
@@ -211,26 +228,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
         </div>
       </div>
 
-      {/* reject confirmation dialog */}
-      {confirmReject && (
-        <>
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 300 }} onClick={() => setConfirmReject(false)} />
-          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--canvas)', borderRadius: 14, border: '1px solid var(--hairline)', padding: 24, zIndex: 301, width: 300, boxShadow: '0 16px 48px rgba(0,0,0,0.12)' }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 8 }}>تأكيد رفض الطلب</div>
-            <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20, lineHeight: 1.6 }}>
-              هل أنت متأكد من رفض طلب #{order.externalRef || order.id}؟ لا يمكن التراجع عن هذا الإجراء.
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={handleReject} style={{ flex: 1, padding: '9px', borderRadius: 9, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, background: '#ff5577', color: '#fff' }}>
-                نعم، ارفض
-              </button>
-              <button onClick={() => setConfirmReject(false)} style={{ flex: 1, padding: '9px', borderRadius: 9, border: '1px solid var(--hairline)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, background: 'var(--canvas-soft)', color: 'var(--ink)' }}>
-                إلغاء
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+      {ConfirmDialog}
     </>
   )
 }

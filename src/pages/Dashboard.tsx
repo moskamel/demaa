@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useConfirm } from '../hooks/useConfirm'
 import {
   Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
   Shop, Electricity, People, ChartSquare,
@@ -180,6 +181,7 @@ function getDailySuggestion(stats: { pending: number; accepted: number }) {
 export default function Dashboard() {
   const navigate = useNavigate()
   const handleLogout = () => { clearToken(); navigate('/login') }
+  const { confirm: confirmAction, Dialog: ConfirmDialog } = useConfirm()
 
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -276,6 +278,16 @@ export default function Dashboard() {
   }
 
   const handleDeleteConv = async (id: string) => {
+    const conv = convList.find(c => c.id === id)
+    const ok = await confirmAction({
+      title: 'حذف المحادثة',
+      message: `هل تريد حذف المحادثة "${conv?.title || 'محادثة'}"؟`,
+      confirmLabel: 'حذف',
+      risk: 'high',
+      danger: true,
+      consequence: 'لا يمكن استعادة رسائل هذه المحادثة بعد الحذف.',
+    })
+    if (!ok) return
     await convApi.delete(id).catch(() => {})
     setConvList(prev => prev.filter(c => c.id !== id))
     if (activeConv === id) handleNewChat()
@@ -619,6 +631,7 @@ export default function Dashboard() {
 
       {/* Global search modal */}
       {showSearch && <SearchModal onClose={() => setShowSearch(false)} onSelectOrder={id => { setSelectedOrderId(id); setShowSearch(false) }} />}
+      {ConfirmDialog}
     </div>
   )
 }

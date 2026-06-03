@@ -60,7 +60,7 @@ export default function Team() {
   }
 
   const handleRemove = async (id: string, name: string) => {
-    const ok = await confirm({ title: 'إزالة عضو الفريق', message: `هل أنت متأكد من إزالة "${name}" من الفريق؟`, confirmLabel: 'إزالة', danger: true })
+    const ok = await confirm({ title: 'إزالة عضو الفريق', message: `هل تريد إزالة "${name}" من الفريق؟`, confirmLabel: 'إزالة العضو', danger: true, risk: 'high', consequence: 'سيفقد العضو فوراً جميع صلاحياته ولن يتمكن من الوصول للنظام.' })
     if (!ok) return
     try {
       await teamApi.remove(id)
@@ -72,6 +72,15 @@ export default function Team() {
   }
 
   const handleRoleChange = async (id: string, role: NormRole) => {
+    const member = members.find(m => m.id === id)
+    const ok = await confirm({
+      title: 'تغيير صلاحية العضو',
+      message: `هل تريد تغيير دور "${member?.name || 'العضو'}" إلى "${roleConfig[role].label}"؟`,
+      confirmLabel: 'تغيير الصلاحية',
+      risk: 'medium',
+      consequence: `سيحصل العضو على صلاحيات: ${PERMISSIONS[role].join('، ')}`,
+    })
+    if (!ok) return
     try {
       await teamApi.updateRole(id, role.toUpperCase())
       setMembers(prev => prev.map(m => m.id === id ? { ...m, role } : m))

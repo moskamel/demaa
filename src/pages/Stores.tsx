@@ -34,7 +34,7 @@ export default function Stores() {
   }, [])
 
   const handleDisconnect = async (id: string, name: string) => {
-    const ok = await confirm({ title: 'فصل المتجر', message: `هل أنت متأكد من فصل متجر "${name}"؟ لن تتمكن من استقبال طلبات جديدة منه.`, confirmLabel: 'فصل المتجر', danger: true })
+    const ok = await confirm({ title: 'فصل المتجر', message: `هل تريد فصل متجر "${name}"؟`, confirmLabel: 'فصل المتجر', danger: true, risk: 'critical', consequence: 'لن تتمكن من استقبال طلبات جديدة من هذا المتجر. يمكنك إعادة الربط لاحقاً.', confirmPhrase: 'DISCONNECT' })
     if (!ok) return
     setDisconnecting(id)
     try {

@@ -4,6 +4,7 @@ import { TickCircle, InfoCircle, Clock, Add, ExportSquare } from 'iconsax-react'
 import { connectorsApi, type ConnectorData as Connector } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { useConfirm } from '../hooks/useConfirm'
 
 const categoryLabels = {
   shipping: 'شركات الشحن',
@@ -88,6 +89,7 @@ export default function Connectors() {
   const [connectors, setConnectors] = useState<Connector[]>([])
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState<string | null>(null)
+  const { confirm, Dialog } = useConfirm()
 
   useEffect(() => {
     connectorsApi.list().then(data => {
@@ -99,6 +101,15 @@ export default function Connectors() {
   const handleToggle = async (type: string) => {
     const c = connectors.find(x => x.type === type)!
     if (c.status === 'connected') {
+      const ok = await confirm({
+        title: `فصل ${c.nameAr}`,
+        message: `هل تريد فصل تطبيق ${c.nameAr}؟`,
+        confirmLabel: 'فصل التطبيق',
+        risk: 'high',
+        danger: true,
+        consequence: 'سيتوقف ديما عن استخدام هذا التطبيق فوراً وقد تتأثر العمليات الجارية.',
+      })
+      if (!ok) return
       await connectorsApi.disconnect(type).catch(() => {})
       setConnectors(prev => prev.map(x => x.type === type ? { ...x, status: 'disconnected', lastUsed: undefined } : x))
     } else {
@@ -179,5 +190,6 @@ export default function Connectors() {
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
+    {Dialog}
   )
 }
