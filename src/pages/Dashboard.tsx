@@ -458,12 +458,6 @@ export default function Dashboard() {
 
         {/* top bar */}
         <AppHeader title="لوحة التحكم">
-          {/* search */}
-          <button onClick={() => setShowSearch(true)} title="بحث (Ctrl+K)" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: 12 }}>
-            <SearchNormal1 size={12} variant="Outline" />
-            <span>بحث</span>
-            <kbd style={{ fontSize: 9, background: 'var(--canvas-soft-2)', borderRadius: 4, padding: '1px 5px', border: '1px solid var(--hairline)' }}>⌘K</kbd>
-          </button>
           {/* notifications bell */}
           <div style={{ position: 'relative' }}>
             <button onClick={() => setShowNotifs(v => !v)} style={{ width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: showNotifs ? 'var(--canvas-soft)' : 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)' }}>
