@@ -32,11 +32,10 @@ const paymentLabels: Record<string, string> = {
 // ── Quick actions ────────────────────────────────────────────────────────────
 const QUICK = [
   { label: 'الطلبات', cmd: 'وريني الطلبات المعلقة' },
-  { label: 'اقبل الكل', cmd: 'اقبل الطلبات السليمة' },
+  { label: 'مبيعات اليوم', cmd: 'مبيعات اليوم' },
+  { label: 'المخزون', cmd: 'كام باقي من المنتجات' },
   { label: 'الشحن', cmd: 'اشحن الطلبات المقبولة' },
   { label: 'المنتجات', cmd: 'وريني المنتجات' },
-  { label: 'المخزون', cmd: 'كام باقي من المنتجات' },
-  { label: 'مبيعات اليوم', cmd: 'مبيعات اليوم' },
   { label: 'كوبون خصم', cmd: 'اعمل كوبون خصم 15%' },
   { label: 'الأنشطة', cmd: 'سجل الأنشطة' },
 ]
@@ -492,12 +491,15 @@ export default function Dashboard() {
               }} />
             ))}
 
-            {/* Logo */}
-            <div className="animate-fade-in-scale" style={{ marginBottom: 40, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 800, fontSize: 22, letterSpacing: '-1px' }}>D</span>
+            {/* Logo + subtitle */}
+            <div className="animate-fade-in-scale" style={{ marginBottom: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: '#fff', fontWeight: 800, fontSize: 22, letterSpacing: '-1px' }}>D</span>
+                </div>
+                <span style={{ fontSize: 36, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-1.5px' }}>ديما</span>
               </div>
-              <span style={{ fontSize: 36, fontWeight: 700, color: '#fff', letterSpacing: '-1.5px' }}>ديما</span>
+              <span style={{ fontSize: 14, color: 'var(--ink-muted)', letterSpacing: '-0.2px' }}>مساعدك الذكي لإدارة متجرك</span>
             </div>
 
             {/* Center input */}
@@ -519,7 +521,7 @@ export default function Dashboard() {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !isTyping && handleSend(input)}
-                  placeholder="ما الذي يدور في ذهنك؟"
+                  placeholder="اكتب أمرك أو سؤالك..."
                   style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#fff', fontSize: 16, fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.2px' }}
                 />
                 <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}

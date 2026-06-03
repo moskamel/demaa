@@ -36,6 +36,7 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
   const navigate = useNavigate()
   const pageTitle = title ?? PAGE_TITLES[location.pathname] ?? ''
   const isSecondary = SECONDARY_PAGES.includes(location.pathname)
+  const user = (() => { try { return JSON.parse(localStorage.getItem('deema_user') || '{}') } catch { return {} } })()
 
   const [pending, setPending] = useState<number | null>(null)
   const [stores, setStores] = useState<StoreData[]>([])
@@ -73,9 +74,14 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
   return (
     <div style={{
       height: 56, borderBottom: '1px solid var(--hairline)',
-      display: 'flex', alignItems: 'center', padding: '0 28px',
-      gap: 16, flexShrink: 0, background: 'var(--canvas)',
+      display: 'flex', alignItems: 'center', padding: '0 20px',
+      gap: 12, flexShrink: 0, background: 'var(--canvas)',
     }}>
+      {/* User avatar — leftmost */}
+      <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+        {(user.name || 'م')[0]}
+      </div>
+
       {/* Page title + optional back arrow */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
         {isSecondary && (
@@ -96,31 +102,25 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
       {children}
 
       {/* Stats badges */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
+          display: 'flex', alignItems: 'center', gap: 5,
           background: 'rgba(255,122,61,0.1)', borderRadius: 20,
-          padding: '5px 12px', border: '1px solid rgba(255,122,61,0.2)',
+          padding: '4px 10px', border: '1px solid rgba(255,122,61,0.2)',
         }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff7a3d', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#ff7a3d', whiteSpace: 'nowrap' }}>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ff7a3d', flexShrink: 0 }} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: '#ff7a3d', whiteSpace: 'nowrap' }}>
             {pending ?? '—'} معلق
           </span>
         </div>
 
-        <div
-          onClick={() => navigate('/reports')}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: 'rgba(255,85,119,0.08)', borderRadius: 20,
-            padding: '5px 12px', border: '1px solid rgba(255,85,119,0.18)',
-            cursor: 'pointer', transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,85,119,0.14)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,85,119,0.08)' }}
-        >
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff5577', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#ff5577', whiteSpace: 'nowrap' }}>نافد</span>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          background: 'rgba(255,85,119,0.08)', borderRadius: 20,
+          padding: '4px 10px', border: '1px solid rgba(255,85,119,0.18)',
+        }}>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#ff5577', flexShrink: 0 }} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: '#ff5577', whiteSpace: 'nowrap' }}>نافد</span>
         </div>
       </div>
 
