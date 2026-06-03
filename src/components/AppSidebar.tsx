@@ -83,7 +83,7 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
         width: collapsed ? 52 : 240,
         background: '#111',
         borderRadius: 15,
-        margin: '20px',
+        margin: '20px 20px 20px 0',
         boxShadow: '0 8px 48px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3)',
         display: 'flex', flexDirection: 'column', flexShrink: 0,
         transition: 'width 0.2s ease', overflow: 'hidden',
