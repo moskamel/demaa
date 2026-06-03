@@ -128,7 +128,7 @@ export default function Connectors() {
   const connected = connectors.filter(c => c.status === 'connected').length
   if (loading) return <div style={{ minHeight: '100vh', background: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-muted)', fontSize: 14 }}>جاري التحميل...</div>
 
-  return (
+  return (<>
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <AppSidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
@@ -191,5 +191,5 @@ export default function Connectors() {
       </div>
     </div>
     {Dialog}
-  )
+  </>)
 }

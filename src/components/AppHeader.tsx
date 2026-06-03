@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { ArrowDown2, TickCircle, Add } from 'iconsax-react'
 import { orders as ordersApi, storesApi, type StoreData } from '../lib/api'
+// clearToken handled in AppSidebar
 
 const PAGE_TITLES: Record<string, string> = {
   '/stores':        'متاجري',
@@ -63,10 +64,6 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
     setShowStores(false)
   }
 
-  const handleLogout = () => {
-    clearToken()
-    navigate('/login')
-  }
 
   const pColor = activeStore ? (platformColors[activeStore.platform] ?? '#6a4cf5') : '#6a4cf5'
 
