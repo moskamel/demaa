@@ -21,13 +21,13 @@ export default function Features() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '64px 30px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 30px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>كل مميزات Deema</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>كل ما تحتاجه لإدارة متجرك بكفاءة — بجملة واحدة بالعربي</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {features.map(({ icon: Icon, title, desc }) => (
             <div key={title} style={{
               background: 'var(--canvas-soft)',
