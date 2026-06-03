@@ -109,8 +109,8 @@ html {
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 .btn-primary {
-  background: var(--primary);
-  color: var(--on-primary);
+  background: linear-gradient(135deg, #6a4cf5, #d44df0);
+  color: #fff;
   border: none;
   border-radius: 100px;
   padding: 0 12px;
@@ -133,8 +133,8 @@ html {
 .btn-primary:active { transform: scale(0.97) translateY(0); opacity: 0.8; }
 
 .btn-primary-sm {
-  background: var(--primary);
-  color: var(--on-primary);
+  background: linear-gradient(135deg, #6a4cf5, #d44df0);
+  color: #fff;
   border: none;
   border-radius: 100px;
   padding: 0 12px;
