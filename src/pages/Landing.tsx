@@ -86,6 +86,52 @@ const FAQS = [
   { q: 'ماذا يحدث إذا لم أكن راضياً؟', a: 'لديك ٣٠ يوماً لاسترداد كامل المبلغ. بدون أسئلة.' },
 ]
 
+// ── Testimonials Slider ───────────────────────────────────────────────────────
+function TestimonialsSlider() {
+  const [current, setCurrent] = useState(0)
+  const total = TESTIMONIALS.length
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent(i => (i + 1) % total), 4000)
+    return () => clearInterval(timer)
+  }, [total])
+
+  const t = TESTIMONIALS[current]
+  return (
+    <section style={{ padding: '96px 40px', maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: 56 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: '#9090a2', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>آراء التجار</p>
+        <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: '#f0f0f5' }}>تجار حقيقيون، نتائج حقيقية</h2>
+      </div>
+
+      <div style={{ position: 'relative', maxWidth: 700, margin: '0 auto' }}>
+        {/* Card */}
+        <div key={current} style={{ background: '#18181e', borderRadius: 28, padding: '40px 36px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.35s ease-out' }}>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {Array(5).fill(0).map((_, i) => <Star1 key={i} size={16} color="#f59e0b" variant="Bold" />)}
+          </div>
+          <p style={{ fontSize: 18, color: '#f0f0f5', lineHeight: 1.75, flex: 1, letterSpacing: '-0.2px' }}>"{t.quote}"</p>
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 44, height: 44, borderRadius: '50%', background: t.avatar, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{t.name[0]}</div>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#f0f0f5' }}>{t.name}</div>
+              <div style={{ fontSize: 12, color: '#9090a2', marginTop: 3 }}>{t.role}</div>
+            </div>
+            <div style={{ marginRight: 'auto', background: '#ffd02f', borderRadius: 9999, padding: '5px 14px', fontSize: 12, color: '#0e0e12', fontWeight: 700 }}>{t.metric}</div>
+          </div>
+        </div>
+
+        {/* Dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 28 }}>
+          {TESTIMONIALS.map((_, i) => (
+            <button key={i} onClick={() => setCurrent(i)} style={{ width: i === current ? 24 : 8, height: 8, borderRadius: 9999, border: 'none', cursor: 'pointer', background: i === current ? '#f0f0f5' : 'rgba(255,255,255,0.2)', transition: 'all 0.3s ease', padding: 0 }} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 export default function Landing() {
   const isAuthed = !!localStorage.getItem('deema_token')
@@ -523,31 +569,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ─────────────────────────────────────────────────────── */}
-      <section style={{ padding: '96px 40px', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>آراء التجار</p>
-          <h2 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-1px', color: T.ink }}>تجار حقيقيون، نتائج حقيقية</h2>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {TESTIMONIALS.map(t => (
-            <div key={t.name} style={{ background: T.canvas, borderRadius: 28, padding: 28, border: `1px solid ${T.hairline}`, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {Array(5).fill(0).map((_, i) => <Star1 key={i} size={14} color="#f59e0b" variant="Bold" />)}
-              </div>
-              <p style={{ fontSize: 15, color: T.ink, lineHeight: 1.7, flex: 1 }}>"{t.quote}"</p>
-              <div style={{ borderTop: `1px solid ${T.hairline}`, paddingTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: t.avatar, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{t.name[0]}</div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: T.slate, marginTop: 2 }}>{t.role}</div>
-                </div>
-                <div style={{ marginRight: 'auto', background: T.yellow, borderRadius: 9999, padding: '4px 12px', fontSize: 11, color: T.ink, fontWeight: 600 }}>{t.metric}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── TESTIMONIALS SLIDER ──────────────────────────────────────────────── */}
+      <TestimonialsSlider />
 
       {/* ── PRICING ──────────────────────────────────────────────────────────── */}
       <section style={{ background: T.well, padding: '96px 40px' }}>
