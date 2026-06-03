@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { DocumentDownload, TickCircle, CloseCircle, Box, ArrowRight2, Flash } from 'iconsax-react'
+import { DocumentDownload, TickCircle, CloseCircle, Box, Flash } from 'iconsax-react'
 import { analytics, type ActivityLog } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const filters = [
   { id: 'all', label: 'الكل' },
@@ -102,12 +102,10 @@ export default function Activity() {
   const yesterday = filtered('yesterday')
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', color: 'var(--ink)' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', color: 'var(--ink)' }}>
       <nav style={{ height: 52, borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', padding: '0 30px', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowRight2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ width: 1, height: 14, background: 'var(--hairline)' }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>سجل الأنشطة</span>
         {logs.length > 0 && (
           <span style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e', borderRadius: 100, fontSize: 10, padding: '2px 8px', fontWeight: 600 }}>
@@ -168,6 +166,7 @@ export default function Activity() {
             )}
           </>
         )}
+      </div>
       </div>
     </div>
   )

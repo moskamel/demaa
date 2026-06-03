@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
   Shop, ChartSquare, People, Electricity,
-  Notification as NotifIcon, ArrowDown2, SearchNormal1,
-  MessageAdd1, Logout,
+  Notification as NotifIcon, ArrowDown2, MessageAdd1, Logout,
+  Profile2User, Setting2, Card, Activity,
 } from 'iconsax-react'
 import { clearToken } from '../lib/api'
 
@@ -11,8 +11,17 @@ const NAV = [
   { to: '/dashboard', icon: MessageAdd1, label: 'المساعد' },
   { to: '/stores', icon: Shop, label: 'متاجري' },
   { to: '/reports', icon: ChartSquare, label: 'التقارير' },
+  { to: '/customers', icon: Profile2User, label: 'العملاء' },
   { to: '/team', icon: People, label: 'الفريق' },
   { to: '/connectors', icon: Electricity, label: 'التطبيقات' },
+  { to: '/notifications', icon: NotifIcon, label: 'الإشعارات' },
+]
+
+const NAV_BOTTOM = [
+  { to: '/activity', icon: Activity, label: 'السجل' },
+  { to: '/billing', icon: Card, label: 'الاشتراك' },
+  { to: '/settings', icon: Setting2, label: 'الإعدادات' },
+]
   { to: '/notifications', icon: NotifIcon, label: 'الإشعارات' },
 ]
 
@@ -87,6 +96,23 @@ export default function AppSidebar() {
 
       {/* Spacer */}
       <div style={{ flex: 1 }} />
+
+      {/* Bottom nav: Activity, Billing, Settings */}
+      <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: 2, borderTop: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+        {NAV_BOTTOM.map(({ to, icon: Icon, label: lbl }) => {
+          const active = location.pathname === to
+          return (
+            <Link key={to} to={to}
+              style={{ ...btn(collapsed), background: active ? 'rgba(255,255,255,0.12)' : 'transparent', textDecoration: 'none' }}
+              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+            >
+              <Icon size={16} variant="Outline" color={active ? '#fff' : 'rgba(255,255,255,0.5)'} />
+              {!collapsed && <span style={{ ...label, color: active ? '#fff' : 'rgba(255,255,255,0.5)', fontWeight: active ? 600 : 400 }}>{lbl}</span>}
+            </Link>
+          )
+        })}
+      </div>
 
       {/* User + logout */}
       <div style={{ padding: collapsed ? '10px 8px' : '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>

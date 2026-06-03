@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft2, SearchNormal1, People, TrendUp, ShoppingBag, Star1 } from 'iconsax-react'
+import { SearchNormal1, People, TrendUp, ShoppingBag, Star1 } from 'iconsax-react'
 import { customers as customersApi, type Customer } from '../lib/api'
+import AppSidebar from '../components/AppSidebar'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
 const segmentLabels: Record<string, string> = { vip: 'VIP', loyal: 'مخلص', regular: 'عادي', new: 'جديد' }
@@ -34,15 +35,9 @@ export default function Customers() {
   const totalSpent = totalSpentHalalahs / 100
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--canvas)', paddingBottom: 60 }}>
-      <div style={{ borderBottom: '1px solid var(--hairline)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', textDecoration: 'none', fontSize: 13 }}>
-          <ArrowLeft2 size={14} variant="Outline" /> الرئيسية
-        </Link>
-        <span style={{ color: 'var(--hairline)' }}>/</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>العملاء</span>
-      </div>
-
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <AppSidebar />
+      <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', paddingBottom: 60 }}>
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 24px' }}>
 
         {/* KPIs */}
@@ -115,6 +110,7 @@ export default function Customers() {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   )
