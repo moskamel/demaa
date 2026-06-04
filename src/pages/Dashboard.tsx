@@ -97,9 +97,26 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
   )
 }
 
+const SUGGESTED = [
+  { icon: '📦', title: 'الطلبات المعلقة', cmd: 'وريني الطلبات المعلقة' },
+  { icon: '📊', title: 'مبيعات اليوم', cmd: 'كم مبيعات اليوم؟' },
+  { icon: '🏷️', title: 'المنتجات', cmd: 'وريني المنتجات والمخزون' },
+  { icon: '📈', title: 'تقرير الأرباح', cmd: 'احسب صافي الأرباح هذا الشهر' },
+  { icon: '🚚', title: 'الشحنات', cmd: 'وريني الطلبات المقبولة الجاهزة للشحن' },
+  { icon: '⚠️', title: 'مخزون منخفض', cmd: 'وريني المنتجات اللي مخزونها وشك ينفد' },
+  { icon: '👥', title: 'العملاء', cmd: 'وريني أفضل 10 عملاء' },
+  { icon: '🎟️', title: 'كوبون خصم', cmd: 'اعمل لي كوبون خصم 10%' },
+]
+
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
+  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
+  const [hovering, setHovering] = useState(false)
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+    <div
+      style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
       <div style={{ maxWidth: '80%' }}>
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
           <p style={{ whiteSpace: 'pre-line', color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{msg.content}</p>
@@ -126,6 +143,10 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
               ))}
             </div>
           )}
+          <div style={{ display: 'flex', gap: 4, marginTop: 6, opacity: hovering ? 1 : 0, transition: 'opacity 0.15s' }}>
+            <button onClick={() => setFeedback('up')} style={{ background: feedback === 'up' ? 'rgba(34,197,94,0.15)' : 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 13, color: feedback === 'up' ? '#22c55e' : 'var(--ink-muted)' }}>👍</button>
+            <button onClick={() => setFeedback('down')} style={{ background: feedback === 'down' ? 'rgba(239,68,68,0.1)' : 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 13, color: feedback === 'down' ? '#ef4444' : 'var(--ink-muted)' }}>👎</button>
+          </div>
         </div>
       </div>
     </div>
@@ -388,8 +409,23 @@ export default function Dashboard() {
             {/* messages */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '24px 30px 24px 20px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
               {messages.length === 0 && !isTyping && (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 0' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>مرحباً 👋</div>
+                    <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20 }}>كيف أقدر أساعدك اليوم؟</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      {SUGGESTED.map(s => (
+                        <button key={s.cmd} onClick={() => handleSend(s.cmd)}
+                          style={{ background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 12, padding: 14, cursor: 'pointer', textAlign: 'right', fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--hairline-strong)'; e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--hairline)'; e.currentTarget.style.background = 'var(--canvas-soft)' }}
+                        >
+                          <div style={{ fontSize: 24, marginBottom: 6 }}>{s.icon}</div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{s.title}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
               {messages.map((msg, idx) => (

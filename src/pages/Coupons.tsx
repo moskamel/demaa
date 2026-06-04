@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Add, Trash, TickCircle, CloseCircle, PercentageSquare, Tag } from 'iconsax-react'
+import { Add, Trash, TickCircle, CloseCircle, PercentageSquare, Tag, TicketStar } from 'iconsax-react'
 import { couponsApi, type CouponData } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
@@ -163,10 +163,13 @@ export default function Coupons() {
               {[0,1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 64, borderRadius: 0, borderBottom: '1px solid var(--hairline)' }} />)}
             </div>
           ) : coupons.length === 0 ? (
-            <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '80px 0' }}>
-              <PercentageSquare size={40} variant="Outline" color="var(--ink-muted)" style={{ marginBottom: 16, opacity: 0.4 }} />
-              <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 8 }}>لا توجد كوبونات</div>
-              <div style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>أنشئ أول كوبون خصم لعملائك</div>
+            <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <div style={{ marginBottom: 12 }}><TicketStar size={48} color="var(--ink-muted)" style={{ opacity: 0.3 }} /></div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>لا توجد كوبونات بعد</div>
+              <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20, maxWidth: 280, margin: '0 auto 20px' }}>أنشئ كوبونات خصم وشاركها مع عملائك</div>
+              <button onClick={() => setShowForm(true)} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                إنشاء كوبون
+              </button>
             </div>
           ) : (
             <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', overflow: 'hidden' }}>

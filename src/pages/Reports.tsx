@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, Refresh2 } from 'iconsax-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { TrendUp, TrendDown, Box, ShoppingCart, DollarCircle, DocumentDownload, Refresh2, DocumentText } from 'iconsax-react'
 import { analytics as analyticsApi, products as productsApi, type AnalyticsOverview, type Product } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
@@ -13,6 +13,7 @@ const paymentColors: Record<string, string> = { card: '#6a4cf5', cash: '#ff7a3d'
 type Period = '7d' | '30d' | '90d'
 
 export default function Reports() {
+  const navigate = useNavigate()
   const [period, setPeriod] = useState<Period>('30d')
   const [overview, setOverview] = useState<AnalyticsOverview | null>(null)
   const [allProducts, setAllProducts] = useState<Product[]>([])
@@ -92,10 +93,13 @@ export default function Reports() {
             </div>
           </div>
         ) : !overview ? (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <Box size={40} variant="Outline" color="var(--ink-muted)" style={{ marginBottom: 16, opacity: 0.4 }} />
-            <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 8 }}>لا توجد بيانات لهذه الفترة</div>
-            <div style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ بربط متجرك وقبول الطلبات لتظهر التقارير هنا</div>
+          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ marginBottom: 12 }}><DocumentText size={48} color="var(--ink-muted)" style={{ opacity: 0.3 }} /></div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>لا توجد تقارير بعد</div>
+            <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20, maxWidth: 280, margin: '0 auto 20px' }}>أضف طلبات لبدء إنشاء التقارير التلقائية</div>
+            <button onClick={() => navigate('/orders')} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+              الطلبات
+            </button>
           </div>
         ) : (
           <>
