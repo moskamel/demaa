@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useConfirm } from '../hooks/useConfirm'
 import {
@@ -447,32 +448,48 @@ export default function Dashboard() {
                   <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>
                 </div>
               )}
-              {messages.map((msg, idx) => (
-                <div key={msg.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 30, 120)}ms` }}>
+              <AnimatePresence initial={false}>
+              {messages.map((msg) => (
+                <motion.div key={msg.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}>
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
                     <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
-                        <div className="chat-message-user" style={{ background: '#6a4cf5', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.25)', maxWidth: '50vw', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                        <motion.div className="chat-message-user"
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                          style={{ background: '#6a4cf5', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.25)', maxWidth: '50vw', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
                           {msg.content}
-                        </div>
+                        </motion.div>
                         {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
                       </div>
                     </div>
                   )}
-                </div>
+                </motion.div>
               ))}
+              </AnimatePresence>
 
+              <AnimatePresence>
               {isTyping && (
-                <div className="animate-fade-in" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <motion.div key="typing"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+                  style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', display: 'flex', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                     {[0, 1, 2].map(i => (
-                      <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)', animation: `dotBounce 1.2s ${i * 0.18}s ease-in-out infinite` }} />
+                      <motion.div key={i}
+                        animate={{ y: [0, -6, 0] }}
+                        transition={{ duration: 0.7, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ink-muted)' }} />
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
               <div ref={bottomRef} />
             </div>
 
@@ -481,12 +498,14 @@ export default function Dashboard() {
               <div style={{ position: 'relative', marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
                   {QUICK.map((q, i) => (
-                    <button key={q.label} onClick={() => handleSend(q.cmd)}
-                      className="animate-fade-in btn-press"
-                      style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit', animationDelay: `${i * 40}ms`, transition: 'background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s' }}
-                      onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)'; e.currentTarget.style.background = 'var(--canvas-soft-2)'; e.currentTarget.style.borderColor = 'var(--hairline-strong)' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink-muted)'; e.currentTarget.style.background = 'var(--canvas-soft)'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
-                    >{q.label}</button>
+                    <motion.button key={q.label} onClick={() => handleSend(q.cmd)}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.25 }}
+                      whileHover={{ scale: 1.05, backgroundColor: 'var(--canvas-soft-2)', color: 'var(--ink)' }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
+                    >{q.label}</motion.button>
                   ))}
                 </div>
                 <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 32, background: 'linear-gradient(to left, transparent, var(--canvas))', pointerEvents: 'none' }} />
@@ -503,10 +522,12 @@ export default function Dashboard() {
                   onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
                   onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
                 />
-                <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
-                  style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default' }}>
+                <motion.button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
+                  whileHover={input.trim() && !isTyping ? { scale: 1.1 } : {}}
+                  whileTap={input.trim() && !isTyping ? { scale: 0.9 } : {}}
+                  style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default', transition: 'background 0.2s' }}>
                   <Send2 size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
-                </button>
+                </motion.button>
               </div>
             </div>
           </>

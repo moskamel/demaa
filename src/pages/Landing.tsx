@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { fadeUp, fadeIn, scaleIn, slideInRight, stagger, buttonTap, popIn } from '../lib/animations'
 import LandingNav from '../components/LandingNav'
 import {
   ArrowLeft2, TickCircle, ArrowDown2, Flash, Box, ChartSquare,
@@ -135,10 +137,20 @@ function TestimonialsSlider() {
   )
 }
 
+function ScrollSection({ children }: { children: React.ReactNode }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-80px' })
+  return (
+    <motion.div ref={ref} variants={stagger(0.08)} initial="hidden" animate={isInView ? 'show' : 'hidden'}>
+      {children}
+    </motion.div>
+  )
+}
+
 export default function Landing() {
   const isAuthed = !!localStorage.getItem('deema_token')
   const ctaTo = isAuthed ? '/dashboard' : '/signup'
-  const loginTo = isAuthed ? '/dashboard' : '/login'
+  // const loginTo = isAuthed ? '/dashboard' : '/login'
 
   const [demoIdx, setDemoIdx] = useState(0)
   const [demoInput, setDemoInput] = useState('')
@@ -210,22 +222,6 @@ export default function Landing() {
     letterSpacing: '-0.14px',
   }
 
-  const btnOutline: React.CSSProperties = {
-    background: 'transparent',
-    color: T.ink,
-    borderRadius: 9999,
-    padding: '12px 24px',
-    fontSize: 14,
-    fontWeight: 500,
-    textDecoration: 'none',
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    border: `1.5px solid rgba(255,255,255,0.18)`,
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    letterSpacing: '-0.14px',
-  }
 
   return (
     <div dir="rtl" style={{ background: T.canvas, color: T.ink, minHeight: '100vh', overflowX: 'hidden', fontFamily: 'Zain, sans-serif' }}>
@@ -234,44 +230,53 @@ export default function Landing() {
 
       {/* ── HERO ── */}
       <section style={{ padding: '96px 200px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
-          <div className="animate-fade-in-up">
-            <div className="animate-pop-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: T.yellow, borderRadius: 9999, padding: '6px 16px', marginBottom: 28 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', animation: 'pulse 1.5s infinite', flexShrink: 0 }} />
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#0e0e12' }}>+١٢٠٠ تاجر يستخدمون ديما الآن</span>
-            </div>
+        <motion.div variants={stagger(0.1)} initial="hidden" animate="show"
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
 
-            <h1 style={{ fontSize: 'clamp(42px, 5.5vw, 76px)', fontWeight: 800, lineHeight: 1.05, letterSpacing: '-2px', color: T.ink, margin: '0 0 20px' }}>
+          <div>
+            <motion.div variants={popIn} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: T.yellow, borderRadius: 9999, padding: '6px 16px', marginBottom: 28 }}>
+              <motion.span animate={{ scale: [1, 1.4, 1] }} transition={{ duration: 1.5, repeat: Infinity }}
+                style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', flexShrink: 0, display: 'inline-block' }} />
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#0e0e12' }}>+١٢٠٠ تاجر يستخدمون ديما الآن</span>
+            </motion.div>
+
+            <motion.h1 variants={fadeUp} style={{ fontSize: 'clamp(42px, 5.5vw, 76px)', fontWeight: 800, lineHeight: 1.05, letterSpacing: '-2px', color: T.ink, margin: '0 0 20px' }}>
               مساعدك الذكي<br />
               لإدارة متجرك<br />
               <span style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>بجملة عربية</span>
-            </h1>
+            </motion.h1>
 
-            <p style={{ fontSize: 18, lineHeight: 1.6, color: T.slate, margin: '0 0 36px', maxWidth: 460 }}>
+            <motion.p variants={fadeUp} style={{ fontSize: 18, lineHeight: 1.6, color: T.slate, margin: '0 0 36px', maxWidth: 460 }}>
               اقبل طلباتك، أنشئ بوالص الشحن، وتابع مبيعاتك — كل ذلك بكلمة واحدة بالعربي.
               بدون تدريب، بدون تعقيد.
-            </p>
+            </motion.p>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 32 }}>
-              <Link to={ctaTo} style={{ ...btnPrimary, padding: '15px 32px', fontSize: 16 }}>
-                ابدأ مجاناً — بدون بطاقة <ArrowLeft2 size={16} variant="Outline" />
-              </Link>
-            </div>
+            <motion.div variants={fadeUp} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 32 }}>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={buttonTap}>
+                <Link to={ctaTo} style={{ ...btnPrimary, padding: '15px 32px', fontSize: 16 }}>
+                  ابدأ مجاناً — بدون بطاقة <ArrowLeft2 size={16} variant="Outline" />
+                </Link>
+              </motion.div>
+            </motion.div>
 
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <motion.div variants={fadeIn} style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               {['✅ ربط في دقيقتين', '✅ ١٤ منصة مدعومة', '✅ استرداد ٣٠ يوماً'].map(t => (
                 <span key={t} style={{ fontSize: 13, color: T.slate }}>{t}</span>
               ))}
-            </div>
+            </motion.div>
           </div>
 
           {/* Chat mockup */}
-          <div className="animate-fade-in-up" style={{ background: T.surface, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', animationDelay: '120ms' }}>
+          <motion.div variants={slideInRight}
+            whileHover={{ y: -6, boxShadow: '0 40px 80px rgba(0,0,0,0.7)' }}
+            transition={{ duration: 0.3 }}
+            style={{ background: T.surface, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
             <div style={{ background: T.well, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${T.hairline}` }}>
               {['#ff5f57', '#ffbd2e', '#28c940'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
               <span style={{ color: T.slate, fontSize: 12, marginRight: 'auto' }}>Deema · متجر النور · Shopify</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
                 <span style={{ fontSize: 11, color: '#22c55e' }}>متصل</span>
               </div>
             </div>
@@ -283,7 +288,9 @@ export default function Landing() {
                 { text: 'نعم نفذ', isAi: false },
                 { text: '🚀 تم! ٣٥ بوليصة شحن اتبعتت للعملاء. الطلبات الـ ١٢ الباقية محتاجة مراجعتك.', isAi: true },
               ].map((m, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: m.isAi ? 'flex-end' : 'flex-start' }}>
+                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.15, duration: 0.35, ease: 'easeOut' }}
+                  style={{ display: 'flex', justifyContent: m.isAi ? 'flex-end' : 'flex-start' }}>
                   <div style={{
                     background: m.isAi ? 'rgba(255,255,255,0.06)' : '#6a4cf5',
                     color: '#f0f0f5',
@@ -292,7 +299,7 @@ export default function Landing() {
                     border: `1px solid ${T.hairline}`,
                     lineHeight: 1.55, whiteSpace: 'pre-line',
                   }}>{m.text}</div>
-                </div>
+                </motion.div>
               ))}
             </div>
             <div style={{ padding: '10px 14px', borderTop: `1px solid ${T.hairline}`, background: T.canvas }}>
@@ -301,8 +308,8 @@ export default function Landing() {
                 <Send2 size={13} color={T.slate} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ── STATS ── */}
@@ -324,14 +331,15 @@ export default function Landing() {
       </section>
 
       {/* ── PAIN POINTS ── */}
+      <ScrollSection>
       <section style={{ background: T.well, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '80px 200px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 52 }}>
+        <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: 52 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>مشاكل يومية</p>
           <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, letterSpacing: '-1px', color: T.ink, marginBottom: 14 }}>هل تعاني من هذه المشاكل كل يوم؟</h2>
           <p style={{ fontSize: 16, color: T.slate, maxWidth: 520, margin: '0 auto', lineHeight: 1.6 }}>معظم أصحاب المتاجر يضيعون ساعات في مهام يمكن لديما إنجازها في ثوانٍ</p>
-        </div>
+        </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <motion.div variants={stagger(0.07)} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {[
             { icon: <Timer1 size={22} variant="Outline" />, color: '#ff7a3d', bg: 'rgba(255,122,61,0.1)', title: 'ساعات ضايعة كل يوم', desc: 'إدارة الطلبات يدوياً تأخذ ساعتين أو أكثر كل صباح — وقت كان يمكن استثماره في تنمية متجرك.' },
             { icon: <Warning2 size={22} variant="Outline" />, color: '#ff5577', bg: 'rgba(255,85,119,0.1)', title: 'طلبات مشبوهة تضيع فلوسك', desc: 'بدون فلترة ذكية، الطلبات الوهمية والكاش المشبوه تكلفك خسائر حقيقية كل شهر.' },
@@ -340,21 +348,28 @@ export default function Landing() {
             { icon: <People size={22} variant="Outline" />, color: '#d44df0', bg: 'rgba(212,77,240,0.1)', title: 'فريق بدون تنسيق', desc: 'كل عضو في الفريق يعمل بطريقة مختلفة وصلاحيات غير واضحة تسبب أخطاء متكررة.' },
             { icon: <Flash size={22} variant="Outline" />, color: T.yellow, bg: 'rgba(255,208,47,0.1)', title: 'شحن بطيء يغضب العملاء', desc: 'تأخير إنشاء بوالص الشحن يرفع معدل إلغاء الطلبات ويضر بتقييم متجرك.' },
           ].map(p => (
-            <div key={p.title} style={{ background: T.surface, borderRadius: 20, padding: '28px 24px', border: `1px solid ${T.hairline}` }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, color: p.color }}>{p.icon}</div>
+            <motion.div key={p.title} variants={scaleIn}
+              whileHover={{ y: -6, borderColor: p.color + '55', boxShadow: `0 16px 40px rgba(0,0,0,0.3)` }}
+              transition={{ duration: 0.2 }}
+              style={{ background: T.surface, borderRadius: 20, padding: '28px 24px', border: `1px solid ${T.hairline}`, cursor: 'default' }}>
+              <motion.div whileHover={{ scale: 1.1, rotate: -5 }} transition={{ duration: 0.2 }}
+                style={{ width: 44, height: 44, borderRadius: 12, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, color: p.color }}>{p.icon}</motion.div>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: T.ink, marginBottom: 8, letterSpacing: '-0.3px' }}>{p.title}</h3>
               <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.65 }}>{p.desc}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div style={{ textAlign: 'center', marginTop: 48 }}>
           <p style={{ fontSize: 18, fontWeight: 700, color: T.ink, marginBottom: 20 }}>ديما تحل كل هذا — بجملة عربية واحدة</p>
-          <Link to={ctaTo} style={{ ...btnPrimary, padding: '14px 32px', fontSize: 15 }}>
-            جرب ديما مجاناً <ArrowLeft2 size={15} variant="Outline" />
-          </Link>
+          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-block' }}>
+            <Link to={ctaTo} style={{ ...btnPrimary, padding: '14px 32px', fontSize: 15 }}>
+              جرب ديما مجاناً <ArrowLeft2 size={15} variant="Outline" />
+            </Link>
+          </motion.div>
         </div>
       </section>
+      </ScrollSection>
 
       {/* ── PLATFORMS TICKER ── */}
       <section style={{ borderBottom: `1px solid ${T.hairline}`, padding: '28px 0', overflow: 'hidden', background: T.canvas }}>
@@ -370,67 +385,52 @@ export default function Landing() {
       </section>
 
       {/* ── FEATURES ── */}
+      <ScrollSection>
       <section style={{ padding: '96px 200px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+        <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: 56 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>المميزات</p>
           <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, letterSpacing: '-1px', color: T.ink, marginBottom: 14 }}>كل ما يحتاجه متجرك في مكان واحد</h2>
           <p style={{ fontSize: 16, color: T.slate, maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>ديما مش مجرد أداة — هي العضو الأذكى في فريقك</p>
-        </div>
+        </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+        <motion.div variants={stagger(0.1)} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
           {[
-            {
-              icon: <Box size={26} variant="Outline" />, title: 'إدارة الطلبات بذكاء',
-              desc: 'اقبل، ارفض، وتابع طلباتك بجملة واحدة. ديما تكشف الطلبات المشبوهة وتنبهك قبل الشحن.',
-              demo: '"اقبل الطلبات السليمة وحاسبني على المشبوهة"',
-              bg: '#1a1400', accent: '#c8960a', iconBg: 'rgba(200,150,10,0.15)',
-            },
-            {
-              icon: <Flash size={26} variant="Outline" />, title: 'شحن فوري مع كبرى الشركات',
-              desc: 'ينشئ بوالص الشحن مع أرامكس وSMSA وJ&T ويرسل رقم التتبع للعميل تلقائياً — كل هذا بثوانٍ.',
-              demo: '"اشحن الطلبات المقبولة مع أرامكس"',
-              bg: '#1a0a0a', accent: '#e05555', iconBg: 'rgba(224,85,85,0.15)',
-            },
-            {
-              icon: <ChartSquare size={26} variant="Outline" />, title: 'تقارير ذكية وتنبيهات فورية',
-              desc: 'ملخص يومي كل صباح، تنبيهات عند نفاد المخزون، وتحليل مبيعاتك مقارنة بالفترات السابقة.',
-              demo: '"وريني مبيعات هذا الأسبوع مقارنة بالأسبوع الفائت"',
-              bg: '#001a18', accent: '#1ab8ae', iconBg: 'rgba(26,184,174,0.15)',
-            },
-            {
-              icon: <Global size={26} variant="Outline" />, title: 'كل متاجرك في لوحة واحدة',
-              desc: 'Shopify، Salla، Zid، WooCommerce، Amazon، Noon وأكثر — ١٤ منصة، طلباتها جميعاً عندك في مكان واحد.',
-              demo: '"وريني طلبات Salla وShopify مع بعض"',
-              bg: '#12001a', accent: '#b060e0', iconBg: 'rgba(176,96,224,0.15)',
-            },
-          ].map((f, i) => (
-            <div key={f.title} className="animate-fade-in-up" style={{ background: f.bg, borderRadius: 28, padding: 32, border: `1px solid ${f.accent}22`, transition: 'transform 0.2s, box-shadow 0.2s', animationDelay: `${i * 80}ms` }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 20px 48px rgba(0,0,0,0.4)` }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
-            >
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: f.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: f.accent }}>{f.icon}</div>
+            { icon: <Box size={26} variant="Outline" />, title: 'إدارة الطلبات بذكاء', desc: 'اقبل، ارفض، وتابع طلباتك بجملة واحدة. ديما تكشف الطلبات المشبوهة وتنبهك قبل الشحن.', demo: '"اقبل الطلبات السليمة وحاسبني على المشبوهة"', bg: '#1a1400', accent: '#c8960a', iconBg: 'rgba(200,150,10,0.15)' },
+            { icon: <Flash size={26} variant="Outline" />, title: 'شحن فوري مع كبرى الشركات', desc: 'ينشئ بوالص الشحن مع أرامكس وSMSA وJ&T ويرسل رقم التتبع للعميل تلقائياً — كل هذا بثوانٍ.', demo: '"اشحن الطلبات المقبولة مع أرامكس"', bg: '#1a0a0a', accent: '#e05555', iconBg: 'rgba(224,85,85,0.15)' },
+            { icon: <ChartSquare size={26} variant="Outline" />, title: 'تقارير ذكية وتنبيهات فورية', desc: 'ملخص يومي كل صباح، تنبيهات عند نفاد المخزون، وتحليل مبيعاتك مقارنة بالفترات السابقة.', demo: '"وريني مبيعات هذا الأسبوع مقارنة بالأسبوع الفائت"', bg: '#001a18', accent: '#1ab8ae', iconBg: 'rgba(26,184,174,0.15)' },
+            { icon: <Global size={26} variant="Outline" />, title: 'كل متاجرك في لوحة واحدة', desc: 'Shopify، Salla، Zid، WooCommerce، Amazon، Noon وأكثر — ١٤ منصة، طلباتها جميعاً عندك في مكان واحد.', demo: '"وريني طلبات Salla وShopify مع بعض"', bg: '#12001a', accent: '#b060e0', iconBg: 'rgba(176,96,224,0.15)' },
+          ].map((f) => (
+            <motion.div key={f.title} variants={fadeUp}
+              whileHover={{ y: -6, boxShadow: '0 24px 56px rgba(0,0,0,0.45)' }}
+              transition={{ duration: 0.2 }}
+              style={{ background: f.bg, borderRadius: 28, padding: 32, border: `1px solid ${f.accent}22` }}>
+              <motion.div whileHover={{ scale: 1.1, rotate: -8 }} transition={{ duration: 0.2 }}
+                style={{ width: 48, height: 48, borderRadius: 14, background: f.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: f.accent }}>{f.icon}</motion.div>
               <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', color: T.ink, marginBottom: 10 }}>{f.title}</h3>
               <p style={{ fontSize: 15, color: T.slate, lineHeight: 1.6, marginBottom: 20 }}>{f.desc}</p>
               <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px', fontSize: 12.5, color: T.slate, fontFamily: 'monospace', border: `1px solid ${T.hairline}` }}>{f.demo}</div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginTop: 16 }}>
+        <motion.div variants={stagger(0.12)} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginTop: 16 }}>
           {[
             { icon: <MessageText1 size={22} variant="Outline" />, title: 'يفهم كل اللهجات العربية', desc: 'مصري، سعودي، خليجي، مغربي — كلهم يشتغلون. اكتب بأي طريقة وديما تفهمك.' },
             { icon: <ShieldTick size={22} variant="Outline" />, title: 'أمان كامل لبياناتك', desc: 'كل إجراء جماعي يطلب تأكيدك. لا تنفيذ مالي بدون موافقتك الصريحة. بيانات مشفرة.' },
           ].map(f => (
-            <div key={f.title} style={{ background: T.surface, borderRadius: 16, padding: '24px 28px', border: `1px solid ${T.hairline}`, display: 'flex', alignItems: 'flex-start', gap: 18 }}>
+            <motion.div key={f.title} variants={fadeUp}
+              whileHover={{ y: -3, borderColor: 'rgba(255,255,255,0.15)' }}
+              style={{ background: T.surface, borderRadius: 16, padding: '24px 28px', border: `1px solid ${T.hairline}`, display: 'flex', alignItems: 'flex-start', gap: 18 }}>
               <div style={{ width: 42, height: 42, borderRadius: 12, background: T.canvas, border: `1px solid ${T.hairline}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: T.ink }}>{f.icon}</div>
               <div>
                 <h3 style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.3px', color: T.ink, marginBottom: 8 }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: T.slate, lineHeight: 1.6 }}>{f.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
+      </ScrollSection>
 
       {/* ── INTERACTIVE DEMO ── */}
       <section id="demo" style={{ padding: '0 200px 96px' }}>
@@ -615,63 +615,79 @@ export default function Landing() {
       </section>
 
       {/* ── FAQ ── */}
+      <ScrollSection>
       <section style={{ padding: '96px 200px', maxWidth: '100%' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>الأسئلة الشائعة</p>
             <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, letterSpacing: '-1px', color: T.ink }}>عندك سؤال؟ عندنا الجواب</h2>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          </motion.div>
+          <motion.div variants={stagger(0.06)} style={{ display: 'flex', flexDirection: 'column' }}>
             {FAQS.map((f, i) => (
-              <div key={i} style={{ borderBottom: `1px solid ${T.hairline}` }}>
+              <motion.div key={i} variants={fadeUp} style={{ borderBottom: `1px solid ${T.hairline}` }}>
                 <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 4px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'right', gap: 12 }}>
                   <span style={{ fontSize: 16, fontWeight: 600, color: T.ink, letterSpacing: '-0.3px' }}>{f.q}</span>
-                  <ArrowDown2 size={17} color={T.slate} variant="Outline" style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
+                  <motion.div animate={{ rotate: openFaq === i ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ flexShrink: 0 }}>
+                    <ArrowDown2 size={17} color={T.slate} variant="Outline" />
+                  </motion.div>
                 </button>
-                {openFaq === i && (
-                  <div style={{ padding: '0 4px 20px', animation: 'fadeIn 0.15s ease-out' }}>
-                    <p style={{ fontSize: 15, color: T.slate, lineHeight: 1.7 }}>{f.a}</p>
-                  </div>
-                )}
-              </div>
+                <AnimatePresence>
+                  {openFaq === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      style={{ overflow: 'hidden' }}>
+                      <p style={{ fontSize: 15, color: T.slate, lineHeight: 1.7, padding: '0 4px 20px' }}>{f.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
+      </ScrollSection>
 
       {/* ── FINAL CTA ── */}
+      <ScrollSection>
       <section style={{ padding: '0 200px 96px' }}>
-        <div style={{ background: 'linear-gradient(135deg, rgba(106,76,245,0.15), rgba(212,77,240,0.1))', borderRadius: 32, padding: '80px 48px', border: '1px solid rgba(106,76,245,0.3)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <motion.div variants={scaleIn}
+          style={{ background: 'linear-gradient(135deg, rgba(106,76,245,0.15), rgba(212,77,240,0.1))', borderRadius: 32, padding: '80px 48px', border: '1px solid rgba(106,76,245,0.3)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -80, left: -80, width: 400, height: 400, borderRadius: '50%', background: 'rgba(106,76,245,0.05)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -100, right: -60, width: 360, height: 360, borderRadius: '50%', background: 'rgba(212,77,240,0.05)', pointerEvents: 'none' }} />
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.08)', borderRadius: 9999, padding: '6px 18px', marginBottom: 28 }}>
+          <motion.div variants={fadeIn} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.08)', borderRadius: 9999, padding: '6px 18px', marginBottom: 28 }}>
             <Clock size={13} color="rgba(255,255,255,0.6)" variant="Outline" />
             <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>ابدأ في أقل من دقيقتين</span>
-          </div>
+          </motion.div>
 
-          <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, letterSpacing: '-2px', lineHeight: 1.05, color: '#fff', margin: '0 0 16px' }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, letterSpacing: '-2px', lineHeight: 1.05, color: '#fff', margin: '0 0 16px' }}>
             متجرك يستحق مساعداً ذكياً
-          </h2>
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.65)', marginBottom: 40, maxWidth: 480, margin: '0 auto 40px', lineHeight: 1.6 }}>
+          </motion.h2>
+          <motion.p variants={fadeUp} style={{ fontSize: 18, color: 'rgba(255,255,255,0.65)', marginBottom: 40, maxWidth: 480, margin: '0 auto 40px', lineHeight: 1.6 }}>
             انضم لـ +١٢٠٠ تاجر عربي يوفرون ساعات كل يوم<br />
             ويركزون على تنمية أعمالهم بدلاً من إدارة الطلبات.
-          </p>
+          </motion.p>
 
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            <Link to={ctaTo} style={{ ...btnPrimary, padding: '16px 36px', fontSize: 17 }}>
-              ابدأ مجاناً الآن <ArrowLeft2 size={16} variant="Outline" />
-            </Link>
-          </div>
+          <motion.div variants={fadeUp} style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+              <Link to={ctaTo} style={{ ...btnPrimary, padding: '16px 36px', fontSize: 17 }}>
+                ابدأ مجاناً الآن <ArrowLeft2 size={16} variant="Outline" />
+              </Link>
+            </motion.div>
+          </motion.div>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
             {['✅ بدون بطاقة ائتمان', '✅ ربط في دقيقتين', '✅ استرداد ٣٠ يوماً', '✅ إلغاء وقتما تريد'].map(t => (
               <span key={t} style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{t}</span>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
+      </ScrollSection>
 
       {/* ── FOOTER ── */}
       <footer style={{ background: T.well, padding: '64px 200px 40px', borderTop: `1px solid ${T.hairline}` }}>
