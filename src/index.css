@@ -475,3 +475,124 @@ input:focus, textarea:focus {
   display: inline-block;
   flex-shrink: 0;
 }
+
+/* ── Global micro-interactions ───────────────────────────────────────────── */
+
+/* All buttons get press feedback */
+button:not([disabled]):active {
+  transform: scale(0.97);
+}
+
+/* All interactive cards */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+}
+
+/* Sidebar items — smooth left indicator */
+.sidebar-item {
+  position: relative;
+  transition: background 0.15s, color 0.15s, padding-right 0.15s;
+}
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  right: 0; top: 20%; bottom: 20%;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+  background: #6a4cf5;
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+.sidebar-item.active::before { transform: scaleY(1); }
+
+/* Table rows */
+tr { transition: background 0.12s; }
+
+/* Links in content */
+a.content-link {
+  position: relative;
+  text-decoration: none;
+}
+a.content-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.2s ease;
+}
+a.content-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Badge / tag pop */
+.badge {
+  transition: transform 0.15s, background 0.15s;
+}
+.badge:hover { transform: scale(1.06); }
+
+/* Smooth scrollbar */
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* Page-level entrance — applied by PageEnter wrapper */
+.page-enter {
+  animation: pageEnter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, var(--canvas-soft) 25%, var(--canvas-soft-2) 50%, var(--canvas-soft) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position: 400px 0; }
+}
+
+/* Pulse ring — for live indicators */
+@keyframes pulseRing {
+  0%   { transform: scale(1); opacity: 0.7; }
+  70%  { transform: scale(2); opacity: 0; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: pulseRing 2s ease-out infinite;
+}
+
+/* Stat number pop */
+@keyframes statPop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.stat-pop { animation: statPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Reduced motion — respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

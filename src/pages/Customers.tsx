@@ -5,6 +5,7 @@ import { customers as customersApi, orders as ordersApi, type Customer, type Ord
 import AppSidebar from '../components/AppSidebar'
 import { useDebounce } from '../hooks/useDebounce'
 import AppHeader from '../components/AppHeader'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
 const segmentLabels: Record<string, string> = { vip: 'VIP', loyal: 'مخلص', regular: 'عادي', new: 'جديد' }
@@ -234,24 +235,27 @@ export default function Customers() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)', paddingBottom: 60 }}>
       <AppHeader />
       <div style={{ padding: '30px 200px' }}>
+      <PageEnter>
 
         {/* KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+        <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
           {[
             { icon: People, label: 'إجمالي العملاء', value: allCustomers.length, color: '#6a4cf5' },
             { icon: Star1, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
             { icon: TrendUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
             { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('en-US')} $`, color: '#22c55e' },
           ].map(({ icon: Icon, label, value, color }, i) => (
-            <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
-              <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <Icon size={15} color={color} variant="Outline" />
+            <StaggerItem key={label}>
+              <div className="animate-fade-in-up hover-lift card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
+                <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Icon size={15} color={color} variant="Outline" />
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 2 }}>{value}</div>
+                <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
               </div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 2 }}>{value}</div>
-              <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerList>
 
         {/* filters */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -327,6 +331,7 @@ export default function Customers() {
             ))}
           </div>
         )}
+      </PageEnter>
       </div>
       </div>
 

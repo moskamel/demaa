@@ -7,6 +7,7 @@ import {
 import { storesApi, teamApi } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -242,6 +243,7 @@ export default function Billing() {
         <AppHeader title="الاشتراك" />
 
         <div style={{ padding: '24px 200px', boxSizing: 'border-box' }}>
+        <PageEnter>
 
           {/* Alert banner */}
           {sub && <AlertBanner sub={sub} />}
@@ -250,14 +252,14 @@ export default function Billing() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
 
             {/* Plan card */}
-            <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: `1px solid ${currentPlan.color}40`, padding: '22px 24px', position: 'relative', overflow: 'hidden' }}>
+            <div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: `1px solid ${currentPlan.color}40`, padding: '22px 24px', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, right: 0, left: 0, height: 3, background: `linear-gradient(90deg, ${currentPlan.color}, ${currentPlan.color}88)` }} />
 
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div>
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 4 }}>باقتك الحالية</div>
                   <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px' }}>
-                    {loading ? '...' : `باقة ${sub?.planLabel ?? 'مجاني'}`}
+                    <PopNumber>{loading ? '...' : `باقة ${sub?.planLabel ?? 'مجاني'}`}</PopNumber>
                   </div>
                 </div>
                 <div style={{ textAlign: 'left' }}>
@@ -309,10 +311,10 @@ export default function Billing() {
               {/* Action buttons */}
               <div style={{ display: 'flex', gap: 8 }}>
                 {sub?.canReactivate && (
-                  <button onClick={handleReactivate} disabled={reactivating} style={{ flex: 1, padding: '9px', borderRadius: 9, border: 'none', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  <AnimBtn onClick={handleReactivate} disabled={reactivating} style={{ flex: 1, padding: '9px', borderRadius: 9, border: 'none', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                     <Refresh2 size={14} />
                     {reactivating ? 'جارٍ التفعيل...' : 'إعادة تفعيل'}
-                  </button>
+                  </AnimBtn>
                 )}
                 {sub && !sub.isCancelled && !sub.isExpired && sub.planId !== 'free' && (
                   <button onClick={() => setShowCancelConfirm(true)} disabled={cancelling} style={{ padding: '9px 14px', borderRadius: 9, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', color: '#ef4444', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -323,7 +325,7 @@ export default function Billing() {
             </div>
 
             {/* Usage card */}
-            <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '22px 24px' }}>
+            <div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 16, border: '1px solid var(--hairline)', padding: '22px 24px' }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)', marginBottom: 18 }}>استخدامك هذا الشهر</div>
 
               {/* Orders usage */}
@@ -370,14 +372,14 @@ export default function Billing() {
           <div id="plans-section">
             <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>اختر الباقة المناسبة لك</div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
               {PLANS.map(plan => {
                 const isCurrent = plan.id === sub?.planId
                 const isUpgrade = PLANS.findIndex(p => p.id === plan.id) > PLANS.findIndex(p => p.id === sub?.planId)
                 const isProcessing = upgrading === plan.id
 
                 return (
-                  <div key={plan.id} style={{
+                  <StaggerItem key={plan.id}><div style={{
                     background: plan.highlight ? 'rgba(106,76,245,0.06)' : 'var(--canvas-soft)',
                     borderRadius: 14,
                     border: isCurrent ? `2px solid ${plan.color}` : plan.highlight ? '1px solid rgba(106,76,245,0.3)' : '1px solid var(--hairline)',
@@ -435,12 +437,13 @@ export default function Billing() {
                         )}
                       </button>
                     )}
-                  </div>
+                  </div></StaggerItem>
                 )
               })}
-            </div>
+            </StaggerList>
           </div>
 
+        </PageEnter>
         </div>
       </div>
 

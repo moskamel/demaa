@@ -5,6 +5,7 @@ import { connectorsApi, type ConnectorData as Connector } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 const categoryLabels = {
   shipping: 'شركات الشحن',
@@ -135,24 +136,27 @@ export default function Connectors() {
       <AppHeader />
 
       <div style={{ padding: '30px 200px' }}>
+      <PageEnter>
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>التطبيقات المتصلة</h1>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>اربط شركات الشحن والدفع والتواصل لتعمل Deema بالكامل</p>
         </div>
 
         {/* stats */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
+        <StaggerList style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
           {(['shipping', 'payment', 'messaging'] as const).map(cat => {
             const catItems = connectors.filter(c => c.category === cat)
             const catConnected = catItems.filter(c => c.status === 'connected').length
             return (
-              <div key={cat} style={{ flex: 1, background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{catConnected}/{catItems.length}</div>
-                <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{categoryLabels[cat]}</div>
-              </div>
+              <StaggerItem key={cat} style={{ flex: 1 }}>
+                <div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px' }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}><PopNumber>{catConnected}/{catItems.length}</PopNumber></div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{categoryLabels[cat]}</div>
+                </div>
+              </StaggerItem>
             )
           })}
-        </div>
+        </StaggerList>
 
         {/* categories */}
         {categoryOrder.map(cat => {
@@ -185,6 +189,7 @@ export default function Connectors() {
           <ExportSquare size={13} color="var(--ink-muted)" variant="Outline" />
           <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>جميع مفاتيح API مشفرة بـ AES-256 ولا تُشارك مع أي طرف ثالث</span>
         </div>
+      </PageEnter>
       </div>
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

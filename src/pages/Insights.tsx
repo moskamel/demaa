@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft2, Cpu, TrendUp, Warning2, Clock, ChartSquare } from 'iconsax-react'
 import { aiApi, orders, type AiMemory, type UsageRecord } from '../lib/api'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 interface PnlData {
   revenue: number
@@ -131,6 +132,7 @@ export default function Insights() {
       </div>
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '32px 24px' }}>
+      <PageEnter>
 
         {/* header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
@@ -182,11 +184,11 @@ export default function Insights() {
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>رؤى المتجر</span>
                   <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--canvas-soft)', borderRadius: 6, padding: '2px 8px' }}>محدّثة تلقائياً</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+                <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
                   {insights.map(insight => {
                     const displayValue = (INSIGHT_VALUE_LABELS[insight.key] ?? (v => v))(insight.value)
                     return (
-                      <div key={insight.key} style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
+                      <StaggerItem key={insight.key}><div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px' }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                           <div>
                             <div style={{ fontSize: 20, marginBottom: 4 }}>{INSIGHT_ICONS[insight.key] ?? '💡'}</div>
@@ -199,10 +201,10 @@ export default function Insights() {
                         </div>
                         <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', marginBottom: 10, lineHeight: 1.3 }}>{displayValue}</div>
                         <ConfidenceBar value={insight.confidence} />
-                      </div>
+                      </div></StaggerItem>
                     )
                   })}
-                </div>
+                </StaggerList>
               </div>
             )}
 
@@ -250,43 +252,43 @@ export default function Insights() {
           ) : (
             <>
               {/* Summary Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
+              <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
                 {/* Revenue */}
-                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                <StaggerItem><div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>إجمالي الإيرادات</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: '#22c55e', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
                     {pnl.revenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>$</div>
-                </div>
+                </div></StaggerItem>
 
                 {/* Cost */}
-                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                <StaggerItem><div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>إجمالي التكاليف</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: '#ff5577', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
                     {pnl.cost.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>$ (تقديري 60%)</div>
-                </div>
+                </div></StaggerItem>
 
                 {/* Profit */}
-                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                <StaggerItem><div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>صافي الربح</div>
                   <div style={{ fontSize: 22, fontWeight: 700, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
                     {pnl.profit.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>$</div>
-                </div>
+                </div></StaggerItem>
 
                 {/* Margin */}
-                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                <StaggerItem><div className="card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>هامش الربح</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: '#ff7a3d', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
                     {pnl.margin.toFixed(1)}%
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>من الإيرادات</div>
-                </div>
-              </div>
+                </div></StaggerItem>
+              </StaggerList>
 
               {/* COD Breakdown */}
               <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px 24px', marginBottom: 24 }}>
@@ -354,6 +356,7 @@ export default function Insights() {
           )}
         </div>
 
+      </PageEnter>
       </div>
     </div>
   )

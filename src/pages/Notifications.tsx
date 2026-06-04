@@ -4,6 +4,7 @@ import { InfoCircle, Warning2, Clock, TickCircle, ChartSquare, Electricity, Box,
 import { notifications as notifApi, type Notification } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
 
 const typeConfig: Record<string, { icon: typeof NotificationIcon; color: string; bg: string }> = {
   low_stock: { icon: Box, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
@@ -55,6 +56,7 @@ export default function Notifications() {
       <AppHeader />
 
       <div style={{ padding: '30px 200px' }}>
+      <PageEnter>
         {/* filter tabs */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 24, background: 'var(--canvas-soft)', borderRadius: 10, padding: 4 }}>
           {([['all', 'الكل'], ['unread', 'غير مقروء'], ['urgent', 'عاجل']] as const).map(([v, l]) => (
@@ -82,14 +84,13 @@ export default function Notifications() {
             <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink-muted)' }}>لا توجد إشعارات</div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <StaggerList style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {filtered.map((n, i) => {
               const cfg = typeConfig[n.type] || { icon: Notification, color: '#6a4cf5', bg: 'rgba(106,76,245,0.12)' }
               const Icon = cfg.icon
               const isRead = n.isRead
               return (
-                <div
-                  key={n.id}
+                <StaggerItem key={n.id}><div
                   onClick={() => markRead(n.id)}
                   className="animate-fade-in-up"
                   style={{
@@ -128,11 +129,12 @@ export default function Notifications() {
                       <div style={{ position: 'absolute', inset: -2, borderRadius: '50%', border: '2px solid #4d7cff', animation: 'pulseRing 1.8s ease-out infinite' }} />
                     </div>
                   )}
-                </div>
+                </div></StaggerItem>
               )
             })}
-          </div>
+          </StaggerList>
         )}
+      </PageEnter>
       </div>
       </div>
     </div>

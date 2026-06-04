@@ -5,6 +5,7 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
 import { useToast } from '../components/Toast'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 const INPUT: React.CSSProperties = {
   width: '100%', padding: '9px 12px', borderRadius: 8,
@@ -98,6 +99,7 @@ export default function Coupons() {
         </AppHeader>
 
         <div style={{ padding: '30px 200px', width: '100%' }}>
+        <PageEnter>
 
           {/* Create form */}
           {showForm && (
@@ -129,9 +131,9 @@ export default function Coupons() {
                 </div>
                 {formError && <div style={{ fontSize: 13, color: '#ff5577', background: 'rgba(255,85,119,0.1)', borderRadius: 8, padding: '8px 12px' }}>{formError}</div>}
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <button type="submit" disabled={saving} style={{ padding: '10px 24px', borderRadius: 9, border: 'none', background: 'var(--ink)', color: 'var(--canvas)', cursor: saving ? 'default' : 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, opacity: saving ? 0.6 : 1 }}>
+                  <AnimBtn type="submit" disabled={saving} style={{ padding: '10px 24px', borderRadius: 9, border: 'none', background: 'var(--ink)', color: 'var(--canvas)', cursor: saving ? 'default' : 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, opacity: saving ? 0.6 : 1 }}>
                     {saving ? 'جاري الإنشاء...' : 'إنشاء الكوبون'}
-                  </button>
+                  </AnimBtn>
                   <button type="button" onClick={() => { setShowForm(false); setFormError('') }} style={{ padding: '10px 18px', borderRadius: 9, border: '1px solid var(--hairline)', background: 'transparent', color: 'var(--ink-muted)', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
                     إلغاء
                   </button>
@@ -141,21 +143,23 @@ export default function Coupons() {
           )}
 
           {/* KPIs */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
+          <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
             {[
               { label: 'إجمالي الكوبونات', value: coupons.length, icon: Tag, color: '#6a4cf5' },
               { label: 'الكوبونات النشطة', value: coupons.filter(c => c.isActive).length, icon: TickCircle, color: '#22c55e' },
               { label: 'إجمالي الاستخدامات', value: coupons.reduce((s, c) => s + c.usageCount, 0), icon: PercentageSquare, color: '#0099ff' },
             ].map(({ label, value, icon: Icon, color }, i) => (
-              <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
-                <div style={{ width: 32, height: 32, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
-                  <Icon size={14} color={color} variant="Outline" />
+              <StaggerItem key={label}>
+                <div className="animate-fade-in-up hover-lift card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+                    <Icon size={14} color={color} variant="Outline" />
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 2 }}>{loading ? '...' : <PopNumber>{value}</PopNumber>}</div>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 2 }}>{loading ? '...' : value}</div>
-                <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerList>
 
           {/* List */}
           {loading ? (
@@ -207,6 +211,7 @@ export default function Coupons() {
               ))}
             </div>
           )}
+        </PageEnter>
         </div>
       </div>
       {Dialog}

@@ -5,6 +5,7 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
 import { useToast } from '../components/Toast'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
 
 type NormRole = 'admin' | 'order_manager' | 'customer_service'
 
@@ -97,6 +98,7 @@ export default function Team() {
       <AppHeader />
 
       <div style={{ padding: '30px 200px' }}>
+      <PageEnter>
         <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
             <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>الفريق والصلاحيات</h1>
@@ -151,13 +153,13 @@ export default function Team() {
             {[0,1,2].map(i => <div key={i} className="skeleton" style={{ height: 68, borderRadius: 14 }} />)}
           </div>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <StaggerList style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {members.map((m, idx) => {
             const normRole = normalizeRole(m.role)
             const cfg = roleConfig[normRole]
             const Icon = cfg.icon
             return (
-              <div key={m.id} className="animate-fade-in-up card-interactive" style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)', animationDelay: `${idx * 50}ms` }}>
+              <StaggerItem key={m.id}><div className="animate-fade-in-up card-interactive card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 14, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--hairline)', animationDelay: `${idx * 50}ms` }}>
                 {/* avatar */}
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: cfg.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 16, fontWeight: 700, color: cfg.color }}>{m.avatar}</span>
@@ -192,10 +194,10 @@ export default function Team() {
                     <Trash size={13} color="var(--gradient-coral)" variant="Outline" />
                   </button>
                 )}
-              </div>
+              </div></StaggerItem>
             )
           })}
-        </div>
+        </StaggerList>
 
         {/* invite modal */}
         {showInvite && (
@@ -230,14 +232,14 @@ export default function Team() {
               </label>
 
               <div style={{ display: 'flex', gap: 8 }}>
-                <button
+                <AnimBtn
                   onClick={handleInvite}
                   disabled={!inviteEmail.trim() || inviting}
                   className="btn-primary"
                   style={{ flex: 1, justifyContent: 'center', borderRadius: 10, padding: '11px', opacity: inviting ? 0.7 : 1 }}
                 >
                   {inviting ? 'جاري الإرسال...' : 'إرسال الدعوة'}
-                </button>
+                </AnimBtn>
                 <button onClick={() => setShowInvite(false)} className="btn-secondary" style={{ flex: 1, justifyContent: 'center', borderRadius: 10, padding: '11px' }}>
                   إلغاء
                 </button>
@@ -245,6 +247,7 @@ export default function Team() {
             </div>
           </div>
         )}
+      </PageEnter>
       </div>
       </div>
     </div>

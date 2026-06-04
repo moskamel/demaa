@@ -4,6 +4,7 @@ import { Sun1, ShieldTick, Notification, Flash, Global, Profile, Lock, Electrici
 import { settingsApi } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -119,6 +120,7 @@ export default function Settings() {
       <AppHeader />
 
       <div style={{ padding: '30px 200px' }}>
+      <PageEnter>
         <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 28 }}>الإعدادات</h1>
 
         {/* Profile section */}
@@ -139,9 +141,9 @@ export default function Settings() {
             {profileMsg && (
               <div style={{ fontSize: 12, color: '#22c55e', background: 'rgba(34,197,94,0.08)', borderRadius: 8, padding: '8px 12px' }}>{profileMsg}</div>
             )}
-            <button onClick={handleSaveProfile} disabled={saving} className="btn-primary" style={{ alignSelf: 'flex-start', padding: '9px 20px', borderRadius: 10, opacity: saving ? 0.7 : 1 }}>
+            <AnimBtn onClick={handleSaveProfile} disabled={saving} className="btn-primary" style={{ alignSelf: 'flex-start', padding: '9px 20px', borderRadius: 10, opacity: saving ? 0.7 : 1 }}>
               {saving ? 'جاري الحفظ...' : 'حفظ الملف الشخصي'}
-            </button>
+            </AnimBtn>
           </div>
         </Section>
 
@@ -166,9 +168,9 @@ export default function Settings() {
             {passwordMsg && (
               <div style={{ fontSize: 12, color: '#22c55e', background: 'rgba(34,197,94,0.08)', borderRadius: 8, padding: '8px 12px' }}>{passwordMsg}</div>
             )}
-            <button onClick={handleChangePassword} disabled={savingPassword} className="btn-primary" style={{ alignSelf: 'flex-start', padding: '9px 20px', borderRadius: 10, opacity: savingPassword ? 0.7 : 1 }}>
+            <AnimBtn onClick={handleChangePassword} disabled={savingPassword} className="btn-primary" style={{ alignSelf: 'flex-start', padding: '9px 20px', borderRadius: 10, opacity: savingPassword ? 0.7 : 1 }}>
               {savingPassword ? 'جاري التغيير...' : 'تغيير كلمة المرور'}
-            </button>
+            </AnimBtn>
           </div>
         </Section>
 
@@ -269,6 +271,7 @@ export default function Settings() {
             <SettingRow label="سجل الجلسات" desc="تتبع كل الأجهزة التي سجّلت دخول" checked={settings.sessionLog} onChange={v => set('sessionLog', v)} />
           </div>
         </Section>
+      </PageEnter>
       </div>
       </div>
     </div>

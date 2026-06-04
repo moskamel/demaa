@@ -6,6 +6,7 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import AnimatedNumber from '../components/AnimatedNumber'
 import { SkeletonKPI, SkeletonRow } from '../components/Skeleton'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 const paymentLabels: Record<string, string> = { card: 'بطاقة', cash: 'كاش', tabby: 'تابby', tamara: 'تمارا' }
 const paymentColors: Record<string, string> = { card: '#6a4cf5', cash: '#ff7a3d', tabby: '#22c55e', tamara: '#0099ff' }
@@ -83,6 +84,7 @@ export default function Reports() {
         </button>
       </AppHeader>
       <div style={{ padding: '30px 200px', width: '100%' }}>
+      <PageEnter>
         {loading ? (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
@@ -104,12 +106,12 @@ export default function Reports() {
         ) : (
           <>
             {/* KPI grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-              <KPI icon={DollarCircle} label="إجمالي الإيرادات" numericValue={overview.totalRevenue} unit="$" sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
-              <KPI icon={ShoppingCart} label="إجمالي الطلبات" numericValue={overview.totalOrders} sub={`${overview.pendingOrders} معلق`} color="#0099ff" trend="up" />
-              <KPI icon={DollarCircle} label="متوسط قيمة الطلب" numericValue={Math.round(overview.avgOrderValue)} unit="$" color="#22c55e" trend="up" />
-              <KPI icon={Box} label="طلبات مرفوضة" numericValue={overview.rejectedOrders} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" />
-            </div>
+            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+              <StaggerItem><KPI icon={DollarCircle} label="إجمالي الإيرادات" numericValue={overview.totalRevenue} unit="$" sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" /></StaggerItem>
+              <StaggerItem><KPI icon={ShoppingCart} label="إجمالي الطلبات" numericValue={overview.totalOrders} sub={`${overview.pendingOrders} معلق`} color="#0099ff" trend="up" /></StaggerItem>
+              <StaggerItem><KPI icon={DollarCircle} label="متوسط قيمة الطلب" numericValue={Math.round(overview.avgOrderValue)} unit="$" color="#22c55e" trend="up" /></StaggerItem>
+              <StaggerItem><KPI icon={Box} label="طلبات مرفوضة" numericValue={overview.rejectedOrders} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" /></StaggerItem>
+            </StaggerList>
 
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
 
@@ -239,6 +241,7 @@ export default function Reports() {
             </div>
           </>
         )}
+      </PageEnter>
       </div>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>

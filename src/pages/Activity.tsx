@@ -3,6 +3,7 @@ import { DocumentDownload, TickCircle, CloseCircle, Box, Flash } from 'iconsax-r
 import { analytics, type ActivityLog } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
 
 const filters = [
   { id: 'all', label: 'الكل' },
@@ -120,11 +121,12 @@ export default function Activity() {
       </AppHeader>
 
       <div style={{ padding: '30px 200px' }}>
+      <PageEnter>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
           <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1 }}>
             سجل الأنشطة
           </h1>
-          <button className="btn-secondary" style={{ fontSize: 13, padding: '8px 14px', borderRadius: 10 }} onClick={() => {
+          <AnimBtn className="btn-secondary" style={{ fontSize: 13, padding: '8px 14px', borderRadius: 10 }} onClick={() => {
             const rows = [['الوقت', 'النشاط', 'التفاصيل'], ...mapped.map(a => [a.time, a.title, a.detail])]
             const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')
             const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
@@ -133,7 +135,7 @@ export default function Activity() {
             URL.revokeObjectURL(url)
           }}>
             <DocumentDownload size={13} variant="Outline" /> تصدير CSV
-          </button>
+          </AnimBtn>
         </div>
 
         <div style={{ display: 'flex', gap: 4, marginBottom: 32, background: 'var(--canvas-soft)', borderRadius: 100, padding: 4, width: 'fit-content' }}>
@@ -155,9 +157,9 @@ export default function Activity() {
                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
                   اليوم
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {today.map((a, i) => <ActivityRow key={a.id} item={a} index={i} total={today.length} />)}
-                </div>
+                <StaggerList style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {today.map((a, i) => <StaggerItem key={a.id}><ActivityRow item={a} index={i} total={today.length} /></StaggerItem>)}
+                </StaggerList>
               </div>
             )}
 
@@ -166,9 +168,9 @@ export default function Activity() {
                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
                   أمس
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {yesterday.map((a, i) => <ActivityRow key={a.id} item={a} index={i} total={yesterday.length} />)}
-                </div>
+                <StaggerList style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {yesterday.map((a, i) => <StaggerItem key={a.id}><ActivityRow item={a} index={i} total={yesterday.length} /></StaggerItem>)}
+                </StaggerList>
               </div>
             )}
 
@@ -180,6 +182,7 @@ export default function Activity() {
             )}
           </>
         )}
+      </PageEnter>
       </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { orders as ordersApi, type Order, type OrderFilters } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import OrderDetailDrawer from '../components/OrderDetailDrawer'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 const STATUS_TABS = [
   { key: 'all', label: 'الكل' },
@@ -146,9 +147,10 @@ export default function Orders() {
         <AppHeader title="الطلبات" subtitle={`${stats.pending} معلق · ${stats.shipped} مشحون`} />
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
+        <PageEnter>
 
           {/* Stats row */}
-          <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+          <StaggerList style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
             {(() => {
               const codPending = orderList.filter(o => (o.paymentMethod === 'cash' || o.paymentMethod === 'cod') && o.status === 'pending').length
               return [
@@ -160,15 +162,18 @@ export default function Orders() {
                 { label: 'COD معلق', value: codPending, color: '#f59e0b', tab: 'pending' },
               ]
             })().map(s => (
-              <div key={s.label} onClick={() => setActiveTab(s.tab)}
-                style={{ flex: '1 1 120px', background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px', cursor: 'pointer', border: `1px solid rgba(255,255,255,0.06)`, transition: 'border-color 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = s.color + '44')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}>
-                <div style={{ fontSize: 24, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
-                <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 2 }}>{s.label}</div>
-              </div>
+              <StaggerItem key={s.label} style={{ flex: '1 1 120px' }}>
+                <div onClick={() => setActiveTab(s.tab)}
+                  className="card-hover"
+                  style={{ background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px', cursor: 'pointer', border: `1px solid rgba(255,255,255,0.06)`, transition: 'border-color 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = s.color + '44')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}><PopNumber>{s.value}</PopNumber></div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 2 }}>{s.label}</div>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerList>
 
           {/* Filters */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -333,6 +338,7 @@ export default function Orders() {
               })}
             </div>
           )}
+        </PageEnter>
         </div>
       </div>
 

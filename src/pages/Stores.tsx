@@ -7,6 +7,7 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
 import { useToast } from '../components/Toast'
+import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
 
 const statusMap = (isActive: boolean, syncStatus: string) => {
   if (syncStatus === 'syncing') return { label: 'جاري التزامن', color: '#0099ff', icon: Clock }
@@ -119,6 +120,7 @@ export default function Stores() {
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
       <div style={{ padding: '30px 200px', width: '100%' }}>
+      <PageEnter>
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>متاجري</h1>
           <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{stores.length} متجر مربوط بـ Deema</p>
@@ -130,7 +132,7 @@ export default function Stores() {
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <StaggerList style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {stores.map((s, idx) => {
             const pColor = platformColors[s.platform] ?? '#666'
             const pLabel = platformLabel[s.platform] ?? s.platform
@@ -138,7 +140,7 @@ export default function Stores() {
             const StatusIcon = st.icon
             const isSyncing = syncing === s.id
             return (
-              <div key={s.id} className="animate-fade-in-up card-interactive" style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', border: '1px solid var(--hairline)', position: 'relative', overflow: 'hidden', animationDelay: `${idx * 60}ms` }}>
+              <StaggerItem key={s.id}><div className="animate-fade-in-up card-interactive card-hover" style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '20px 22px', border: '1px solid var(--hairline)', position: 'relative', overflow: 'hidden', animationDelay: `${idx * 60}ms` }}>
                 <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 3, background: pColor, borderRadius: '0 16px 16px 0' }} />
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -218,10 +220,10 @@ export default function Stores() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div></StaggerItem>
             )
           })}
-        </div>
+        </StaggerList>
 
         {!loading && stores.length === 0 && (
           <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: 60, color: 'var(--ink-muted)', fontSize: 14 }}>
@@ -237,6 +239,7 @@ export default function Stores() {
             <span style={{ fontSize: 14 }}>ربط متجر جديد</span>
           </div>
         </Link>
+      </PageEnter>
       </div>
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
