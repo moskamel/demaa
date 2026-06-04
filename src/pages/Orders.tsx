@@ -130,7 +130,7 @@ export default function Orders() {
       (o.total / 100).toFixed(2),
       STATUS_LABELS[o.status] || o.status,
       PAYMENT_LABELS[o.paymentMethod] || o.paymentMethod,
-      new Date(o.placedAt).toLocaleDateString('ar-SA'),
+      new Date(o.placedAt).toLocaleDateString('en-US'),
     ])
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
@@ -292,7 +292,7 @@ export default function Orders() {
 
                     {/* Amount */}
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums', display: 'flex', alignItems: 'center' }}>
-                      {(o.total / 100).toLocaleString('ar-SA')} <span style={{ fontSize: 11, color: 'var(--ink-muted)', marginRight: 3 }}>ر.س</span>
+                      {(o.total / 100).toLocaleString('en-US')} <span style={{ fontSize: 11, color: 'var(--ink-muted)', marginRight: 3 }}>$</span>
                     </div>
 
                     {/* City */}

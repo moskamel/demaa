@@ -176,7 +176,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                   <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ink)' }}>{item.name}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>الكمية: {item.qty}</div>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.totalPrice / 100).toLocaleString('ar-SA')} ر.س</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.totalPrice / 100).toLocaleString('en-US')} $</div>
               </div>
             ))}
             {(() => {
@@ -185,12 +185,12 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                 <>
                   <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
                     <span style={{ fontSize: 12, color: '#f59e0b', fontWeight: 500 }}>ضريبة القيمة المضافة (15%)</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#f59e0b' }}>{(vatAmount / 100).toLocaleString('ar-SA')} ر.س</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#f59e0b' }}>{(vatAmount / 100).toLocaleString('en-US')} $</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 8, marginTop: 2 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإجمالي</span>
                     <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('ar-SA')} ر.س</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('en-US')} $</div>
                       <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>شامل ضريبة القيمة المضافة 15%</div>
                     </div>
                   </div>
@@ -202,7 +202,7 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
           {/* payment & shipping */}
           <Section title="الدفع والشحن">
             <Row icon={<Card size={13} color="var(--ink-muted)" variant="Outline" />} label="طريقة الدفع" value={paymentLabels[order.paymentMethod] || order.paymentMethod} />
-            <Row icon={<Clock size={13} color="var(--ink-muted)" variant="Outline" />} label="تاريخ الطلب" value={new Date(order.placedAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })} />
+            <Row icon={<Clock size={13} color="var(--ink-muted)" variant="Outline" />} label="تاريخ الطلب" value={new Date(order.placedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />
             {order.shipmentId && <Row icon={<Truck size={13} color="#0099ff" variant="Outline" />} label="رقم الشحنة" value={order.shipmentId} ltr valueColor="#0099ff" />}
           </Section>
 

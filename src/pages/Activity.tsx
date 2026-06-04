@@ -86,7 +86,7 @@ export default function Activity() {
     const action = log.action
     return {
       id: log.id,
-      time: new Date(log.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
+      time: new Date(log.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       icon: getIcon(action),
       color: getColor(action),
       title: log.summary || action,

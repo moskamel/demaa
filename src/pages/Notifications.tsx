@@ -117,7 +117,7 @@ export default function Notifications() {
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{n.body}</div>
                     <div style={{ fontSize: 10, color: 'var(--ink-disabled)', marginTop: 6 }}>
-                      {new Date(n.createdAt).toLocaleString('ar-SA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      {new Date(n.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
 

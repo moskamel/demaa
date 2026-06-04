@@ -52,7 +52,7 @@ function CustomerDrawer({ customer, onClose }: { customer: Customer; onClose: ()
 
   const formatDate = (iso?: string) => {
     if (!iso) return '—'
-    return new Date(iso).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })
+    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   const orderStatusColor: Record<string, string> = {
@@ -117,7 +117,7 @@ function CustomerDrawer({ customer, onClose }: { customer: Customer; onClose: ()
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {[
             { label: 'عدد الطلبات', value: customer.totalOrders },
-            { label: 'إجمالي الإنفاق', value: `${(customer.totalSpent / 100).toLocaleString('ar-SA')} ر.س` },
+            { label: 'إجمالي الإنفاق', value: `${(customer.totalSpent / 100).toLocaleString('en-US')} $` },
             { label: 'آخر طلب', value: formatDate(customer.lastOrderAt) },
           ].map(({ label, value }) => (
             <div key={label} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -176,7 +176,7 @@ function CustomerDrawer({ customer, onClose }: { customer: Customer; onClose: ()
                   </div>
                   <div style={{ textAlign: 'left' }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
-                      {(order.total / 100).toLocaleString('ar-SA')} ر.س
+                      {(order.total / 100).toLocaleString('en-US')} $
                     </div>
                     <span style={{
                       fontSize: 10, fontWeight: 600,
@@ -241,7 +241,7 @@ export default function Customers() {
             { icon: People, label: 'إجمالي العملاء', value: allCustomers.length, color: '#6a4cf5' },
             { icon: Star1, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
             { icon: TrendUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
-            { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-SA')} ر.س`, color: '#22c55e' },
+            { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('en-US')} $`, color: '#22c55e' },
           ].map(({ icon: Icon, label, value, color }, i) => (
             <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
@@ -320,7 +320,7 @@ export default function Customers() {
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>طلبات</div>
                 </div>
                 <div style={{ textAlign: 'left', minWidth: 100 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(c.totalSpent / 100).toLocaleString('ar-SA')} ر.س</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(c.totalSpent / 100).toLocaleString('en-US')} $</div>
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>إجمالي الإنفاق</div>
                 </div>
               </div>
