@@ -225,7 +225,7 @@ async function seedDemoData(orgId: string, storeId: string) {
     { key: 'preferred_carrier', value: 'smsa', confidence: 0.92, label: 'شركة الشحن المفضلة' },
     { key: 'top_city', value: 'القاهرة', confidence: 0.95, label: 'أعلى مدينة مبيعاً' },
     { key: 'best_sales_day', value: 'الجمعة', confidence: 0.78, label: 'أفضل يوم مبيعات' },
-    { key: 'avg_order_value', value: '487', confidence: 0.99, label: 'متوسط قيمة الطلب (ج.م)' },
+    { key: 'avg_order_value', value: '487', confidence: 0.99, label: 'متوسط قيمة الطلب (ر.س)' },
     { key: 'peak_hour', value: '21:00', confidence: 0.71, label: 'أعلى ساعة بيع' },
     { key: 'cash_ratio', value: '18%', confidence: 0.91, label: 'نسبة طلبات الكاش' },
   ]
@@ -238,7 +238,7 @@ async function seedDemoData(orgId: string, storeId: string) {
     data: [
       { organizationId: orgId, type: 'NEW_ORDER', priority: 'urgent', title: '4 طلبات جديدة بانتظار موافقتك', body: 'آخر طلب قبل 5 دقائق' },
       { organizationId: orgId, type: 'LOW_STOCK', priority: 'important', title: 'مخزون منخفض: كريم الوجه', body: 'نفد تماماً من المخزون' },
-      { organizationId: orgId, type: 'RISK_ALERT', priority: 'important', title: 'طلب مشبوه #10233', body: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ج.م' },
+      { organizationId: orgId, type: 'RISK_ALERT', priority: 'important', title: 'طلب مشبوه #10233', body: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ر.س' },
     ],
   })
 

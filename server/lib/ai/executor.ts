@@ -287,7 +287,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
           action: 'create_coupon',
           entity: 'coupon',
           entityId: coupon.id,
-          summary: `إنشاء كوبون ${coupon.code} — ${type === 'percentage' ? value + '%' : value + ' ج.م'} خصم`,
+          summary: `إنشاء كوبون ${coupon.code} — ${type === 'percentage' ? value + '%' : value + ' ر.س'} خصم`,
         },
       })
 
