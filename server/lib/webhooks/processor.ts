@@ -158,6 +158,15 @@ export async function upsertOrderFromWebhook(storeId: string, orgId: string, dat
 
   const existing = await prisma.order.findFirst({ where: { storeId, externalRef: data.externalRef } })
   if (!existing) {
+    // Compute risk score based on order signals
+    let riskScore = 0
+    const isCOD = data.paymentMethod === 'cash' || data.paymentMethod === 'cod'
+    if (isCOD) riskScore += 30
+    const priorOrders = await prisma.order.count({ where: { storeId, customerId: customer.id } })
+    const isNewCustomer = priorOrders === 0
+    if (isNewCustomer) riskScore += 20
+    if (data.total > 50000) riskScore += 20 // > 500 SAR
+
     const order = await prisma.order.create({
       data: {
         storeId, externalRef: data.externalRef, customerId: customer.id,
@@ -165,6 +174,7 @@ export async function upsertOrderFromWebhook(storeId: string, orgId: string, dat
         city: data.city, address: data.address,
         status: data.status, paymentMethod: data.paymentMethod,
         total: data.total, placedAt: data.placedAt,
+        riskScore, isNewCustomer,
       },
     })
     if (data.items?.length) {
