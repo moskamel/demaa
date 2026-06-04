@@ -127,6 +127,25 @@ router.post('/connect', async (req: AuthRequest, res) => {
   }
 })
 
+// POST /stores/switch — set active store for this org's session
+router.post('/switch', async (req: AuthRequest, res) => {
+  const { storeId } = req.body
+  if (!storeId) { res.status(400).json({ error: { code: 'MISSING_STORE_ID', message: 'storeId مطلوب' } }); return }
+  const store = await prisma.store.findFirst({
+    where: { id: storeId, organizationId: req.orgId, isActive: true },
+  })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND', message: 'المتجر غير موجود' } }); return }
+  await prisma.organization.update({ where: { id: req.orgId! }, data: { activeStoreId: storeId } })
+  res.json({ switched: true, storeId })
+})
+
+// GET /stores/usage — plan limit info
+router.get('/usage', async (req: AuthRequest, res) => {
+  const { getStoreUsage } = await import('../middleware/subscriptionLimits.js')
+  const usage = await getStoreUsage(req.orgId!)
+  res.json(usage)
+})
+
 // POST /stores/:id/disconnect
 router.post('/:id/disconnect', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({
@@ -160,11 +179,20 @@ router.post('/:id/resume', async (req: AuthRequest, res) => {
   res.json({ resumed: true })
 })
 
-// DELETE /stores/:id
+// DELETE /stores/:id — soft delete, preserves all history
 router.delete('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({ where: { id: req.params.id, organizationId: req.orgId } })
   if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
-  await prisma.store.delete({ where: { id: store.id } })
+  await prisma.store.update({
+    where: { id: store.id },
+    data: { isActive: false, isDeleted: true, accessToken: null, refreshToken: null },
+  })
+  // Clear as active store if it was the active one
+  const org = await prisma.organization.findUnique({ where: { id: req.orgId! }, select: { activeStoreId: true } })
+  if (org?.activeStoreId === store.id) {
+    const next = await prisma.store.findFirst({ where: { organizationId: req.orgId!, isActive: true, isDeleted: false } })
+    await prisma.organization.update({ where: { id: req.orgId! }, data: { activeStoreId: next?.id ?? null } })
+  }
   res.json({ deleted: true })
 })
 
