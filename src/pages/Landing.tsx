@@ -300,7 +300,7 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Left: chat mockup */}
+          {/* Left: interactive chat demo */}
           <div className="animate-fade-in-up" style={{ background: T.surface, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', animationDelay: '120ms' }}>
             {/* Window chrome */}
             <div style={{ background: T.well, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${T.hairline}` }}>
@@ -311,33 +311,82 @@ export default function Landing() {
                 <span style={{ fontSize: 11, color: '#22c55e' }}>متصل</span>
               </div>
             </div>
+
+            {/* Messages */}
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12, height: 320, overflowY: 'auto' }}>
-              {[
-                { text: 'صباح الخير! ٤٧ طلب جديد، ١٤k $ 🌅', isAi: true },
-                { text: 'اقبل الطلبات السليمة', isAi: false },
-                { text: '✅ هقبل ٣٥ طلب — ١١,٢٠٠ $\n⏩ بوالص الشحن جاهزة', isAi: true },
-              ].map((m, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: m.isAi ? 'flex-end' : 'flex-start' }}>
+              {demoMessages.map((m, i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-start' : 'flex-end', gap: 8 }}>
                   <div style={{
-                    background: m.isAi ? 'rgba(255,255,255,0.06)' : '#6a4cf5',
+                    background: m.role === 'user' ? 'rgba(255,255,255,0.06)' : '#6a4cf5',
                     color: '#f0f0f5',
-                    borderRadius: m.isAi ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
+                    borderRadius: m.role === 'user' ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
                     padding: '10px 14px', fontSize: 13, maxWidth: '82%',
                     border: `1px solid ${T.hairline}`,
                     lineHeight: 1.55, whiteSpace: 'pre-line',
                   }}>{m.text}</div>
+                  {m.stats && (
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                      {m.stats.map(s => (
+                        <div key={s.l} style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${T.hairline}`, borderRadius: 8, padding: '5px 10px', textAlign: 'center' }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: s.c, fontVariantNumeric: 'tabular-nums' }}>{s.n}</div>
+                          <div style={{ fontSize: 10, color: T.slate }}>{s.l}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {m.actions && (
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                      {m.actions.map((a, ai) => (
+                        <button key={a} onClick={() => sendDemoCommand(a)} style={{
+                          background: ai === 0 ? '#6a4cf5' : 'transparent',
+                          color: ai === 0 ? '#fff' : T.slate,
+                          borderRadius: 9999, padding: '5px 14px', fontSize: 11, fontWeight: 600,
+                          cursor: 'pointer', border: `1px solid ${ai === 0 ? '#6a4cf5' : T.hairline}`,
+                          fontFamily: 'inherit',
+                        }}>{a}</button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
-              <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                {['نعم، نفّذ ✓', 'التفاصيل'].map((a, ai) => (
-                  <div key={a} style={{ background: ai === 0 ? '#6a4cf5' : 'transparent', color: ai === 0 ? '#fff' : T.slate, borderRadius: 9999, padding: '5px 14px', fontSize: 11, fontWeight: 500, cursor: 'default', border: `1px solid ${T.hairline}` }}>{a}</div>
-                ))}
-              </div>
+              {typing && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${T.hairline}`, borderRadius: '16px 4px 16px 16px', padding: '10px 16px', display: 'flex', gap: 4, alignItems: 'center' }}>
+                    {[0, 1, 2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: T.slate, animation: `pulse 1s ${i * 0.2}s infinite` }} />)}
+                  </div>
+                </div>
+              )}
+              <div ref={demoBottomRef} />
             </div>
+
+            {/* Quick commands */}
+            <div style={{ padding: '8px 12px', borderTop: `1px solid ${T.hairline}`, display: 'flex', gap: 6, flexWrap: 'wrap', background: T.well }}>
+              {DEMO_COMMANDS.map(d => (
+                <button key={d.cmd} onClick={() => sendDemoCommand(d.cmd)} disabled={typing} style={{
+                  background: 'rgba(255,255,255,0.05)', border: `1px solid ${T.hairline}`,
+                  borderRadius: 9999, padding: '4px 12px', fontSize: 11, color: T.slate,
+                  cursor: typing ? 'not-allowed' : 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+                  onMouseEnter={e => { if (!typing) { e.currentTarget.style.background = 'rgba(106,76,245,0.15)'; e.currentTarget.style.color = '#a78bfa' } }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = T.slate }}
+                >{d.cmd}</button>
+              ))}
+            </div>
+
+            {/* Input */}
             <div style={{ padding: '10px 14px', borderTop: `1px solid ${T.hairline}`, background: T.canvas }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: T.surface, borderRadius: 9999, padding: '8px 16px', border: `1px solid ${T.hairline}` }}>
-                <span style={{ fontSize: 12, color: T.slate, flex: 1 }}>اكتب أمرك...</span>
-                <Send2 size={13} color={T.slate} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
+                <input
+                  value={demoInput}
+                  onChange={e => setDemoInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && demoInput.trim() && !typing) sendDemoCommand(demoInput.trim()) }}
+                  placeholder="اكتب أمرك..."
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: T.ink, fontSize: 12, fontFamily: 'inherit', direction: 'rtl' }}
+                />
+                <button onClick={() => { if (demoInput.trim() && !typing) sendDemoCommand(demoInput.trim()) }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                  <Send2 size={13} color={demoInput.trim() ? '#6a4cf5' : T.slate} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
+                </button>
               </div>
             </div>
           </div>
