@@ -28,6 +28,7 @@ model Organization {
   aiMemory      AiMemory[]
   subscription  Subscription?
   usageRecords  UsageRecord[]
+  returns       Return[]
 
   @@map("organizations")
 }
@@ -97,6 +98,24 @@ model Store {
   @@map("stores")
 }
 
+model Return {
+  id             String   @id @default(cuid())
+  orderId        String
+  organizationId String
+  reason         String
+  status         String   @default("pending")
+  refundAmount   Int      @default(0)
+  restockItems   Boolean  @default(true)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  order        Order        @relation(fields: [orderId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("returns")
+}
+
 model Order {
   id              String   @id @default(cuid())
   storeId         String
@@ -130,6 +149,7 @@ model Order {
   customer Customer?   @relation(fields: [customerId], references: [id])
   items    OrderItem[]
   shipments Shipment[]
+  returns  Return[]
 
   @@map("orders")
 }
@@ -157,6 +177,7 @@ model Product {
   description   String?
   sku           String?
   price         Int
+  costPrice     Int      @default(0)
   comparePrice  Int?
   stock         Int      @default(0)
   lowStockAlert Int      @default(5)

@@ -325,6 +325,233 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       return { memory }
     }
 
+    case 'create_return': {
+      const { orderId, reason, refundAmount, restockItems = true } = input as {
+        orderId: string; reason: string; refundAmount?: number; restockItems?: boolean
+      }
+      const order = await prisma.order.findFirst({ where: { id: orderId }, include: { items: true } })
+      if (!order) return { error: `الطلب ${orderId} غير موجود` }
+
+      const ret = await (prisma as any).return.create({
+        data: {
+          orderId,
+          organizationId: orgId,
+          reason,
+          refundAmount: refundAmount ? Math.round(refundAmount * 100) : order.total,
+          restockItems,
+          status: 'approved',
+        },
+      })
+
+      if (restockItems) {
+        for (const item of order.items) {
+          if (item.productId) {
+            await prisma.product.update({
+              where: { id: item.productId },
+              data: { stock: { increment: item.qty } },
+            })
+          }
+        }
+      }
+
+      await prisma.order.update({ where: { id: orderId }, data: { status: 'returned' } })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId,
+          userId: ctx.userId,
+          action: 'create_return',
+          entity: 'order',
+          entityId: orderId,
+          summary: `إرجاع الطلب #${order.externalRef || orderId} — ${reason}`,
+        },
+      })
+
+      return { returnId: ret.id, refundAmount: ret.refundAmount / 100, restocked: restockItems }
+    }
+
+    case 'get_returns': {
+      const { status, limit = 20 } = input as { status?: string; limit?: number }
+      const where: Record<string, unknown> = { organizationId: orgId }
+      if (status && status !== 'all') where.status = status
+      const returns = await (prisma as any).return.findMany({
+        where,
+        include: { order: true },
+        orderBy: { createdAt: 'desc' },
+        take: Number(limit),
+      })
+      return { returns, count: returns.length }
+    }
+
+    case 'get_profit_report': {
+      const { period = '30d' } = input as { period?: string }
+      const days = period === 'today' ? 0 : period === '7d' ? 7 : period === '30d' ? 30 : 90
+      const since = new Date()
+      if (days > 0) since.setDate(since.getDate() - days)
+      else since.setHours(0, 0, 0, 0)
+
+      const where: Record<string, unknown> = {
+        placedAt: { gte: since },
+        status: { in: ['accepted', 'shipped', 'delivered'] },
+      }
+      if (storeId) where.storeId = storeId
+
+      const orders = await prisma.order.findMany({ where, include: { items: { include: { product: true } } } })
+
+      let totalRevenue = 0, totalCost = 0, totalShipping = 0
+      for (const order of orders) {
+        totalRevenue += order.subtotal
+        totalShipping += order.shippingFee
+        for (const item of order.items) {
+          const costPrice = (item.product as any)?.costPrice ?? 0
+          totalCost += costPrice * item.qty
+        }
+      }
+
+      const grossProfit = totalRevenue - totalCost
+      const netProfit = grossProfit - totalShipping
+      const margin = totalRevenue > 0 ? Math.round((netProfit / totalRevenue) * 100) : 0
+
+      return {
+        period,
+        totalRevenue: totalRevenue / 100,
+        totalCost: totalCost / 100,
+        totalShipping: totalShipping / 100,
+        grossProfit: grossProfit / 100,
+        netProfit: netProfit / 100,
+        marginPercent: margin,
+        ordersCount: orders.length,
+        note: totalCost === 0 ? 'لم يتم إدخال تكلفة المنتجات بعد — أضف costPrice لكل منتج للحصول على أرباح دقيقة' : undefined,
+      }
+    }
+
+    case 'analyze_customers': {
+      const now = new Date()
+      const d30 = new Date(now); d30.setDate(d30.getDate() - 30)
+      const d60 = new Date(now); d60.setDate(d60.getDate() - 60)
+
+      const all = await prisma.customer.findMany({ where: { organizationId: orgId } })
+
+      const churnRisk = all.filter(c => c.lastOrderAt && c.lastOrderAt < d60 && c.totalOrders > 1)
+      const newOneTime = all.filter(c => c.totalOrders === 1 && c.createdAt > d30)
+      const vip = all.filter(c => c.totalOrders >= 5 || c.totalSpent >= 100000)
+      const activeRecent = all.filter(c => c.lastOrderAt && c.lastOrderAt > d30)
+      const topSpenders = [...all].sort((a, b) => b.totalSpent - a.totalSpent).slice(0, 5)
+
+      return {
+        total: all.length,
+        churnRisk: {
+          count: churnRisk.length,
+          customers: churnRisk.slice(0, 5).map(c => ({ id: c.id, name: c.name, lastOrderAt: c.lastOrderAt, totalSpent: c.totalSpent / 100 })),
+        },
+        newOneTime: { count: newOneTime.length, note: 'اشتروا مرة واحدة فقط — يحتاجون متابعة وعرض لإعادة الشراء' },
+        vip: {
+          count: vip.length,
+          customers: vip.slice(0, 5).map(c => ({ id: c.id, name: c.name, totalOrders: c.totalOrders, totalSpent: c.totalSpent / 100 })),
+        },
+        activeRecent: activeRecent.length,
+        topSpenders: topSpenders.map(c => ({ name: c.name, totalSpent: c.totalSpent / 100, totalOrders: c.totalOrders })),
+      }
+    }
+
+    case 'inventory_report': {
+      const where: Record<string, unknown> = { isActive: true }
+      if (storeId) where.storeId = storeId
+      const products = await prisma.product.findMany({ where })
+
+      const outOfStock = products.filter(p => p.stock === 0)
+      const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.lowStockAlert)
+      const healthy = products.filter(p => p.stock > p.lowStockAlert)
+
+      const since = new Date(); since.setDate(since.getDate() - 30)
+      const recentItems = await prisma.orderItem.findMany({
+        where: { order: { placedAt: { gte: since }, status: { in: ['accepted', 'shipped', 'delivered'] } } },
+      })
+
+      const salesRate: Record<string, number> = {}
+      for (const item of recentItems) {
+        if (item.productId) salesRate[item.productId] = (salesRate[item.productId] || 0) + item.qty
+      }
+
+      const restockAlerts = lowStock.map(p => ({
+        id: p.id,
+        name: p.name,
+        stock: p.stock,
+        dailySales: Math.round((salesRate[p.id] || 0) / 30 * 10) / 10,
+        daysLeft: salesRate[p.id] ? Math.floor(p.stock / (salesRate[p.id] / 30)) : 99,
+      })).sort((a, b) => a.daysLeft - b.daysLeft)
+
+      return {
+        total: products.length,
+        outOfStock: { count: outOfStock.length, products: outOfStock.map(p => ({ id: p.id, name: p.name, sku: p.sku })) },
+        lowStock: { count: lowStock.length, alerts: restockAlerts },
+        healthy: healthy.length,
+        totalInventoryValue: products.reduce((s, p) => s + p.stock * p.price, 0) / 100,
+      }
+    }
+
+    case 'sales_forecast': {
+      const weeks: { week: string; revenue: number; orders: number }[] = []
+      const now = new Date()
+
+      for (let w = 11; w >= 0; w--) {
+        const start = new Date(now); start.setDate(start.getDate() - (w + 1) * 7)
+        const end = new Date(now); end.setDate(end.getDate() - w * 7)
+        const where: Record<string, unknown> = {
+          placedAt: { gte: start, lt: end },
+          status: { in: ['accepted', 'shipped', 'delivered'] },
+        }
+        if (storeId) where.storeId = storeId
+        const orders = await prisma.order.findMany({ where })
+        weeks.push({
+          week: `أسبوع ${12 - w}`,
+          revenue: orders.reduce((s, o) => s + o.total, 0) / 100,
+          orders: orders.length,
+        })
+      }
+
+      const recent = weeks.slice(-4)
+      const weights = [1, 2, 3, 4]
+      const totalWeight = 10
+      const forecastRevenue = recent.reduce((s, w, i) => s + w.revenue * weights[i], 0) / totalWeight
+      const forecastOrders = recent.reduce((s, w, i) => s + w.orders * weights[i], 0) / totalWeight
+
+      const first = weeks[0].revenue || 1
+      const last = weeks[weeks.length - 1].revenue
+      const trend = Math.round(((last - first) / first) * 100)
+
+      return {
+        weeklyHistory: weeks.slice(-6),
+        nextWeekForecast: { revenue: Math.round(forecastRevenue), orders: Math.round(forecastOrders) },
+        trend,
+        trendLabel: trend > 10 ? 'صاعد 📈' : trend < -10 ? 'هابط 📉' : 'مستقر ➡️',
+      }
+    }
+
+    case 'restock_product': {
+      const { productId, addQty, newStock } = input as { productId: string; addQty?: number; newStock?: number }
+      const product = await prisma.product.findUnique({ where: { id: productId } })
+      if (!product) return { error: `المنتج ${productId} غير موجود` }
+
+      const oldStock = product.stock
+      const updatedStock = newStock !== undefined ? newStock : oldStock + (addQty || 0)
+
+      await prisma.product.update({ where: { id: productId }, data: { stock: updatedStock } })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId,
+          userId: ctx.userId,
+          action: 'restock_product',
+          entity: 'product',
+          entityId: productId,
+          summary: `تجديد مخزون "${product.name}": ${oldStock} → ${updatedStock}`,
+        },
+      })
+
+      return { productId, name: product.name, oldStock, newStock: updatedStock, added: updatedStock - oldStock }
+    }
+
     default:
       return { error: `أداة غير معروفة: ${name}` }
   }

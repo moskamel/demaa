@@ -80,6 +80,59 @@ async function saveMessages(convId: string, userMsg: string, result: { response:
   })
 }
 
+// POST /conversations/:id/messages/stream — SSE streaming
+router.post('/:id/messages/stream', async (req: AuthRequest, res) => {
+  const { message } = req.body
+  if (!message?.trim()) { res.status(400).json({ error: { code: 'EMPTY_MESSAGE', message: 'الرسالة فارغة' } }); return }
+
+  const conv = await prisma.conversation.findFirst({ where: { id: req.params.id, organizationId: req.orgId } })
+  if (!conv) { res.status(404).json({ error: { code: 'NOT_FOUND', message: 'المحادثة غير موجودة' } }); return }
+
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+  res.setHeader('X-Accel-Buffering', 'no')
+  res.flushHeaders()
+
+  const send = (event: string, data: unknown) => {
+    res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+  }
+
+  const ctx = { orgId: req.orgId!, userId: req.userId, conversationId: req.params.id }
+
+  try {
+    if (process.env.GROQ_API_KEY) {
+      const { groqStream } = await import('../lib/ai/groqOrchestrator.js')
+      await groqStream(message, ctx, {
+        onToken: (token: string) => send('token', { token }),
+        onTool: (name: string) => send('tool', { name }),
+        onDone: async (fullResponse: string, toolsUsed: string[]) => {
+          await saveMessages(req.params.id, message, { response: fullResponse, toolsUsed })
+          await prisma.conversation.update({ where: { id: req.params.id }, data: { updatedAt: new Date() } })
+          send('done', { response: fullResponse, toolsUsed })
+          res.end()
+        },
+      })
+    } else {
+      const { freeChat } = await import('../lib/ai/freeEngine.js')
+      const result = await freeChat(message, ctx)
+      const words = result.response.split(' ')
+      for (const word of words) {
+        send('token', { token: word + ' ' })
+        await new Promise(r => setTimeout(r, 25))
+      }
+      await saveMessages(req.params.id, message, result)
+      await prisma.conversation.update({ where: { id: req.params.id }, data: { updatedAt: new Date() } })
+      send('done', { response: result.response, toolsUsed: result.toolsUsed })
+      res.end()
+    }
+  } catch (err) {
+    console.error('[stream error]', err)
+    send('error', { message: 'حدث خطأ في المعالجة' })
+    res.end()
+  }
+})
+
 // PATCH /conversations/:id
 router.patch('/:id', async (req: AuthRequest, res) => {
   const { title } = req.body

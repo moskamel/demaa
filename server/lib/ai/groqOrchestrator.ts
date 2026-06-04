@@ -201,6 +201,90 @@ const GROQ_TOOLS: Groq.Chat.ChatCompletionTool[] = [
       parameters: { type: 'object', properties: {} },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'create_return',
+      description: 'إنشاء مرتجع لطلب — يعيد المخزون تلقائياً ويسجل السبب',
+      parameters: {
+        type: 'object',
+        properties: {
+          orderId: { type: 'string' },
+          reason: { type: 'string' },
+          refundAmount: { type: 'number' },
+          restockItems: { type: 'boolean' },
+        },
+        required: ['orderId', 'reason'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_returns',
+      description: 'جلب قائمة المرتجعات',
+      parameters: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['pending', 'approved', 'rejected', 'all'] },
+          limit: { type: 'number' },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_profit_report',
+      description: 'تقرير الأرباح الحقيقية — إيرادات وتكاليف وهامش الربح الصافي',
+      parameters: {
+        type: 'object',
+        properties: {
+          period: { type: 'string', enum: ['today', '7d', '30d', '90d'] },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'analyze_customers',
+      description: 'تحليل متقدم للعملاء: churn risk، VIP، عملاء جدد لم يعيدوا الشراء، أعلى منفقين',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'inventory_report',
+      description: 'تقرير المخزون الكامل: منتجات نافدة، منخفضة، تنبيهات إعادة طلب مع توقع أيام متبقية',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'sales_forecast',
+      description: 'توقع مبيعات الأسبوع القادم بناءً على بيانات الأسابيع الـ١٢ الماضية مع اتجاه النمو',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'restock_product',
+      description: 'تجديد مخزون منتج — إضافة كمية أو تحديد رقم جديد',
+      parameters: {
+        type: 'object',
+        properties: {
+          productId: { type: 'string' },
+          addQty: { type: 'number' },
+          newStock: { type: 'number' },
+        },
+        required: ['productId'],
+      },
+    },
+  },
 ]
 
 async function buildSystemPrompt(ctx: ChatContext): Promise<string> {
@@ -228,12 +312,39 @@ ${memCtx || 'لا توجد بيانات بعد'}
 - كن مختصراً وعملياً`
 }
 
+const DANGEROUS_TOOLS = new Set(['accept_orders', 'bulk_update_prices', 'create_return', 'restock_product'])
+const BULK_THRESHOLD = 5
+const CONFIRM_PATTERN = /^(نعم نفذ|نعم|موافق|تمام نفذ|اوك نفذ|ok|yes)/i
+const CANCEL_PATTERN = /^(لا|إلغاء|الغِ|cancel|no)/i
+
 export async function groqChat(
   userMessage: string,
   ctx: ChatContext
 ): Promise<{ response: string; toolsUsed: string[] }> {
   if (INJECTION_PATTERNS.some(p => p.test(userMessage))) {
     return { response: 'عذراً، لا أستطيع معالجة هذا الطلب.', toolsUsed: [] }
+  }
+
+  // Handle confirmation of pending bulk action
+  if (CONFIRM_PATTERN.test(userMessage.trim())) {
+    const pending = await prisma.aiMemory.findUnique({
+      where: { organizationId_key: { organizationId: ctx.orgId, key: 'pending_bulk_action' } },
+    })
+    if (pending) {
+      const { tool, input } = JSON.parse(pending.value) as { tool: string; input: Record<string, unknown> }
+      await prisma.aiMemory.delete({ where: { organizationId_key: { organizationId: ctx.orgId, key: 'pending_bulk_action' } } })
+      const result = await executeTool(tool, input, { orgId: ctx.orgId, userId: ctx.userId })
+      const summary = JSON.stringify(result, null, 2)
+      return { response: `✅ تم التنفيذ بنجاح!\n\n${summary}`, toolsUsed: [tool] }
+    }
+  }
+
+  if (CANCEL_PATTERN.test(userMessage.trim())) {
+    await prisma.aiMemory.deleteMany({ where: { organizationId: ctx.orgId, key: 'pending_bulk_action' } })
+    const pending = await prisma.aiMemory.findUnique({ where: { organizationId_key: { organizationId: ctx.orgId, key: 'pending_bulk_action' } } })
+    if (!pending) {
+      // Only respond as cancel if there was actually a pending action
+    }
   }
 
   const history = await prisma.message.findMany({
@@ -270,18 +381,34 @@ export async function groqChat(
 
     if (choice.finish_reason === 'stop' || !msg.tool_calls?.length) break
 
-    // Add assistant message with tool calls
     messages.push({ role: 'assistant', content: msg.content || '', tool_calls: msg.tool_calls })
 
-    // Execute all tool calls
     for (const toolCall of msg.tool_calls) {
       const name = toolCall.function.name
       toolsUsed.push(name)
 
+      let parsedInput: Record<string, unknown> = {}
+      try { parsedInput = JSON.parse(toolCall.function.arguments || '{}') } catch {}
+
+      // Confirmation gate for dangerous bulk actions
+      if (DANGEROUS_TOOLS.has(name)) {
+        const ids = (parsedInput.orderIds as string[] | undefined) ?? (parsedInput.productIds as string[] | undefined) ?? []
+        if (ids.length > BULK_THRESHOLD) {
+          await prisma.aiMemory.upsert({
+            where: { organizationId_key: { organizationId: ctx.orgId, key: 'pending_bulk_action' } },
+            create: { organizationId: ctx.orgId, key: 'pending_bulk_action', value: JSON.stringify({ tool: name, input: parsedInput }), label: 'إجراء معلق للتأكيد', confidence: 1 },
+            update: { value: JSON.stringify({ tool: name, input: parsedInput }), updatedAt: new Date() },
+          })
+          return {
+            response: `⚠️ هذا الإجراء سيؤثر على **${ids.length} عنصر**.\n\nهل تريد المتابعة؟\n• اكتب **"نعم نفذ"** للتأكيد\n• اكتب **"لا"** للإلغاء`,
+            toolsUsed,
+          }
+        }
+      }
+
       let result: unknown
       try {
-        const input = JSON.parse(toolCall.function.arguments || '{}')
-        result = await executeTool(name, input, { orgId: ctx.orgId, userId: ctx.userId })
+        result = await executeTool(name, parsedInput, { orgId: ctx.orgId, userId: ctx.userId })
       } catch (err) {
         result = { error: (err as Error).message }
       }
@@ -295,4 +422,27 @@ export async function groqChat(
   }
 
   return { response: finalResponse || 'تم تنفيذ الطلب.', toolsUsed }
+}
+
+export async function groqStream(
+  userMessage: string,
+  ctx: ChatContext,
+  callbacks: {
+    onToken: (token: string) => void
+    onTool: (name: string) => void
+    onDone: (fullResponse: string, toolsUsed: string[]) => Promise<void>
+  }
+): Promise<void> {
+  // Run full tool-use pass first (Groq tool calls can't stream mid-execution)
+  const result = await groqChat(userMessage, ctx)
+
+  // Stream the final response word by word
+  const words = result.response.split(' ')
+  for (const word of words) {
+    callbacks.onToken(word + ' ')
+    await new Promise(r => setTimeout(r, 20))
+  }
+
+  result.toolsUsed.forEach(t => callbacks.onTool(t))
+  await callbacks.onDone(result.response, result.toolsUsed)
 }

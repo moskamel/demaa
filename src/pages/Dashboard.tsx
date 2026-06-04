@@ -241,6 +241,11 @@ export default function Dashboard() {
     setInput('')
     setIsTyping(true)
 
+    // Add empty deema message that will be filled by streaming
+    const deemaId = counter + 1
+    setMessages(prev => [...prev, { id: deemaId, role: 'deema', content: '' }])
+    setCounter(c => c + 2)
+
     try {
       let convId = activeConv
       if (!convId) {
@@ -251,17 +256,52 @@ export default function Dashboard() {
         setConvList(prev => [conversation, ...prev])
       }
 
-      const result = await convApi.send(convId, trimmed)
-      const deemaMsg: Message = { id: counter + 1, role: 'deema', content: result.response }
-      setMessages(prev => [...prev, deemaMsg])
-      setCounter(c => c + 1)
+      const token = localStorage.getItem('deema_token')
+      const response = await fetch(`/api/conversations/${convId}/messages/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: trimmed }),
+      })
 
-      // Refresh stats after action
-      ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
+      if (!response.ok || !response.body) throw new Error('فشل الاتصال')
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let fullText = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const parts = buffer.split('\n\n')
+        buffer = parts.pop() || ''
+
+        for (const part of parts) {
+          const lines = part.split('\n')
+          const eventLine = lines.find(l => l.startsWith('event: '))
+          const dataLine = lines.find(l => l.startsWith('data: '))
+          if (!eventLine || !dataLine) continue
+          const event = eventLine.slice(7).trim()
+          try {
+            const data = JSON.parse(dataLine.slice(6))
+            if (event === 'token') {
+              fullText += data.token
+              setMessages(prev => prev.map(m => m.id === deemaId ? { ...m, content: fullText } : m))
+            } else if (event === 'done') {
+              setIsTyping(false)
+              ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
+            }
+          } catch {}
+        }
+      }
+
+      if (!fullText) {
+        setMessages(prev => prev.map(m => m.id === deemaId ? { ...m, content: 'تم تنفيذ الطلب.' } : m))
+      }
     } catch (err) {
       const errMsg = (err as Error).message || 'حدث خطأ في الاتصال'
-      setMessages(prev => [...prev, { id: counter + 1, role: 'deema', content: `عذراً، حدث خطأ: ${errMsg}. حاول مجدداً.` }])
-      setCounter(c => c + 1)
+      setMessages(prev => prev.map(m => m.id === deemaId ? { ...m, content: `عذراً، حدث خطأ: ${errMsg}. حاول مجدداً.` } : m))
     } finally {
       setIsTyping(false)
     }
