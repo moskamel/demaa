@@ -372,20 +372,21 @@ export default function Billing() {
           <div id="plans-section">
             <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>اختر الباقة المناسبة لك</div>
 
-            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, alignItems: 'stretch' }}>
               {PLANS.map(plan => {
                 const isCurrent = plan.id === sub?.planId
                 const isUpgrade = PLANS.findIndex(p => p.id === plan.id) > PLANS.findIndex(p => p.id === sub?.planId)
                 const isProcessing = upgrading === plan.id
 
                 return (
-                  <StaggerItem key={plan.id}><div style={{
+                  <StaggerItem key={plan.id} style={{ height: '100%' }}><div style={{
                     background: plan.highlight ? 'rgba(106,76,245,0.06)' : 'var(--canvas-soft)',
                     borderRadius: 14,
                     border: isCurrent ? `2px solid ${plan.color}` : plan.highlight ? '1px solid rgba(106,76,245,0.3)' : '1px solid var(--hairline)',
                     padding: '18px 16px',
                     position: 'relative',
                     display: 'flex', flexDirection: 'column',
+                    height: '100%', boxSizing: 'border-box',
                   }}>
                     {plan.badge && (
                       <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 10, fontWeight: 700, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 20, padding: '3px 8px' }}>
