@@ -67,7 +67,7 @@ function OrderListView({ rows, onOrderClick }: { rows: OrderRow[]; onOrderClick?
             </div>
           </div>
           <div style={{ textAlign: 'left', flexShrink: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{(o.total / 100).toLocaleString('en-US')} $</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{(o.total / 100).toLocaleString('ar-EG')} ج.م</div>
             <div style={{ fontSize: 10, color: statusColors[o.status], textAlign: 'center', marginTop: 2 }}>{statusLabels[o.status]}</div>
           </div>
         </div>
@@ -86,7 +86,7 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
             <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{p.category} · {p.id}</div>
           </div>
           <div style={{ textAlign: 'left', flexShrink: 0, display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{p.price.toLocaleString('en-US')} $</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{p.price.toLocaleString('ar-EG')} ج.م</div>
             <div style={{ fontSize: 11, fontWeight: 600, color: p.stock === 0 ? 'var(--gradient-coral)' : p.stock < 5 ? 'var(--gradient-orange)' : 'var(--semantic-success)', background: p.stock === 0 ? 'rgba(255,85,119,0.1)' : p.stock < 5 ? 'rgba(255,122,61,0.1)' : 'rgba(34,197,94,0.1)', borderRadius: 6, padding: '3px 8px', minWidth: 40, textAlign: 'center' }}>
               {p.stock === 0 ? 'نافد' : `${p.stock}`}
             </div>
@@ -97,90 +97,27 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
   )
 }
 
-const SUGGESTED = [
-  { icon: '📦', title: 'الطلبات المعلقة', cmd: 'وريني الطلبات المعلقة' },
-  { icon: '📊', title: 'مبيعات اليوم', cmd: 'كم مبيعات اليوم؟' },
-  { icon: '🏷️', title: 'المنتجات', cmd: 'وريني المنتجات والمخزون' },
-  { icon: '📈', title: 'تقرير الأرباح', cmd: 'احسب صافي الأرباح هذا الشهر' },
-  { icon: '🚚', title: 'الشحنات', cmd: 'وريني الطلبات المقبولة الجاهزة للشحن' },
-  { icon: '⚠️', title: 'مخزون منخفض', cmd: 'وريني المنتجات اللي مخزونها وشك ينفد' },
-  { icon: '👥', title: 'العملاء', cmd: 'وريني أفضل 10 عملاء' },
-  { icon: '🎟️', title: 'كوبون خصم', cmd: 'اعمل لي كوبون خصم 10%' },
-]
-
-function UserMessage({ msg, onEdit }: { msg: Message; onEdit: (text: string) => void }) {
-  const [hovering, setHovering] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const copy = () => { navigator.clipboard.writeText(msg.content).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }) }
-  return (
-    <div style={{ display: 'flex', justifyContent: 'flex-start' }} onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3, maxWidth: '70%' }}>
-        <div className="chat-message-user" style={{ background: '#ffffff', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#111', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(0,0,0,0.15)' }}>
-          {msg.content}
-        </div>
-        <div style={{ display: 'flex', gap: 4, opacity: hovering ? 1 : 0, transition: 'opacity 0.15s', paddingRight: 4 }}>
-          <button onClick={copy} title="نسخ" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 7px', borderRadius: 6, fontSize: 11, color: copied ? '#22c55e' : 'var(--ink-muted)', fontFamily: 'inherit' }}>{copied ? '✓' : '⎘'} نسخ</button>
-          <button onClick={() => onEdit(msg.content)} title="تعديل" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 7px', borderRadius: 6, fontSize: 11, color: 'var(--ink-muted)', fontFamily: 'inherit' }}>✏️ تعديل</button>
-          {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', padding: '2px 4px' }}>{new Date(msg.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function renderMarkdown(text: string) {
   return text.split('\n').map((line, i) => {
-    // Bold: **text**
     const parts = line.split(/\*\*(.+?)\*\*/g)
-    const rendered = parts.map((part, j) => j % 2 === 1 ? <strong key={j} style={{ color: 'var(--ink)', fontWeight: 700 }}>{part}</strong> : part)
-    // Bullet lines
-    const isBullet = line.startsWith('• ') || line.startsWith('- ') || line.match(/^[•\-]\s/)
+    const rendered = parts.map((part, j) => j % 2 === 1
+      ? <strong key={j} style={{ color: 'var(--ink)', fontWeight: 700 }}>{part}</strong>
+      : part)
+    const isBullet = /^[•\-]\s/.test(line)
     return (
-      <span key={i} style={{ display: 'block', paddingRight: isBullet ? 0 : 0, marginBottom: line === '' ? 6 : 2 }}>
-        {isBullet && <span style={{ color: 'var(--ink-muted)', marginLeft: 4 }}>•</span>}
-        {isBullet ? <span style={{ marginRight: 6 }}>{rendered.slice(1)}</span> : rendered}
+      <span key={i} style={{ display: 'block', marginBottom: line === '' ? 6 : 2 }}>
+        {isBullet ? <><span style={{ color: 'var(--ink-muted)', marginLeft: 4 }}>•</span><span style={{ marginRight: 6 }}>{rendered.slice(1)}</span></> : rendered}
       </span>
     )
   })
 }
 
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
-  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
-  const [hovering, setHovering] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const copyMsg = () => { navigator.clipboard.writeText(msg.content).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }) }
-
-  // Error bubble
-  const errorMatch = msg.content.match(/^__error__(.+?)__retry__(.*)$/)
-  if (errorMatch) {
-    const errText = errorMatch[1]
-    const retryCmd = errorMatch[2]
-    return (
-      <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-        <div style={{ maxWidth: '80%', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', fontSize: 13 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-            <span style={{ fontSize: 16 }}>⚠️</span>
-            <p style={{ color: '#ef4444', lineHeight: 1.55, margin: 0 }}>{errText}</p>
-          </div>
-          {retryCmd && (
-            <button onClick={() => onAction(retryCmd)} style={{ marginTop: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, padding: '6px 14px', fontSize: 12, color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit' }}>
-              ↻ إعادة المحاولة
-            </button>
-          )}
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div
-      style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-    >
-      <div style={{ maxWidth: '80%' }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+      <div style={{ maxWidth: '70%', width: 'fit-content' }}>
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
-          <div style={{ color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{renderMarkdown(msg.content)}</div>
+          <div style={{ color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{renderMarkdown(msg.content)}</div>
           {msg.stats && (
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(msg.stats.length, 4)}, 1fr)`, gap: 8, marginBottom: msg.actions ? 12 : 0 }}>
               {msg.stats.map(s => (
@@ -204,12 +141,6 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
               ))}
             </div>
           )}
-          <div style={{ display: 'flex', gap: 4, marginTop: 8, opacity: hovering ? 1 : 0, transition: 'opacity 0.15s', borderTop: '1px solid var(--hairline)', paddingTop: 8 }}>
-            <button onClick={copyMsg} title="نسخ" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 11, color: copied ? '#22c55e' : 'var(--ink-muted)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 3 }}>{copied ? '✓ تم النسخ' : '⎘ نسخ'}</button>
-            <div style={{ width: 1, background: 'var(--hairline)', margin: '0 2px' }} />
-            <button onClick={() => setFeedback('up')} style={{ background: feedback === 'up' ? 'rgba(34,197,94,0.15)' : 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 13, color: feedback === 'up' ? '#22c55e' : 'var(--ink-muted)' }}>👍</button>
-            <button onClick={() => setFeedback('down')} style={{ background: feedback === 'down' ? 'rgba(239,68,68,0.1)' : 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 13, color: feedback === 'down' ? '#ef4444' : 'var(--ink-muted)' }}>👎</button>
-          </div>
         </div>
       </div>
     </div>
@@ -234,7 +165,7 @@ function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; no
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: n.isRead ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
                 <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{n.body}</div>
-                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('en-US')}</div>
+                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
               </div>
             </div>
           </div>
@@ -325,6 +256,11 @@ export default function Dashboard() {
     setInput('')
     setIsTyping(true)
 
+    // Add empty deema message that will be filled by streaming
+    const deemaId = counter + 1
+    setMessages(prev => [...prev, { id: deemaId, role: 'deema', content: '' }])
+    setCounter(c => c + 2)
+
     try {
       let convId = activeConv
       if (!convId) {
@@ -335,21 +271,52 @@ export default function Dashboard() {
         setConvList(prev => [conversation, ...prev])
       }
 
-      const result = await convApi.send(convId, trimmed)
-      const deemaMsg: Message = { id: counter + 1, role: 'deema', content: result.response }
-      setMessages(prev => [...prev, deemaMsg])
-      setCounter(c => c + 1)
+      const token = localStorage.getItem('deema_token')
+      const response = await fetch(`/api/conversations/${convId}/messages/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: trimmed }),
+      })
 
-      // Refresh stats after action
-      ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
+      if (!response.ok || !response.body) throw new Error('فشل الاتصال')
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let fullText = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const parts = buffer.split('\n\n')
+        buffer = parts.pop() || ''
+
+        for (const part of parts) {
+          const lines = part.split('\n')
+          const eventLine = lines.find(l => l.startsWith('event: '))
+          const dataLine = lines.find(l => l.startsWith('data: '))
+          if (!eventLine || !dataLine) continue
+          const event = eventLine.slice(7).trim()
+          try {
+            const data = JSON.parse(dataLine.slice(6))
+            if (event === 'token') {
+              fullText += data.token
+              setMessages(prev => prev.map(m => m.id === deemaId ? { ...m, content: fullText } : m))
+            } else if (event === 'done') {
+              setIsTyping(false)
+              ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
+            }
+          } catch {}
+        }
+      }
+
+      if (!fullText) {
+        setMessages(prev => prev.map(m => m.id === deemaId ? { ...m, content: 'تم تنفيذ الطلب.' } : m))
+      }
     } catch (err) {
-      const raw = (err as Error).message || ''
-      const isNetwork = raw.includes('fetch') || raw.includes('network') || raw.includes('Failed')
-      const errMsg = isNetwork
-        ? 'تعذّر الاتصال بالخادم. تأكد من تشغيل الخادم ثم حاول مجدداً.'
-        : raw || 'حدث خطأ غير متوقع'
-      setMessages(prev => [...prev, { id: counter + 1, role: 'deema', content: `__error__${errMsg}__retry__${trimmed}` }])
-      setCounter(c => c + 1)
+      const errMsg = (err as Error).message || 'حدث خطأ في الاتصال'
+      setMessages(prev => prev.map(m => m.id === deemaId ? { ...m, content: `عذراً، حدث خطأ: ${errMsg}. حاول مجدداً.` } : m))
     } finally {
       setIsTyping(false)
     }
@@ -474,25 +441,10 @@ export default function Dashboard() {
         ) : (
           <>
             {/* messages */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 30px 24px 20px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 200px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
               {messages.length === 0 && !isTyping && (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 0' }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>مرحباً 👋</div>
-                    <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20 }}>كيف أقدر أساعدك اليوم؟</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                      {SUGGESTED.map(s => (
-                        <button key={s.cmd} onClick={() => handleSend(s.cmd)}
-                          style={{ background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 12, padding: 14, cursor: 'pointer', textAlign: 'right', fontFamily: 'inherit', transition: 'border-color 0.15s, background 0.15s' }}
-                          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--hairline-strong)'; e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--hairline)'; e.currentTarget.style.background = 'var(--canvas-soft)' }}
-                        >
-                          <div style={{ fontSize: 24, marginBottom: 6 }}>{s.icon}</div>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{s.title}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>
                 </div>
               )}
               {messages.map((msg, idx) => (
@@ -500,7 +452,14 @@ export default function Dashboard() {
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
-                    <UserMessage msg={msg} onEdit={setInput} />
+                    <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+                        <div className="chat-message-user" style={{ background: '#6a4cf5', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.25)', maxWidth: '50vw', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                          {msg.content}
+                        </div>
+                        {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
+                      </div>
+                    </div>
                   )}
                 </div>
               ))}
@@ -518,7 +477,7 @@ export default function Dashboard() {
             </div>
 
             {/* input area */}
-            <div style={{ margin: '0 20px 20px', borderRadius: 15, background: 'var(--canvas-soft)', padding: '12px 20px 14px', flexShrink: 0, boxShadow: '0 -4px 24px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.18)' }}>
+            <div style={{ margin: '0 200px 20px', borderRadius: 15, background: 'var(--canvas-soft)', padding: '12px 20px 14px', flexShrink: 0, boxShadow: '0 -4px 24px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.18)' }}>
               <div style={{ position: 'relative', marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
                   {QUICK.map((q, i) => (
