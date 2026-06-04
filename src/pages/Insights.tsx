@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft2, Cpu, TrendUp, Warning2, Clock, ChartSquare } from 'iconsax-react'
-import { aiApi, type AiMemory, type UsageRecord } from '../lib/api'
+import { aiApi, orders, type AiMemory, type UsageRecord } from '../lib/api'
+
+interface PnlData {
+  revenue: number
+  cost: number
+  profit: number
+  margin: number
+  codPending: number
+  codCollected: number
+  codPendingValue: number
+  topCities: { city: string; orders: number; revenue: number }[]
+}
 
 const INSIGHT_ICONS: Record<string, string> = {
   preferred_carrier: '🚚',
@@ -48,6 +59,12 @@ export default function Insights() {
   const [usageRecords, setUsageRecords] = useState<UsageRecord[]>([])
   const [subscription, setSubscription] = useState<{ ordersLimit: number } | null>(null)
   const [loading, setLoading] = useState(true)
+  const [pnl, setPnl] = useState<PnlData>({
+    revenue: 0, cost: 0, profit: 0, margin: 0,
+    codPending: 0, codCollected: 0, codPendingValue: 0,
+    topCities: [],
+  })
+  const [pnlLoading, setPnlLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([aiApi.memory(), aiApi.usage()])
@@ -58,6 +75,44 @@ export default function Insights() {
         setLoading(false)
       })
       .catch(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    const loadPnl = async () => {
+      try {
+        const [deliveredRes, pendingRes] = await Promise.all([
+          orders.list({ status: 'delivered', limit: '200' }),
+          orders.list({ status: 'pending', limit: '200' }),
+        ])
+
+        const revenue = deliveredRes.orders.reduce((s, o) => s + o.total, 0)
+        const cost = revenue * 0.6
+        const profit = revenue - cost
+        const margin = revenue > 0 ? (profit / revenue) * 100 : 0
+
+        const codPendingOrders = pendingRes.orders.filter(o => o.paymentMethod === 'cash' || o.paymentMethod === 'cod')
+        const codPending = codPendingOrders.length
+        const codPendingValue = codPendingOrders.reduce((s, o) => s + o.total, 0)
+        const codCollected = deliveredRes.orders.filter(o => o.paymentMethod === 'cash' || o.paymentMethod === 'cod').length
+
+        // Build top cities from delivered orders
+        const cityMap: Record<string, { orders: number; revenue: number }> = {}
+        for (const o of deliveredRes.orders) {
+          const c = o.city || 'غير محدد'
+          if (!cityMap[c]) cityMap[c] = { orders: 0, revenue: 0 }
+          cityMap[c].orders++
+          cityMap[c].revenue += o.total
+        }
+        const topCities = Object.entries(cityMap)
+          .map(([city, data]) => ({ city, ...data }))
+          .sort((a, b) => b.revenue - a.revenue)
+          .slice(0, 5)
+
+        setPnl({ revenue, cost, profit, margin, codPending, codCollected, codPendingValue, topCities })
+      } catch { /* silent */ }
+      finally { setPnlLoading(false) }
+    }
+    loadPnl()
   }, [])
 
   const latestUsage = usageRecords[usageRecords.length - 1]
@@ -183,6 +238,122 @@ export default function Insights() {
             })()}
           </>
         )}
+        {/* ── P&L Financial Report ── */}
+        <div style={{ marginTop: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+            <span style={{ fontSize: 20 }}>📊</span>
+            <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.4px' }}>التقرير المالي</span>
+          </div>
+
+          {pnlLoading ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ink-muted)', fontSize: 14 }}>جاري تحميل البيانات المالية...</div>
+          ) : (
+            <>
+              {/* Summary Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
+                {/* Revenue */}
+                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>إجمالي الإيرادات</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: '#22c55e', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
+                    {pnl.revenue.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>ر.س</div>
+                </div>
+
+                {/* Cost */}
+                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>إجمالي التكاليف</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: '#ff5577', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
+                    {pnl.cost.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>ر.س (تقديري 60%)</div>
+                </div>
+
+                {/* Profit */}
+                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>صافي الربح</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
+                    {pnl.profit.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>ر.س</div>
+                </div>
+
+                {/* Margin */}
+                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>هامش الربح</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: '#ff7a3d', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
+                    {pnl.margin.toFixed(1)}%
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>من الإيرادات</div>
+                </div>
+              </div>
+
+              {/* COD Breakdown */}
+              <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px 24px', marginBottom: 24 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>تفاصيل الدفع عند الاستلام (COD)</div>
+                <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 6 }}>طلبات COD المعلقة</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#ff7a3d' }}>{pnl.codPending.toLocaleString('ar-SA')}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>طلب</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 6 }}>قيمة COD المعلقة</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#ff5577' }}>{pnl.codPendingValue.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>ر.س</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 6 }}>طلبات COD المحصّلة</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#22c55e' }}>{pnl.codCollected.toLocaleString('ar-SA')}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>طلب</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top 5 Cities Bar Chart */}
+              {pnl.topCities.length > 0 && (
+                <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px 24px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 18 }}>أفضل 5 مدن حسب الإيرادات</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {(() => {
+                      const maxRev = Math.max(...pnl.topCities.map(c => c.revenue), 1)
+                      return pnl.topCities.map((c, idx) => (
+                        <div key={c.city}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontSize: 11, color: 'var(--ink-muted)', fontVariantNumeric: 'tabular-nums', minWidth: 16 }}>#{idx + 1}</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{c.city}</span>
+                              <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--hairline)', borderRadius: 5, padding: '1px 7px' }}>{c.orders} طلب</span>
+                            </div>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>
+                              {c.revenue.toLocaleString('ar-SA', { maximumFractionDigits: 0 })} ر.س
+                            </span>
+                          </div>
+                          <div style={{ height: 6, background: 'var(--hairline)', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{
+                              width: `${(c.revenue / maxRev) * 100}%`,
+                              height: '100%',
+                              borderRadius: 4,
+                              background: idx === 0
+                                ? 'linear-gradient(90deg,#6a4cf5,#d44df0)'
+                                : idx === 1
+                                  ? '#007cf0'
+                                  : idx === 2
+                                    ? '#22c55e'
+                                    : '#ff7a3d',
+                              transition: 'width 0.8s ease',
+                            }} />
+                          </div>
+                        </div>
+                      ))
+                    })()}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
       </div>
     </div>
   )
