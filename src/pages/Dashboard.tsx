@@ -133,6 +133,29 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
   const [hovering, setHovering] = useState(false)
   const [copied, setCopied] = useState(false)
   const copyMsg = () => { navigator.clipboard.writeText(msg.content).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }) }
+
+  // Error bubble
+  const errorMatch = msg.content.match(/^__error__(.+?)__retry__(.*)$/)
+  if (errorMatch) {
+    const errText = errorMatch[1]
+    const retryCmd = errorMatch[2]
+    return (
+      <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+        <div style={{ maxWidth: '80%', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '4px 14px 14px 14px', padding: '12px 16px', fontSize: 13 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>⚠️</span>
+            <p style={{ color: '#ef4444', lineHeight: 1.55, margin: 0 }}>{errText}</p>
+          </div>
+          {retryCmd && (
+            <button onClick={() => onAction(retryCmd)} style={{ marginTop: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, padding: '6px 14px', fontSize: 12, color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit' }}>
+              ↻ إعادة المحاولة
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
@@ -304,8 +327,12 @@ export default function Dashboard() {
       // Refresh stats after action
       ordersApi.stats().then(s => setOrderStats(s)).catch(() => {})
     } catch (err) {
-      const errMsg = (err as Error).message || 'حدث خطأ في الاتصال'
-      setMessages(prev => [...prev, { id: counter + 1, role: 'deema', content: `عذراً، حدث خطأ: ${errMsg}. حاول مجدداً.` }])
+      const raw = (err as Error).message || ''
+      const isNetwork = raw.includes('fetch') || raw.includes('network') || raw.includes('Failed')
+      const errMsg = isNetwork
+        ? 'تعذّر الاتصال بالخادم. تأكد من تشغيل الخادم ثم حاول مجدداً.'
+        : raw || 'حدث خطأ غير متوقع'
+      setMessages(prev => [...prev, { id: counter + 1, role: 'deema', content: `__error__${errMsg}__retry__${trimmed}` }])
       setCounter(c => c + 1)
     } finally {
       setIsTyping(false)
