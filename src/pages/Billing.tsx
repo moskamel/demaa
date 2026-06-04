@@ -241,7 +241,7 @@ export default function Billing() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
         <AppHeader title="الاشتراك" />
 
-        <div style={{ padding: '24px 28px', maxWidth: 960, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+        <div style={{ padding: '24px 20px', boxSizing: 'border-box' }}>
 
           {/* Alert banner */}
           {sub && <AlertBanner sub={sub} />}
@@ -354,19 +354,14 @@ export default function Billing() {
               </div>
 
               {/* Stats */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                {[
-                  { icon: Shop, label: 'متاجر', value: loading ? '...' : storeCount },
-                  { icon: People, label: 'أعضاء الفريق', value: loading ? '...' : memberCount },
-                ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} style={{ background: 'var(--canvas)', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <Icon size={16} color="var(--ink-muted)" variant="Outline" />
-                    <div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{value}</div>
-                      <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{label}</div>
-                    </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                <div style={{ background: 'var(--canvas)', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Shop size={16} color="var(--ink-muted)" variant="Outline" />
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{loading ? '...' : storeCount}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>متاجر</div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
