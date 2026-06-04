@@ -4,7 +4,7 @@ import { TickCircle, ArrowLeft2, ExportSquare, Refresh2, SearchNormal1 } from 'i
 import { storesApi } from '../lib/api'
 import { getPlatformLogo } from '../lib/platformLogos'
 
-type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | 'woocommerce' | 'wix' | 'bigcommerce' | 'ecwid' | null
+type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'woocommerce' | 'wix' | 'bigcommerce' | 'ecwid' | null
 
 const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
   const logo = getPlatformLogo(domain)
@@ -61,104 +61,6 @@ const platforms = [
       'اضغط "توليد مفتاح API جديد"',
       'حدد الصلاحيات المطلوبة: طلبات، منتجات، شحن',
       'انسخ المفتاح والصقه هنا',
-    ],
-  },
-  {
-    id: 'facebook',
-    name: 'Facebook & Instagram',
-    desc: 'البيع عبر فيسبوك وإنستغرام',
-    url: 'https://www.facebook.com/business/commerce',
-    method: 'api-key',
-    steps: [
-      'افتح Meta Business Suite على business.facebook.com',
-      'اذهب إلى: الإعدادات ← حسابات ← الصفحات',
-      'اختر صفحتك وافتح إعدادات Commerce',
-      'اذهب إلى: الإعدادات المتقدمة ← رموز الوصول',
-      'أنشئ System User Token بصلاحية manage_pages وانسخه هنا',
-    ],
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok Shop',
-    desc: 'البيع عبر متجر تيك توك',
-    url: 'https://seller.tiktok.com',
-    method: 'api-key',
-    steps: [
-      'افتح TikTok Seller Center على seller.tiktok.com',
-      'اذهب إلى: My Account ← Developer',
-      'اضغط "Apply for API Access"',
-      'بعد الموافقة اذهب إلى: API Management ← Access Token',
-      'انسخ الـ Access Token والصقه هنا',
-    ],
-  },
-  {
-    id: 'salla',
-    name: 'Salla — سلة',
-    desc: 'منصة التجارة الإلكترونية السعودية الرائدة',
-    url: 'https://salla.com',
-    method: 'api-key',
-    steps: [
-      'افتح لوحة تحكم سلة على salla.com',
-      'اذهب إلى: التطبيقات ← مطوري سلة',
-      'اضغط "إنشاء تطبيق جديد" واختر Private App',
-      'فعّل الصلاحيات: الطلبات، المنتجات، الشحن',
-      'انسخ Access Token والصقه هنا',
-    ],
-  },
-  {
-    id: 'zid',
-    name: 'Zid — زد',
-    desc: 'منصة التجارة الإلكترونية السعودية المتكاملة',
-    url: 'https://zid.sa',
-    method: 'api-key',
-    steps: [
-      'افتح لوحة تحكم زد على zid.sa',
-      'اذهب إلى: الإعدادات ← واجهة برمجة التطبيقات',
-      'اضغط "إنشاء رمز وصول جديد"',
-      'فعّل الصلاحيات: إدارة الطلبات، المنتجات',
-      'انسخ Manager Token والصقه هنا',
-    ],
-  },
-  {
-    id: 'amazon',
-    name: 'Amazon',
-    desc: 'أكبر سوق إلكتروني في العالم',
-    url: 'https://sellercentral.amazon.com',
-    method: 'api-key',
-    steps: [
-      'افتح Seller Central على sellercentral.amazon.com',
-      'اذهب إلى: Apps & Services ← Develop Apps',
-      'أنشئ تطبيقاً جديداً واحصل على Client ID و Client Secret',
-      'من صفحة Authorize، احصل على Refresh Token',
-      'أدخل البيانات بالصيغة: clientId:clientSecret:refreshToken',
-    ],
-  },
-  {
-    id: 'noon',
-    name: 'Noon',
-    desc: 'أكبر سوق إلكتروني في الشرق الأوسط',
-    url: 'https://sell.noon.com',
-    method: 'api-key',
-    steps: [
-      'افتح Noon Seller Lab على sell.noon.com',
-      'اذهب إلى: الإعدادات ← API & Integrations',
-      'اضغط "Generate New API Token"',
-      'امنح الصلاحيات: Orders Management, Shipments',
-      'انسخ الـ Bearer Token والصقه هنا',
-    ],
-  },
-  {
-    id: 'jumia',
-    name: 'Jumia',
-    desc: 'أكبر سوق إلكتروني في أفريقيا ومصر',
-    url: 'https://seller.jumia.com.eg',
-    method: 'api-key',
-    steps: [
-      'افتح Jumia Seller Center على seller.jumia.com.eg',
-      'اذهب إلى: الإعدادات ← API Access',
-      'اطلب رمز الوصول من فريق الدعم أو من لوحة Developer',
-      'بعد الحصول على الرمز أدخل رمز البلد أولاً (eg لمصر)',
-      'أدخل البيانات بالصيغة: eg:accessToken',
     ],
   },
   {
@@ -243,7 +145,7 @@ export default function Onboarding() {
       setLoading(false)
       setConnected(true)
       // Kick off sync in background for supported platforms
-      if (store.id && (platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'salla' || platform === 'zid' || platform === 'amazon' || platform === 'noon' || platform === 'jumia' || platform === 'woocommerce' || platform === 'wix' || platform === 'bigcommerce' || platform === 'ecwid')) {
+      if (store.id) {
         setSyncing(true)
         try {
           await storesApi.sync(store.id)
@@ -393,17 +295,17 @@ export default function Onboarding() {
             </a>
           </div>
 
-          {(platform === 'shopify' || platform === 'facebook' || platform === 'tiktok' || platform === 'amazon' || platform === 'woocommerce') && (
+          {(platform === 'shopify' || platform === 'woocommerce') && (
 
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--ink-muted)', marginBottom: 7, letterSpacing: '-0.13px' }}>
-                {platform === 'facebook' ? 'Page ID' : platform === 'tiktok' ? 'Shop ID' : platform === 'amazon' ? 'Marketplace ID' : platform === 'woocommerce' ? 'Store Domain' : 'Store Domain'}
+                {platform === 'woocommerce' ? 'Store Domain' : 'Store Domain'}
               </label>
               <input
                 type="text"
                 value={storeDomain}
                 onChange={e => setStoreDomain(e.target.value)}
-                placeholder={platform === 'facebook' ? '123456789012345' : platform === 'tiktok' ? '7123456789012345678' : platform === 'amazon' ? 'A2VIGQ35RCS4UG' : platform === 'woocommerce' ? 'mystore.com' : 'mystore.myshopify.com'}
+                placeholder={platform === 'woocommerce' ? 'mystore.com' : 'mystore.myshopify.com'}
                 style={{
                   width: '100%', background: 'var(--canvas-soft)',
                   border: '1px solid var(--hairline)', borderRadius: 10,
@@ -574,15 +476,15 @@ export default function Onboarding() {
                 رجوع
               </button>
               <button
-                disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'facebook' || platform === 'tiktok') && !storeDomain.trim())}
+                disabled={!apiKey.trim() || ((platform === 'shopify' || platform === 'woocommerce') && !storeDomain.trim())}
                 onClick={() => setStep(3)}
                 style={{
                   flex: 1, padding: '13px', borderRadius: 9999, border: 'none',
                   background: 'linear-gradient(135deg, #6a4cf5, #d44df0)',
                   color: '#fff', fontSize: 15, fontWeight: 600, fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  cursor: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 'pointer' : 'default',
-                  opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'facebook' && platform !== 'tiktok' || storeDomain.trim())) ? 1 : 0.4,
+                  cursor: (apiKey.trim() && (platform !== 'shopify' && platform !== 'woocommerce' || storeDomain.trim())) ? 'pointer' : 'default',
+                  opacity: (apiKey.trim() && (platform !== 'shopify' && platform !== 'woocommerce' || storeDomain.trim())) ? 1 : 0.4,
                   transition: 'opacity 0.15s',
                 }}
               >
