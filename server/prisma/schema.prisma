@@ -11,12 +11,13 @@ datasource db {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  timezone  String   @default("Asia/Riyadh")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  timezone      String   @default("Asia/Riyadh")
+  activeStoreId String?  // currently selected store
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   memberships   TeamMembership[]
   stores        Store[]
@@ -28,8 +29,27 @@ model Organization {
   aiMemory      AiMemory[]
   subscription  Subscription?
   usageRecords  UsageRecord[]
+  returns       Return[]
+  oauthStates   OAuthState[]
 
   @@map("organizations")
+}
+
+// Temporary OAuth state — cleaned up after callback completes
+model OAuthState {
+  id             String   @id @default(cuid())
+  organizationId String
+  platform       String
+  pendingStoreId String?  // pre-created store awaiting OAuth
+  state          String   @unique
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([state])
+  @@index([expiresAt])
+  @@map("oauth_states")
 }
 
 model User {
@@ -76,17 +96,24 @@ model TeamMembership {
 }
 
 model Store {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   organizationId String
   name           String
-  platform       String
+  platform       String    // salla | zid | shopify | woocommerce | custom
   domain         String?
-  isActive       Boolean  @default(true)
+  externalStoreId String?  // platform's own store ID
+  isActive       Boolean   @default(true)
+  isDeleted      Boolean   @default(false)  // soft delete
+  connectionStatus String  @default("disconnected") // connected | disconnected | error | token_expired
   lastSyncAt     DateTime?
-  syncStatus     String   @default("idle")
-  accessToken    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  syncStatus     String    @default("idle")
+  accessToken    String?   // AES-256-GCM encrypted
+  refreshToken   String?   // AES-256-GCM encrypted
+  tokenExpiresAt DateTime?
+  webhookSecret  String?   // platform webhook verification secret
+  platformMeta   String    @default("{}") // JSON: platform-specific config
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   organization         Organization          @relation(fields: [organizationId], references: [id])
   orders               Order[]
@@ -94,6 +121,8 @@ model Store {
   webhookEvents        WebhookEvent[]
   webhookRegistrations WebhookRegistration[]
 
+  @@index([organizationId, isActive, isDeleted])
+  @@index([organizationId, platform])
   @@map("stores")
 }
 
@@ -130,7 +159,10 @@ model Order {
   customer Customer?   @relation(fields: [customerId], references: [id])
   items    OrderItem[]
   shipments Shipment[]
+  returns  Return[]
 
+  @@index([storeId, status])
+  @@index([storeId, placedAt])
   @@map("orders")
 }
 
@@ -195,19 +227,39 @@ model Customer {
 }
 
 model Shipment {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   orderId        String
   carrier        String
   trackingNumber String?
   trackingUrl    String?
-  status         String   @default("created")
+  status         String    @default("created")
+  lastEvent      String?
+  lastEventAt    DateTime?
   cost           Int?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   order Order @relation(fields: [orderId], references: [id])
 
   @@map("shipments")
+}
+
+model Return {
+  id             String   @id @default(cuid())
+  orderId        String
+  organizationId String
+  reason         String
+  status         String   @default("pending")
+  refundAmount   Int      @default(0)
+  restockItems   Boolean  @default(true)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  order        Order        @relation(fields: [orderId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("returns")
 }
 
 model Coupon {

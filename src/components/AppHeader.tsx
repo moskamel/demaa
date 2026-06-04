@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { ArrowDown2, TickCircle, Add, ArrowRight, Pause, Play, Trash } from 'iconsax-react'
 import { orders as ordersApi, storesApi, type StoreData } from '../lib/api'
+import { useActiveStore } from '../store/activeStore'
 // clearToken handled in AppSidebar
 
 const PAGE_TITLES: Record<string, string> = {
@@ -47,6 +48,8 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
   const [actingStore, setActingStore] = useState<string | null>(null)
   const storeRef = useRef<HTMLDivElement>(null)
 
+  const { refreshStores: zustandRefresh, setActiveStore: zustandSetActive } = useActiveStore()
+
   useEffect(() => {
     ordersApi.stats().then(s => setPending(s.pending)).catch(() => {})
     storesApi.list().then(r => {
@@ -54,8 +57,10 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
       const savedId = localStorage.getItem(ACTIVE_STORE_KEY)
       const found = r.stores.find(s => s.id === savedId) ?? r.stores[0] ?? null
       setActiveStore(found)
+      // Sync to Zustand
+      zustandRefresh().catch(() => {})
     }).catch(() => {})
-  }, [])
+  }, [zustandRefresh])
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -69,6 +74,8 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
     setActiveStore(s)
     localStorage.setItem(ACTIVE_STORE_KEY, s.id)
     setShowStores(false)
+    // Sync to Zustand + backend
+    zustandSetActive(s.id).catch(() => {})
   }
 
   const refreshStores = () => {
