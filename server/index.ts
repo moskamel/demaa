@@ -20,6 +20,7 @@ import settingsRouter from './routes/settings.js'
 import webhooksRouter from './routes/webhooks.js'
 import webhookAdminRouter from './routes/webhook-admin.js'
 import oauthRouter from './routes/oauth/index.js'
+import billingRouter from './routes/billing.js'
 import { startRetryWorker } from './lib/webhooks/processor.js'
 
 const app = express()
@@ -72,6 +73,7 @@ app.use('/api/coupons', couponsRouter)
 app.use('/api/settings', settingsRouter)
 app.use('/api/webhooks', webhookAdminRouter)
 app.use('/api/oauth', oauthRouter)
+app.use('/api/billing', billingRouter)
 
 // Health check
 app.get('/api/health', (_req, res) => {
