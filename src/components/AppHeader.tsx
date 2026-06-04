@@ -34,6 +34,7 @@ interface AppHeaderProps {
 export default function AppHeader({ title, children }: AppHeaderProps) {
   const location = useLocation()
   const navigate = useNavigate()
+  const isMobile = window.innerWidth < 768
   const pageTitle = title ?? PAGE_TITLES[location.pathname] ?? ''
   const isSecondary = SECONDARY_PAGES.includes(location.pathname)
   const user = (() => { try { return JSON.parse(localStorage.getItem('deema_user') || '{}') } catch { return {} } })()
@@ -108,10 +109,10 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
 
   return (
     <div style={{
-      minHeight: 56, borderRadius: 15,
-      margin: '20px 20px 0 20px',
-      display: 'flex', alignItems: 'center', padding: '0 20px',
-      gap: 12, flexShrink: 0, background: 'var(--canvas-soft)',
+      minHeight: isMobile ? 48 : 56, borderRadius: 15,
+      margin: isMobile ? '10px 10px 0 10px' : '20px 20px 0 20px',
+      display: 'flex', alignItems: 'center', padding: isMobile ? '0 12px' : '0 20px',
+      gap: isMobile ? 8 : 12, flexShrink: 0, background: 'var(--canvas-soft)',
       boxShadow: '0 4px 24px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)',
     }}>
 
@@ -127,7 +128,7 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
             <ArrowRight size={18} variant="Outline" />
           </button>
         )}
-        <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>
+        <span style={{ fontSize: isMobile ? 13 : 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>
           {pageTitle}
         </span>
       </div>
