@@ -128,6 +128,22 @@ function UserMessage({ msg, onEdit }: { msg: Message; onEdit: (text: string) => 
   )
 }
 
+function renderMarkdown(text: string) {
+  return text.split('\n').map((line, i) => {
+    // Bold: **text**
+    const parts = line.split(/\*\*(.+?)\*\*/g)
+    const rendered = parts.map((part, j) => j % 2 === 1 ? <strong key={j} style={{ color: 'var(--ink)', fontWeight: 700 }}>{part}</strong> : part)
+    // Bullet lines
+    const isBullet = line.startsWith('• ') || line.startsWith('- ') || line.match(/^[•\-]\s/)
+    return (
+      <span key={i} style={{ display: 'block', paddingRight: isBullet ? 0 : 0, marginBottom: line === '' ? 6 : 2 }}>
+        {isBullet && <span style={{ color: 'var(--ink-muted)', marginLeft: 4 }}>•</span>}
+        {isBullet ? <span style={{ marginRight: 6 }}>{rendered.slice(1)}</span> : rendered}
+      </span>
+    )
+  })
+}
+
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
   const [hovering, setHovering] = useState(false)
@@ -164,7 +180,7 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
     >
       <div style={{ maxWidth: '80%' }}>
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
-          <p style={{ whiteSpace: 'pre-line', color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{msg.content}</p>
+          <div style={{ color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{renderMarkdown(msg.content)}</div>
           {msg.stats && (
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(msg.stats.length, 4)}, 1fr)`, gap: 8, marginBottom: msg.actions ? 12 : 0 }}>
               {msg.stats.map(s => (

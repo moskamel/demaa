@@ -265,7 +265,7 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', overflow: 'hidden', padding: '80px 40px 60px' }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: '48px 40px 60px' }}>
         {/* Glow orbs */}
         <div style={{ position: 'absolute', top: '-120px', right: '10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(106,76,245,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: '0', left: '15%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,77,240,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -281,7 +281,7 @@ export default function Landing() {
 
           {/* Headline — centered, large */}
           <div className="animate-fade-in-up" style={{ textAlign: 'center', marginBottom: 28 }}>
-            <h1 style={{ fontSize: 'clamp(52px, 7vw, 96px)', fontWeight: 700, lineHeight: 1.0, letterSpacing: '-3px', color: T.ink, margin: 0 }}>
+            <h1 style={{ fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 700, lineHeight: 1.0, letterSpacing: '-3px', color: T.ink, margin: 0 }}>
               وفّر ساعتين
               <span style={{ display: 'block', background: 'linear-gradient(90deg, #6a4cf5, #d44df0, #ff7a3d)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 كل يوم
@@ -302,7 +302,7 @@ export default function Landing() {
             <Link to={loginTo} style={{ ...btnOutline, padding: '14px 28px', fontSize: 15 }}>دخول</Link>
           </div>
 
-          <div className="animate-fade-in-up" style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 60, animationDelay: '180ms' }}>
+          <div className="animate-fade-in-up" style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 36, animationDelay: '180ms' }}>
             {['✅ لا يحتاج بطاقة ائتمانية', '✅ ربط في دقيقتين', '✅ استرداد ٣٠ يوماً'].map(t => (
               <span key={t} style={{ fontSize: 13, color: T.slate }}>{t}</span>
             ))}
@@ -321,7 +321,7 @@ export default function Landing() {
             </div>
 
             {/* Messages */}
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12, height: 320, overflowY: 'auto' }}>
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12, height: 260, overflowY: 'auto' }}>
               {demoMessages.map((m, i) => (
                 <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-start' : 'flex-end', gap: 8 }}>
                   <div style={{
