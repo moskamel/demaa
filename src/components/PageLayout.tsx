@@ -61,7 +61,8 @@ export default function PageLayout({ children }: Props) {
           }}>{isAuthed ? 'لوحة التحكم' : 'دخول'}</Link>
           <Link to={ctaTo} style={{
             padding: '9px 20px', borderRadius: 9999, border: 'none',
-            background: '#fff', color: '#0e0e12', fontSize: 14, fontWeight: 500,
+            background: isAuthed ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : '#fff',
+            color: isAuthed ? '#fff' : '#0e0e12', fontSize: 14, fontWeight: 500,
             textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
           }}>{isAuthed ? 'الذهاب للمساعد' : 'ابدأ مجاناً'}</Link>
         </div>
