@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { SearchNormal1, People, TrendUp, ShoppingBag, Star1 } from 'iconsax-react'
 import { customers as customersApi, type Customer } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
@@ -12,6 +13,7 @@ const segmentBg: Record<string, string> = { vip: 'rgba(212,77,240,0.1)', loyal: 
 type SegFilter = 'all' | 'vip' | 'loyal' | 'regular' | 'new'
 
 export default function Customers() {
+  const navigate = useNavigate()
   const [allCustomers, setAllCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -81,6 +83,15 @@ export default function Customers() {
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'var(--canvas-soft)', borderRadius: 16, overflow: 'hidden', border: '1px solid var(--hairline)' }}>
             {[0,1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 64, borderRadius: 0, borderBottom: '1px solid var(--hairline)' }} />)}
+          </div>
+        ) : allCustomers.length === 0 ? (
+          <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ marginBottom: 12 }}><People size={48} color="var(--ink-muted)" style={{ opacity: 0.3 }} /></div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>لا يوجد عملاء بعد</div>
+            <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20, maxWidth: 280, margin: '0 auto 20px' }}>ستظهر بيانات العملاء هنا بعد ربط متجرك وإتمام أول طلب</div>
+            <button onClick={() => navigate('/stores')} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+              ربط متجر
+            </button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="animate-fade-in-scale" style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)' }}>

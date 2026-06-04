@@ -30,7 +30,7 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const PAYMENT_LABELS: Record<string, string> = {
-  card: 'بطاقة 💳', cash: 'كاش ⚠️', cod: 'الدفع عند الاستلام ⚠️',
+  card: 'بطاقة 💳', cash: 'كاش ⚠️', cod: 'COD ⚠️',
   tabby: 'تابby', tamara: 'تمارا',
 }
 
@@ -149,13 +149,17 @@ export default function Orders() {
 
           {/* Stats row */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-            {[
-              { label: 'معلق', value: stats.pending, color: '#f59e0b', tab: 'pending' },
-              { label: 'مقبول', value: stats.accepted, color: '#22c55e', tab: 'accepted' },
-              { label: 'مشحون', value: stats.shipped, color: '#3b82f6', tab: 'shipped' },
-              { label: 'مُسلَّم', value: stats.delivered, color: '#10b981', tab: 'delivered' },
-              { label: 'مرفوض', value: stats.rejected, color: '#ef4444', tab: 'rejected' },
-            ].map(s => (
+            {(() => {
+              const codPending = orderList.filter(o => (o.paymentMethod === 'cash' || o.paymentMethod === 'cod') && o.status === 'pending').length
+              return [
+                { label: 'معلق', value: stats.pending, color: '#f59e0b', tab: 'pending' },
+                { label: 'مقبول', value: stats.accepted, color: '#22c55e', tab: 'accepted' },
+                { label: 'مشحون', value: stats.shipped, color: '#3b82f6', tab: 'shipped' },
+                { label: 'مُسلَّم', value: stats.delivered, color: '#10b981', tab: 'delivered' },
+                { label: 'مرفوض', value: stats.rejected, color: '#ef4444', tab: 'rejected' },
+                { label: 'COD معلق', value: codPending, color: '#f59e0b', tab: 'pending' },
+              ]
+            })().map(s => (
               <div key={s.label} onClick={() => setActiveTab(s.tab)}
                 style={{ flex: '1 1 120px', background: 'var(--canvas-soft)', borderRadius: 12, padding: '14px 16px', cursor: 'pointer', border: `1px solid rgba(255,255,255,0.06)`, transition: 'border-color 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = s.color + '44')}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowLeft2, Cpu, TrendUp, Warning2, Clock } from 'iconsax-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft2, Cpu, TrendUp, Warning2, Clock, ChartSquare } from 'iconsax-react'
 import { aiApi, type AiMemory, type UsageRecord } from '../lib/api'
 
 const INSIGHT_ICONS: Record<string, string> = {
@@ -43,6 +43,7 @@ function ConfidenceBar({ value }: { value: number }) {
 }
 
 export default function Insights() {
+  const navigate = useNavigate()
   const [insights, setInsights] = useState<AiMemory[]>([])
   const [usageRecords, setUsageRecords] = useState<UsageRecord[]>([])
   const [subscription, setSubscription] = useState<{ ordersLimit: number } | null>(null)
@@ -151,9 +152,13 @@ export default function Insights() {
             )}
 
             {insights.length === 0 && !loading && (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-muted)', fontSize: 14 }}>
-                <Cpu size={36} variant="Outline" style={{ marginBottom: 12, opacity: 0.3 }} />
-                <div>لا توجد رؤى بعد — تفاعل مع ديما لتبدأ التعلم</div>
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ marginBottom: 12 }}><ChartSquare size={48} color="var(--ink-muted)" style={{ opacity: 0.3 }} /></div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>لا توجد بيانات تحليلية بعد</div>
+                <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 20, maxWidth: 280, margin: '0 auto 20px' }}>تحتاج على الأقل 10 طلبات لعرض التحليلات</div>
+                <button onClick={() => navigate('/orders')} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  اذهب للطلبات
+                </button>
               </div>
             )}
 
