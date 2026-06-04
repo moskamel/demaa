@@ -235,7 +235,7 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [connected, setConnected] = useState(false)
-  const [_error, setError] = useState('')
+  const [connectError, setConnectError] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
   // Hide "تخطي" when user navigated from the add-store button (not first-time signup)
@@ -244,7 +244,7 @@ export default function Onboarding() {
   const handleConnect = async () => {
     if (!apiKey.trim()) return
     setLoading(true)
-    setError('')
+    setConnectError('')
     try {
       const { store } = await storesApi.connect(platform!, apiKey.trim(), storeDomain.trim() || undefined)
       setLoading(false)
@@ -261,7 +261,7 @@ export default function Onboarding() {
       setTimeout(() => navigate('/subscribe'), 1800)
     } catch (err: unknown) {
       setLoading(false)
-      setError(err instanceof Error ? err.message : 'فشل الاتصال، تحقق من المفتاح')
+      setConnectError(err instanceof Error ? err.message : 'فشل الاتصال، تحقق من بياناتك')
     }
   }
 
@@ -429,7 +429,7 @@ export default function Onboarding() {
             <input
               type="text"
               value={apiKey}
-              onChange={e => setApiKey(e.target.value)}
+              onChange={e => { setApiKey(e.target.value); setConnectError('') }}
               placeholder={selectedPlatform?.id === 'shopify' ? 'shpat_xxxxxxxxxxxxxxxxxxxx' : 'sk-xxxxxxxxxxxxxxxxxxxx'}
               style={{
                 width: '100%', background: 'var(--canvas-soft)',
@@ -442,6 +442,14 @@ export default function Onboarding() {
               onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
             />
           </div>
+
+          {/* Connection error */}
+          {connectError && (
+            <div style={{ marginTop: 12, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <span style={{ fontSize: 15, flexShrink: 0 }}>⚠️</span>
+              <span style={{ fontSize: 13, color: '#f87171', lineHeight: 1.5 }}>{connectError}</span>
+            </div>
+          )}
 
         </div>
       )}

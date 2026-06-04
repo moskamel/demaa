@@ -2,6 +2,7 @@ import { Router } from 'express'
 import prisma from '../lib/prisma.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
 import { registerStoreWebhooks, deregisterStoreWebhooks } from '../lib/webhooks/registry.js'
+import { verifyPlatformCredentials } from '../lib/platforms/verify.js'
 import { fetchOrders as fetchFacebookOrders } from '../lib/platforms/facebook.js'
 import { fetchOrders as fetchTikTokOrders } from '../lib/platforms/tiktok.js'
 import { fetchOrders as fetchSallaOrders } from '../lib/platforms/salla.js'
@@ -33,7 +34,7 @@ router.post('/', async (req: AuthRequest, res) => {
   res.json({ store })
 })
 
-// POST /stores/connect — save platform + accessToken for the org's store
+// POST /stores/connect — verify credentials against platform API, then save
 router.post('/connect', async (req: AuthRequest, res) => {
   try {
     const { platform, apiKey, storeDomain } = req.body
@@ -42,7 +43,18 @@ router.post('/connect', async (req: AuthRequest, res) => {
       return
     }
 
-    // Upsert: find existing active store or create one
+    // Verify credentials against the real platform API before saving anything
+    let storeName: string
+    try {
+      const result = await verifyPlatformCredentials(platform, storeDomain, apiKey)
+      storeName = result.storeName
+    } catch (verifyErr) {
+      const msg = verifyErr instanceof Error ? verifyErr.message : 'بيانات الاتصال غير صحيحة'
+      res.status(422).json({ error: { code: 'INVALID_CREDENTIALS', message: msg } })
+      return
+    }
+
+    // Credentials verified — now upsert the store record
     let store = await prisma.store.findFirst({
       where: { organizationId: req.orgId, isActive: true },
     })
@@ -52,6 +64,7 @@ router.post('/connect', async (req: AuthRequest, res) => {
         where: { id: store.id },
         data: {
           platform,
+          name: storeName,
           domain: storeDomain || store.domain,
           accessToken: apiKey,
           updatedAt: new Date(),
@@ -61,7 +74,7 @@ router.post('/connect', async (req: AuthRequest, res) => {
       store = await prisma.store.create({
         data: {
           organizationId: req.orgId!,
-          name: storeDomain || platform,
+          name: storeName,
           platform,
           domain: storeDomain,
           accessToken: apiKey,
