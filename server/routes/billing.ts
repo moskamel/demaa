@@ -21,8 +21,19 @@ const PLAN_LIMITS: Record<string, { ordersLimit: number; stores: number; label: 
 
 // GET /api/billing/status
 router.get('/status', async (req: AuthRequest, res) => {
-  const sub = await prisma.subscription.findUnique({ where: { organizationId: req.orgId } })
-  if (!sub) { res.json({ subscription: null }); return }
+  let sub = await prisma.subscription.findUnique({ where: { organizationId: req.orgId } })
+  if (!sub) {
+    sub = await prisma.subscription.create({
+      data: {
+        organizationId: req.orgId!,
+        planId: 'free',
+        status: 'active',
+        ordersUsed: 0,
+        ordersLimit: 100,
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    })
+  }
 
   const now = new Date()
   const daysRemaining = Math.max(0, Math.ceil((sub.currentPeriodEnd.getTime() - now.getTime()) / 86400000))
@@ -52,8 +63,19 @@ router.post('/upgrade', async (req: AuthRequest, res) => {
     res.status(400).json({ error: { code: 'INVALID_PLAN', message: 'الباقة المختارة غير صحيحة' } }); return
   }
 
-  const sub = await prisma.subscription.findUnique({ where: { organizationId: req.orgId } })
-  if (!sub) { res.status(404).json({ error: { code: 'NO_SUBSCRIPTION' } }); return }
+  // Auto-create free subscription if org has none yet
+  await prisma.subscription.upsert({
+    where: { organizationId: req.orgId! },
+    create: {
+      organizationId: req.orgId!,
+      planId: 'free',
+      status: 'active',
+      ordersUsed: 0,
+      ordersLimit: 100,
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    },
+    update: {},
+  })
 
   const limits = PLAN_LIMITS[planId]
   const updated = await prisma.subscription.update({

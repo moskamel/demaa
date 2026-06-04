@@ -185,8 +185,12 @@ export default function Billing() {
       setSub(statusData.subscription)
       setStoreCount(storesData.stores.length)
       setMemberCount(teamData.members.length)
-    } catch { /* silent */ }
-    finally { setLoading(false) }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : ''
+      if (msg && !msg.includes('غير موجود') && !msg.includes('404')) {
+        showToast(msg, 'error')
+      }
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { loadData() }, [])
