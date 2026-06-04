@@ -153,7 +153,7 @@ export function generateResponse(
 
     return {
       role: 'deema',
-      content: `عندك ${orders.length} طلب معلق${entities.city ? ` في ${entities.city}` : ''} — إجمالي ${fmt(total)} ج.م${cashCount > 0 ? `\n\n⚠️ ${cashCount} طلبات بالكاش — تأكد قبل القبول` : ''}${riskCount > 0 ? `\n🔴 ${riskCount} طلبات مشبوهة تحتاج مراجعة` : ''}${insight}`,
+      content: `عندك ${orders.length} طلب معلق${entities.city ? ` في ${entities.city}` : ''} — إجمالي ${fmt(total)} ر.س${cashCount > 0 ? `\n\n⚠️ ${cashCount} طلبات بالكاش — تأكد قبل القبول` : ''}${riskCount > 0 ? `\n🔴 ${riskCount} طلبات مشبوهة تحتاج مراجعة` : ''}${insight}`,
       orderList: orders.slice(0, 6).map(o => ({
         id: o.id, customer: o.customer, city: o.city,
         total: o.total, payment: o.payment, status: o.status,
@@ -183,7 +183,7 @@ export function generateResponse(
       setPending({ type: 'accept_bulk', data: { orders: validOrders.map(o => o.id) }, tier })
       return {
         role: 'deema',
-        content: `عندك ${pending.length} طلب معلق:\n• ${validOrders.length} طلبات بطاقة/تابby — ${fmt(total)} ج.م ✅\n• ${cashOrders.length} طلبات كاش ⚠️ (تحتاج مراجعة)\n\nأي منها تقبل؟`,
+        content: `عندك ${pending.length} طلب معلق:\n• ${validOrders.length} طلبات بطاقة/تابby — ${fmt(total)} ر.س ✅\n• ${cashOrders.length} طلبات كاش ⚠️ (تحتاج مراجعة)\n\nأي منها تقبل؟`,
         actions: [
           btn(`اقبل البطاقات فقط (${validOrders.length})`, 'primary', `اقبل ${validOrders.length} طلب بدون الكاش`),
           btn(`اقبل الكل (${pending.length})`, 'secondary', `اقبل الكل بما فيهم الكاش`),
@@ -202,7 +202,7 @@ export function generateResponse(
 
     return {
       role: 'deema',
-      content: `هتقبل ${targetOrders.length} طلب بمجموع ${fmt(total)} ج.م\n\n✅ ${targetOrders.filter(o => !o.riskScore || o.riskScore < 60).length} طلبات سليمة${doubleWarn}`,
+      content: `هتقبل ${targetOrders.length} طلب بمجموع ${fmt(total)} ر.س\n\n✅ ${targetOrders.filter(o => !o.riskScore || o.riskScore < 60).length} طلبات سليمة${doubleWarn}`,
       actions: [
         btn('نعم، نفّذ', 'primary', 'نعم'),
         btn('لا، ألغِ', 'secondary', 'لا'),
@@ -222,7 +222,7 @@ export function generateResponse(
       setPending({ type: 'accept_bulk', data: { orders: [entities.orderId] } })
       return {
         role: 'deema',
-        content: `⚠️ طلب #${entities.orderId} يحتاج مراجعة قبل القبول:\n\n🔴 درجة الخطورة: ${order.riskScore}/100\nالسبب: ${order.suspiciousReason}\n\nالعميل: ${order.customer} — ${order.total} ج.م\n\nتأكيد القبول رغم التحذير؟`,
+        content: `⚠️ طلب #${entities.orderId} يحتاج مراجعة قبل القبول:\n\n🔴 درجة الخطورة: ${order.riskScore}/100\nالسبب: ${order.suspiciousReason}\n\nالعميل: ${order.customer} — ${order.total} ر.س\n\nتأكيد القبول رغم التحذير؟`,
         actions: [btn('نعم، اقبل على مسؤوليتي', 'primary', 'نعم'), btn('لا، راجع لاحقاً', 'secondary', 'لا')],
       }
     }
@@ -230,7 +230,7 @@ export function generateResponse(
     store.acceptOrder(entities.orderId)
     return {
       role: 'deema',
-      content: `✅ تم قبول طلب #${entities.orderId}\n\n${order.customer} — ${fmt(order.total)} ج.م\n\nهل تريد شحنه الآن؟`,
+      content: `✅ تم قبول طلب #${entities.orderId}\n\n${order.customer} — ${fmt(order.total)} ر.س\n\nهل تريد شحنه الآن؟`,
       actions: [btn('شحن الآن', 'primary', `اشحن طلب #${entities.orderId}`), btn('لاحقاً', 'secondary')],
     }
   }
@@ -245,7 +245,7 @@ export function generateResponse(
     setPending({ type: 'reject_single', data: { orderId: entities.orderId } })
     return {
       role: 'deema',
-      content: `تأكيد رفض طلب #${entities.orderId}؟\n\n${order.customer} — ${order.city} — ${fmt(order.total)} ج.م\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه.`,
+      content: `تأكيد رفض طلب #${entities.orderId}؟\n\n${order.customer} — ${order.city} — ${fmt(order.total)} ر.س\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه.`,
       actions: [btn('نعم، ارفض', 'primary', 'نعم'), btn('لا، ألغِ', 'secondary', 'لا')],
     }
   }
@@ -255,11 +255,11 @@ export function generateResponse(
     const order = store.getOrder(entities.orderId)
     if (!order) return { role: 'deema', content: `ما لقيت طلب رقم #${entities.orderId}. تأكد من الرقم وجرب مرة ثانية.` }
 
-    const itemsText = order.items.map(i => `• ${i.name} × ${i.qty} = ${fmt(i.qty * i.price)} ج.م`).join('\n')
+    const itemsText = order.items.map(i => `• ${i.name} × ${i.qty} = ${fmt(i.qty * i.price)} ر.س`).join('\n')
     const riskLine = (order.riskScore || 0) >= 60 ? `\n\n🔴 تحذير: ${order.suspiciousReason} (درجة خطورة ${order.riskScore}/100)` : ''
     return {
       role: 'deema',
-      content: `تفاصيل طلب #${order.id} — ${statusLabel(order.status)}\n\n👤 ${order.customer}\n📍 ${order.city} — ${order.address}\n📞 ${order.phone}\n💳 ${paymentLabel(order.payment)}\n\n${itemsText}\n\nالإجمالي: ${fmt(order.total)} ج.م${riskLine}`,
+      content: `تفاصيل طلب #${order.id} — ${statusLabel(order.status)}\n\n👤 ${order.customer}\n📍 ${order.city} — ${order.address}\n📞 ${order.phone}\n💳 ${paymentLabel(order.payment)}\n\n${itemsText}\n\nالإجمالي: ${fmt(order.total)} ر.س${riskLine}`,
       actions: order.status === 'pending'
         ? [btn('قبول الطلب', 'primary', `اقبل طلب #${order.id}`), btn('رفض الطلب', 'secondary', `ارفض طلب #${order.id}`)]
         : order.status === 'accepted' ? [btn('شحن الآن', 'primary', `اشحن طلب #${order.id}`)]
@@ -275,7 +275,7 @@ export function generateResponse(
     const total = orders.reduce((s, o) => s + o.total, 0)
     return {
       role: 'deema',
-      content: `عندك ${orders.length} طلب مقبول جاهز للشحن — ${fmt(total)} ج.م`,
+      content: `عندك ${orders.length} طلب مقبول جاهز للشحن — ${fmt(total)} ر.س`,
       orderList: orders.map(o => ({ id: o.id, customer: o.customer, city: o.city, total: o.total, payment: o.payment, status: o.status })),
       actions: [btn('اشحن الكل', 'primary', 'اشحن الطلبات المقبولة')],
     }
@@ -303,7 +303,7 @@ export function generateResponse(
 
     return {
       role: 'deema',
-      content: `طلبات ${entities.city}: ${all.length} طلب — ${fmt(total)} ج.م${topCityNote}`,
+      content: `طلبات ${entities.city}: ${all.length} طلب — ${fmt(total)} ر.س${topCityNote}`,
       orderList: all.map(o => ({ id: o.id, customer: o.customer, city: o.city, total: o.total, payment: o.payment, status: o.status, riskScore: o.riskScore })),
     }
   }
@@ -325,7 +325,7 @@ export function generateResponse(
 
     return {
       role: 'deema',
-      content: `سأنشئ ${accepted.length} بوليصة شحن مع ${carrier}\nإجمالي: ${fmt(total)} ج.م\n\n💡 ${carrier} هي شركة الشحن المفضلة لمتجرك (92% ثقة)`,
+      content: `سأنشئ ${accepted.length} بوليصة شحن مع ${carrier}\nإجمالي: ${fmt(total)} ر.س\n\n💡 ${carrier} هي شركة الشحن المفضلة لمتجرك (92% ثقة)`,
       actions: [btn('نعم، اشحن الكل', 'primary', 'نعم'), btn('إلغاء', 'secondary', 'لا')],
     }
   }
@@ -383,11 +383,11 @@ export function generateResponse(
   if (intent === 'add_product') {
     const name = entities.productName || 'منتج جديد'
     const price = entities.price || 0
-    if (!price) return { role: 'deema', content: `ما عرفت السعر. مثال: "ضيف منتج عطر اسمه العود الفاخر سعره 280 ج.م"` }
+    if (!price) return { role: 'deema', content: `ما عرفت السعر. مثال: "ضيف منتج عطر اسمه العود الفاخر سعره 280 ر.س"` }
     const product = store.addProduct({ name, sku: `SKU-${Date.now()}`, price, stock: 10, category: 'عطور', active: true })
     return {
       role: 'deema',
-      content: `✅ تم إضافة المنتج:\n\n📦 ${product.name}\nالسعر: ${fmt(product.price)} ج.م\nالمخزون الأولي: ١٠ قطعة\nالرمز: ${product.sku}`,
+      content: `✅ تم إضافة المنتج:\n\n📦 ${product.name}\nالسعر: ${fmt(product.price)} ر.س\nالمخزون الأولي: ١٠ قطعة\nالرمز: ${product.sku}`,
       actions: [btn('وريني كل المنتجات', 'secondary', 'وريني المنتجات')],
     }
   }
@@ -404,11 +404,11 @@ export function generateResponse(
     if (targetProducts.length === 0) return { role: 'deema', content: `ما لقيت منتجات في فئة ${category}.` }
 
     setPending({ type: 'update_price', data: { products: targetProducts.map(p => p.id), percent, price: entities.price } })
-    const action = percent && percent < 0 ? `تخفيض ${Math.abs(percent)}%` : percent ? `رفع ${percent}%` : `تغيير السعر لـ ${entities.price} ج.م`
+    const action = percent && percent < 0 ? `تخفيض ${Math.abs(percent)}%` : percent ? `رفع ${percent}%` : `تغيير السعر لـ ${entities.price} ر.س`
 
     return {
       role: 'deema',
-      content: `${action} على ${targetProducts.length} منتج${category ? ` في فئة "${category}"` : ''}:\n\n${targetProducts.map(p => `• ${p.name}: ${fmt(p.price)} → ${fmt(calcNewPrice(p.price, percent, entities.price))} ج.م`).join('\n')}\n\nتأكيد التغيير؟`,
+      content: `${action} على ${targetProducts.length} منتج${category ? ` في فئة "${category}"` : ''}:\n\n${targetProducts.map(p => `• ${p.name}: ${fmt(p.price)} → ${fmt(calcNewPrice(p.price, percent, entities.price))} ر.س`).join('\n')}\n\nتأكيد التغيير؟`,
       actions: [btn('نعم، حدّث الأسعار', 'primary', 'نعم'), btn('لا، ألغِ', 'secondary', 'لا')],
     }
   }
@@ -421,14 +421,14 @@ export function generateResponse(
 
     const topCity = getInsight('top_city') === 'cairo' ? 'القاهرة' : getInsight('top_city') || 'القاهرة'
     const topCityData = ANALYTICS.byCity.find(c => c.city === topCity)
-    const topCityLine = topCityData ? `\n\n💡 ${topCity}: ${topCityData.orders} طلب — ${fmt(topCityData.revenue)} ج.م (المدينة الأعلى ربحية)` : ''
+    const topCityLine = topCityData ? `\n\n💡 ${topCity}: ${topCityData.orders} طلب — ${fmt(topCityData.revenue)} ر.س (المدينة الأعلى ربحية)` : ''
 
     return {
       role: 'deema',
       content: `📊 تقرير ${periodLabel}:${topCityLine}`,
       stats: [
         { n: String(data.orders), l: 'طلب', c: 'var(--gradient-orange)' },
-        { n: fmt(data.revenue), l: 'ج.م إيراد', c: 'var(--ink)' },
+        { n: fmt(data.revenue), l: 'ر.س إيراد', c: 'var(--ink)' },
         { n: fmt(data.avgOrder), l: 'متوسط الطلب', c: 'var(--semantic-success)' },
         ...('growth' in data ? [{ n: `+${(data as { growth: number }).growth}%`, l: 'نمو', c: 'var(--gradient-violet)' }] : []),
       ],
@@ -444,12 +444,12 @@ export function generateResponse(
   if (intent === 'create_coupon') {
     const amount = entities.discountAmount
     const type = entities.discountType || 'percent'
-    if (!amount) return { role: 'deema', content: 'كم قيمة الخصم؟ مثال: "اعمل كوبون خصم 15%" أو "كوبون خصم 50 ج.م"' }
+    if (!amount) return { role: 'deema', content: 'كم قيمة الخصم؟ مثال: "اعمل كوبون خصم 15%" أو "كوبون خصم 50 ر.س"' }
     const code = generateCouponCode(amount, type)
     const coupon = store.addCoupon({ code, discount: amount, type, maxUses: 100, active: true })
     return {
       role: 'deema',
-      content: `✅ تم إنشاء الكوبون:\n\n🎟 الكود: ${coupon.code}\nالخصم: ${coupon.discount}${type === 'percent' ? '%' : ' ج.م'}\nالاستخدام: حتى ١٠٠ مرة\nالحالة: فعّال ✅`,
+      content: `✅ تم إنشاء الكوبون:\n\n🎟 الكود: ${coupon.code}\nالخصم: ${coupon.discount}${type === 'percent' ? '%' : ' ر.س'}\nالاستخدام: حتى ١٠٠ مرة\nالحالة: فعّال ✅`,
       actions: [btn('وريني كل الكوبونات', 'secondary')],
     }
   }

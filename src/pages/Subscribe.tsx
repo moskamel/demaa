@@ -151,8 +151,8 @@ export default function Subscribe() {
                     <div style={{ fontSize: 13, fontWeight: 600, color: isPro ? 'rgba(255,255,255,0.55)' : '#8e91a0', marginBottom: 6 }}>{plan.name}</div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
                       <span style={{ fontSize: 44, fontWeight: 500, letterSpacing: '-1.5px', color: isPro ? '#fff' : '#1c1c1e' }}>{plan.price}</span>
-                      {plan.id === 'pro' && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>ج.م / {plan.period}</span>}
-                      {plan.id === 'free' && <span style={{ fontSize: 14, color: '#8e91a0' }}>ج.م</span>}
+                      {plan.id === 'pro' && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>ر.س / {plan.period}</span>}
+                      {plan.id === 'free' && <span style={{ fontSize: 14, color: '#8e91a0' }}>ر.س</span>}
                     </div>
                     <p style={{ fontSize: 13, color: isPro ? 'rgba(255,255,255,0.6)' : '#555a6a', marginBottom: 20, lineHeight: 1.5 }}>{plan.desc}</p>
 
@@ -194,17 +194,17 @@ export default function Subscribe() {
             <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e0e2e8', padding: '16px 20px', marginBottom: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, fontSize: 14 }}>
                 <span style={{ color: '#555a6a' }}>خطة برو — شهري</span>
-                <span style={{ fontWeight: 600, color: '#1c1c1e' }}>٩٩ ج.م</span>
+                <span style={{ fontWeight: 600, color: '#1c1c1e' }}>٩٩ ر.س</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, fontSize: 14 }}>
                 <span style={{ color: '#555a6a' }}>خصم الإطلاق (٥٠٪)</span>
-                <span style={{ fontWeight: 600, color: '#00b473' }}>−٤٩.٥ ج.م</span>
+                <span style={{ fontWeight: 600, color: '#00b473' }}>−٤٩.٥ ر.س</span>
               </div>
               <div style={{ borderTop: '1px solid #e0e2e8', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 16, fontWeight: 700 }}>
                 <span>الإجمالي اليوم</span>
-                <span style={{ color: '#1c1c1e' }}>٤٩.٥ ج.م</span>
+                <span style={{ color: '#1c1c1e' }}>٤٩.٥ ر.س</span>
               </div>
-              <p style={{ fontSize: 12, color: '#8e91a0', marginTop: 8 }}>ثم ٩٩ ج.م شهرياً · إلغاء في أي وقت</p>
+              <p style={{ fontSize: 12, color: '#8e91a0', marginTop: 8 }}>ثم ٩٩ ر.س شهرياً · إلغاء في أي وقت</p>
               <div style={{ borderTop: '1px solid #e0e2e8', marginTop: 14, paddingTop: 14 }}>
                 <button onClick={() => setStep('plan')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: '9px 16px', borderRadius: 10, background: '#f7f8fa', border: '1px solid #e0e2e8', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: '#1c1c1e', transition: 'background 0.15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#eef0f5' }}
@@ -310,7 +310,7 @@ export default function Subscribe() {
             }}>
               {loading
                 ? <><Refresh2 size={18} variant="Outline" style={{ animation: 'spin 1s linear infinite' }} /> جارٍ المعالجة...</>
-                : <><Lock size={15} variant="Outline" /> ادفع ٤٩.٥ ج.م الآن</>
+                : <><Lock size={15} variant="Outline" /> ادفع ٤٩.٥ ر.س الآن</>
               }
             </button>
 

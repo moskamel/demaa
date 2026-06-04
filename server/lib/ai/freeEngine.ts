@@ -14,7 +14,7 @@ interface Intent {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function fmt(n: number) { return (n / 100).toLocaleString('ar-EG', { minimumFractionDigits: 0 }) + ' ج.م' }
+function fmt(n: number) { return (n / 100).toLocaleString('ar-EG', { minimumFractionDigits: 0 }) + ' ر.س' }
 function pct(n: number) { return Math.round(n) + '%' }
 
 // ── Intents ──────────────────────────────────────────────────────────────────
@@ -245,7 +245,7 @@ const INTENTS: Intent[] = [
       const coupons = await prisma.coupon.findMany({ where: { organizationId: ctx.orgId }, orderBy: { createdAt: 'desc' }, take: 10 })
       if (!coupons.length) return 'ما في كوبونات مضافة بعد. أنشئ كوبون الآن!'
       const list = coupons.map((c: any) =>
-        `• **${c.code}** — ${c.type === 'percentage' ? c.value / 100 + '%' : c.value / 100 + ' ج.م'} — استُخدم ${c.usageCount} مرة${c.maxUsage ? ' من ' + c.maxUsage : ''}`
+        `• **${c.code}** — ${c.type === 'percentage' ? c.value / 100 + '%' : c.value / 100 + ' ر.س'} — استُخدم ${c.usageCount} مرة${c.maxUsage ? ' من ' + c.maxUsage : ''}`
       ).join('\n')
       return `🎟️ **كوبوناتك (${coupons.length}):**\n\n${list}`
     }

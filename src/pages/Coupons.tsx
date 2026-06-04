@@ -14,7 +14,7 @@ const INPUT: React.CSSProperties = {
 }
 
 function formatVal(c: CouponData) {
-  return c.type === 'percentage' ? `${c.value / 100}%` : `${(c.value / 100).toLocaleString('ar-EG')} ج.م`
+  return c.type === 'percentage' ? `${c.value / 100}%` : `${(c.value / 100).toLocaleString('ar-SA')} ر.س`
 }
 
 export default function Coupons() {
@@ -118,7 +118,7 @@ export default function Coupons() {
                   </div>
                   <div>
                     <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>
-                      {form.type === 'percentage' ? 'نسبة الخصم (%)' : 'مبلغ الخصم (ج.م)'}
+                      {form.type === 'percentage' ? 'نسبة الخصم (%)' : 'مبلغ الخصم (ر.س)'}
                     </label>
                     <input type="number" min="1" max={form.type === 'percentage' ? 100 : undefined} value={form.value} onChange={e => setForm(s => ({ ...s, value: e.target.value }))} placeholder={form.type === 'percentage' ? '20' : '50'} style={INPUT} />
                   </div>
@@ -188,7 +188,7 @@ export default function Coupons() {
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
                       خصم {formatVal(c)}
                       {c.maxUsage ? ` · ${c.usageCount}/${c.maxUsage} استخدام` : ` · ${c.usageCount} استخدام`}
-                      {c.expiresAt ? ` · ينتهي ${new Date(c.expiresAt).toLocaleDateString('ar-EG')}` : ''}
+                      {c.expiresAt ? ` · ينتهي ${new Date(c.expiresAt).toLocaleDateString('ar-SA')}` : ''}
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 6 }}>

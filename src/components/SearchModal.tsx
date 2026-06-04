@@ -64,7 +64,7 @@ export default function SearchModal({ onClose, onSelectOrder }: Props) {
           newResults.push({ type: 'order', id: o.id, title: `طلب #${o.externalRef || o.id}`, subtitle: `${o.customerName} · ${o.city}`, value: o.id })
         })
         productsData.products.slice(0, 3).forEach(p => {
-          newResults.push({ type: 'product', id: p.id, title: p.name, subtitle: `${p.category || '—'} · ${p.price.toLocaleString('ar-EG')} ج.م`, value: p.id })
+          newResults.push({ type: 'product', id: p.id, title: p.name, subtitle: `${p.category || '—'} · ${p.price.toLocaleString('ar-SA')} ر.س`, value: p.id })
         })
       } catch {
         // ignore API errors during search

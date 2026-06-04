@@ -50,7 +50,7 @@ export default function Customers() {
             { icon: People, label: 'إجمالي العملاء', value: allCustomers.length, color: '#6a4cf5' },
             { icon: Star1, label: 'عملاء VIP', value: vipCount, color: '#d44df0' },
             { icon: TrendUp, label: 'العملاء المخلصون', value: loyalCount, color: '#0099ff' },
-            { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-EG')} ج.م`, color: '#22c55e' },
+            { icon: ShoppingBag, label: 'إجمالي الإنفاق', value: `${totalSpent.toLocaleString('ar-SA')} ر.س`, color: '#22c55e' },
           ].map(({ icon: Icon, label, value, color }, i) => (
             <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '16px 18px', animationDelay: `${i * 60}ms` }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
@@ -110,7 +110,7 @@ export default function Customers() {
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>طلبات</div>
                 </div>
                 <div style={{ textAlign: 'left', minWidth: 100 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(c.totalSpent / 100).toLocaleString('ar-EG')} ج.م</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(c.totalSpent / 100).toLocaleString('ar-SA')} ر.س</div>
                   <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>إجمالي الإنفاق</div>
                 </div>
               </div>
