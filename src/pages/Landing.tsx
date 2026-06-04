@@ -599,6 +599,7 @@ export default function Landing() {
               borderRadius: 28, padding: 32, position: 'relative',
               border: tier.featured ? '1px solid rgba(106,76,245,0.4)' : `1px solid ${T.hairline}`,
               boxShadow: tier.featured ? '0 20px 60px rgba(106,76,245,0.2)' : 'none',
+              display: 'flex', flexDirection: 'column',
             }}>
               {tier.tag && (
                 <div style={{ position: 'absolute', top: -14, right: 24 }}>
@@ -620,6 +621,7 @@ export default function Landing() {
               </div>
               <Link to={ctaTo} style={{
                 display: 'flex', justifyContent: 'center', textDecoration: 'none',
+                marginTop: 'auto',
                 borderRadius: 9999, padding: '13px 24px', fontSize: 14, fontWeight: 600,
                 ...(tier.featured
                   ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff' }
