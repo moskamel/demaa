@@ -191,7 +191,7 @@ export default function BlogPost() {
 
   return (
     <PageLayout>
-      <main style={{ maxWidth: 760, margin: '0 auto', padding: 'clamp(32px,5vw,72px) 24px 80px' }}>
+      <main style={{ padding: 'clamp(32px,5vw,72px) 200px 80px' }}>
 
         {/* Back */}
         <button

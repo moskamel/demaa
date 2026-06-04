@@ -64,7 +64,7 @@ export default function Blog() {
   return (
     <PageLayout>
 
-      <main style={{ maxWidth: 860, margin: '0 auto', padding: 'clamp(40px,6vw,80px) 24px' }}>
+      <main style={{ padding: 'clamp(40px,6vw,80px) 200px' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 700, letterSpacing: '-0.05em', marginBottom: 16 }}>المدونة</h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.6 }}>محتوى عملي من خبرة مباشرة مع التجار العرب — لتنمي متجرك وتوفر وقتك.</p>
