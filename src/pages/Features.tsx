@@ -12,7 +12,7 @@ const features = [
   {
     icon: Truck,
     title: 'الشحن الذكي',
-    desc: 'ينشئ بوالص الشحن تلقائياً مع أرامكس وSMSA وJ&T. يتابع حالة الشحنات ويبلغك بأي تأخير.',
+    desc: 'ينشئ بوالص الشحن تلقائياً مع أرامكس وSMSA وJ&T. يتابع حالة الشحنات ويبلغك بأي تأخير فور حدوثه.',
     example: 'أنشئ بوليصة شحن لطلب #١٢٣',
   },
   {
@@ -24,19 +24,19 @@ const features = [
   {
     icon: People,
     title: 'إدارة الفريق',
-    desc: 'أضف أعضاء الفريق وحدد صلاحياتهم. كل عضو يرى فقط ما يحتاجه — مدير أو محرر أو قارئ.',
+    desc: 'أضف أعضاء الفريق وحدد صلاحياتهم بدقة. كل عضو يرى فقط ما يحتاجه — مدير أو محرر أو قارئ.',
     example: 'أضف سارة كمحررة للطلبات',
   },
   {
     icon: Tag,
     title: 'الكوبونات',
-    desc: 'أنشئ وأدر كوبونات الخصم والعروض الخاصة. تتبع الاستخدام وقيّم أداء كل حملة ترويجية.',
+    desc: 'أنشئ وأدر كوبونات الخصم والعروض الخاصة. تتبع الاستخدام وقيّم أداء كل حملة ترويجية بدقة.',
     example: 'أنشئ كوبون خصم ١٠٪ لرمضان',
   },
   {
     icon: ShieldTick,
     title: 'الأمان',
-    desc: 'كل إجراء جماعي يطلب تأكيداً صريحاً. لا تنفيذ مالي بدون موافقتك. بياناتك مشفرة بالكامل.',
+    desc: 'كل إجراء جماعي يطلب تأكيداً صريحاً منك. لا تنفيذ مالي بدون موافقتك. بياناتك مشفرة بالكامل.',
     example: 'راجع قبل تأكيد أي إجراء جماعي',
   },
   {
@@ -66,7 +66,7 @@ const features = [
   {
     icon: Setting2,
     title: 'إعدادات مرنة',
-    desc: 'خصّص Deema حسب احتياجات متجرك — لغة، عملة، ساعات عمل، تنبيهات، وأكثر.',
+    desc: 'خصّص Deema حسب احتياجات متجرك — لغة، عملة، ساعات عمل، تنبيهات، وأكثر من ذلك.',
     example: 'غيّر العملة للريال السعودي',
   },
   {
@@ -77,6 +77,14 @@ const features = [
   },
 ]
 
+const eyebrow: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 700,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  marginBottom: 16,
+}
+
 export default function Features() {
   return (
     <PageLayout>
@@ -85,12 +93,11 @@ export default function Features() {
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 80 }}>
           <div style={{
+            ...eyebrow,
             display: 'inline-block',
             background: 'linear-gradient(135deg, #6a4cf5, #d44df0)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-            marginBottom: 16,
           }}>
             المميزات
           </div>
@@ -121,9 +128,9 @@ export default function Features() {
 
         {/* Closing CTA */}
         <div style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', borderRadius: 20, padding: '56px 40px', textAlign: 'center' }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: 16 }}>ابدأ الآن</div>
+          <div style={{ ...eyebrow, color: 'rgba(255,255,255,0.7)' }}>ابدأ الآن</div>
           <h2 style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em', marginBottom: 16 }}>جرّب كل الميزات مجاناً</h2>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', marginBottom: 32, maxWidth: 480, margin: '0 auto 32px' }}>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', maxWidth: 480, margin: '0 auto 32px' }}>
             لا بطاقة ائتمان. لا إعداد معقد. ابدأ في أقل من دقيقتين.
           </p>
           <Link

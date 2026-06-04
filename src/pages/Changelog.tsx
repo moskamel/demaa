@@ -1,98 +1,183 @@
+import { useState } from 'react'
 import PageLayout from '../components/PageLayout'
 
-const releases = [
+type Badge = 'NEW' | 'FIX' | 'IMPROVE'
+
+const badgeStyles: Record<Badge, { bg: string; color: string; label: string }> = {
+  NEW: { bg: '#22c55e22', color: '#22c55e', label: 'جديد' },
+  FIX: { bg: '#f59e0b22', color: '#f59e0b', label: 'إصلاح' },
+  IMPROVE: { bg: '#6a4cf522', color: '#6a4cf5', label: 'تحسين' },
+}
+
+const releases: {
+  version: string
+  date: string
+  dotColor: string
+  title: string
+  changes: { badge: Badge; text: string }[]
+}[] = [
   {
-    version: 'v1.2.0',
-    date: '١٥ مايو ٢٠٢٥',
-    tag: 'جديد',
-    tagColor: '#22c55e',
-    title: 'تقارير متقدمة وتصدير Excel',
+    version: 'v1.4',
+    date: '١ يونيو ٢٠٢٥',
+    dotColor: '#22c55e',
+    title: 'ربط TikTok Shop + تقارير متقدمة',
     changes: [
-      'إضافة تصدير التقارير بصيغة Excel وPDF',
-      'لوحة تحليلات جديدة بمخططات بيانية',
-      'ملخص أسبوعي يُرسل تلقائياً بالإيميل',
-      'تحسين أداء الاستعلامات الكبيرة بنسبة ٦٠٪',
-      'دعم التواريخ الهجرية في التقارير',
+      { badge: 'NEW', text: 'إضافة دعم TikTok Shop — إدارة الطلبات والشحن من Deema مباشرة' },
+      { badge: 'NEW', text: 'لوحة تقارير متقدمة بمخططات بيانية تفاعلية' },
+      { badge: 'NEW', text: 'تصدير التقارير بصيغة Excel وPDF' },
+      { badge: 'IMPROVE', text: 'تحسين أداء الاستعلامات الكبيرة بنسبة ٦٠٪' },
+      { badge: 'FIX', text: 'إصلاح مشكلة تزامن الطلبات في ساعات الذروة' },
     ],
   },
   {
-    version: 'v1.1.0',
-    date: '٢ أبريل ٢٠٢٥',
-    tag: 'تحسينات',
-    tagColor: '#6a4cf5',
-    title: 'إدارة الفريق والصلاحيات',
+    version: 'v1.3',
+    date: '١٥ أبريل ٢٠٢٥',
+    dotColor: '#6a4cf5',
+    title: 'شحن مع J&T + كوبونات',
     changes: [
-      'نظام صلاحيات كامل — مدير، محرر، قارئ',
-      'دعوة أعضاء الفريق عبر البريد الإلكتروني',
-      'سجل نشاط لكل عضو في الفريق',
-      'إشعارات واتساب للطلبات الجديدة',
-      'تحسين واجهة الدردشة على الجوال',
+      { badge: 'NEW', text: 'ربط شركة الشحن J&T Express — إنشاء بوالص تلقائي' },
+      { badge: 'NEW', text: 'نظام كوبونات كامل — إنشاء وتتبع وتقييم الأداء' },
+      { badge: 'NEW', text: 'إشعارات واتساب للطلبات الجديدة والمشاكل' },
+      { badge: 'IMPROVE', text: 'تسريع وقت استجابة المحادثة بمعدل ٤٠٪' },
+      { badge: 'FIX', text: 'إصلاح خطأ في حساب الكوبونات المتعددة' },
     ],
   },
   {
-    version: 'v1.0.1',
-    date: '١٨ مارس ٢٠٢٥',
-    tag: 'إصلاح',
-    tagColor: '#f59e0b',
-    title: 'إصلاحات وتحسينات الأداء',
+    version: 'v1.2',
+    date: '٢ مارس ٢٠٢٥',
+    dotColor: '#d44df0',
+    title: 'لوحة الفريق + إدارة الصلاحيات',
     changes: [
-      'إصلاح مشكلة تزامن الطلبات مع Shopify',
-      'تحسين دقة فهم اللهجة المصرية',
-      'إصلاح خطأ في حساب الكوبونات المتعددة',
-      'تسريع وقت الاستجابة بمعدل ٤٠٪',
+      { badge: 'NEW', text: 'نظام صلاحيات كامل — مدير، محرر، قارئ' },
+      { badge: 'NEW', text: 'دعوة أعضاء الفريق عبر البريد الإلكتروني' },
+      { badge: 'NEW', text: 'سجل نشاط لكل عضو في الفريق' },
+      { badge: 'IMPROVE', text: 'تحسين واجهة الدردشة على الجوال' },
+      { badge: 'FIX', text: 'إصلاح مشكلة عرض الأرقام العربية في التقارير' },
     ],
   },
   {
-    version: 'v1.0.0',
-    date: '١ مارس ٢٠٢٥',
-    tag: 'إطلاق',
-    tagColor: '#d44df0',
-    title: 'الإطلاق الرسمي لـ Deema 🎉',
+    version: 'v1.1',
+    date: '١ فبراير ٢٠٢٥',
+    dotColor: '#ff7a3d',
+    title: 'إطلاق دعم سلة + زد',
     changes: [
-      'محادثة ذكية بالعربي — أي لهجة',
-      'إدارة الطلبات والشحن الكامل',
-      'ربط Shopify وWuilt وShantaweb',
-      'تقارير يومية وأسبوعية',
-      'نظام الكوبونات والعروض الخاصة',
+      { badge: 'NEW', text: 'دعم منصة سلة — أكبر منصة تجارة سعودية' },
+      { badge: 'NEW', text: 'دعم منصة زد — ربط وإدارة كاملة' },
+      { badge: 'NEW', text: 'دعم اللهجة السعودية بشكل كامل' },
+      { badge: 'IMPROVE', text: 'تحسين دقة فهم الأوامر بالعربية بنسبة ٣٥٪' },
+      { badge: 'FIX', text: 'إصلاح مشكلة الاتصال مع Shopify في بعض الحسابات' },
     ],
   },
 ]
 
+const eyebrow: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 700,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  marginBottom: 16,
+}
+
 export default function Changelog() {
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+
   return (
     <PageLayout>
-
       <main style={{ padding: '64px 200px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>سجل التحديثات</h1>
-          <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>كل جديد في Deema — شفافية كاملة مع مستخدمينا</p>
+
+        {/* Hero */}
+        <div style={{ textAlign: 'center', marginBottom: 80 }}>
+          <div style={{
+            ...eyebrow,
+            display: 'inline-block',
+            background: 'linear-gradient(135deg, #6a4cf5, #d44df0)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
+            التحديثات
+          </div>
+          <h1 style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: 20, lineHeight: 1.15 }}>
+            آخر تحديثات Deema
+          </h1>
+          <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>
+            نُطلق تحديثات مستمرة بناءً على ملاحظات تجارنا. شفافية كاملة — كل تغيير موثّق هنا.
+          </p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-          {releases.map(r => (
+        {/* Timeline */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 80 }}>
+          {releases.map((r, idx) => (
             <div key={r.version} style={{ display: 'flex', gap: 24 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 2 }}>
-                <div style={{ width: 12, height: 12, borderRadius: '50%', background: r.tagColor, flexShrink: 0, marginTop: 6 }} />
-                <div style={{ width: 2, flex: 1, background: 'var(--hairline)', marginTop: 8 }} />
+              {/* Timeline spine */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 24, flexShrink: 0 }}>
+                <div style={{ width: 16, height: 16, borderRadius: '50%', background: r.dotColor, flexShrink: 0, marginTop: 8, boxShadow: `0 0 0 4px ${r.dotColor}22` }} />
+                {idx < releases.length - 1 && (
+                  <div style={{ width: 2, flex: 1, background: 'var(--hairline)', marginTop: 8, minHeight: 40 }} />
+                )}
               </div>
-              <div style={{ flex: 1, paddingBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace', color: 'var(--ink)' }}>{r.version}</span>
-                  <span style={{ background: r.tagColor + '22', color: r.tagColor, borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 600 }}>{r.tag}</span>
+
+              {/* Content */}
+              <div style={{ flex: 1, paddingBottom: 48 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, fontFamily: 'monospace', background: 'var(--canvas-soft)', border: '1px solid var(--hairline)', borderRadius: 6, padding: '2px 10px' }}>{r.version}</span>
                   <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{r.date}</span>
                 </div>
-                <h2 style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.4px', marginBottom: 16 }}>{r.title}</h2>
-                <ul style={{ paddingRight: 20, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {r.changes.map((c, i) => (
-                    <li key={i} style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.6 }}>{c}</li>
-                  ))}
-                </ul>
+                <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.4px', marginBottom: 20 }}>{r.title}</h2>
+                <div style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {r.changes.map((c, i) => {
+                    const bs = badgeStyles[c.badge]
+                    return (
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <span style={{ background: bs.bg, color: bs.color, borderRadius: 5, padding: '2px 8px', fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{bs.label}</span>
+                        <span style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{c.text}</span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           ))}
         </div>
-      </main>
 
+        {/* Subscribe to updates */}
+        <div style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '56px 40px', border: '1px solid var(--hairline)', textAlign: 'center' }}>
+          <div style={{ ...eyebrow, color: 'var(--ink-muted)' }}>ابق على اطلاع</div>
+          <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.04em', marginBottom: 12 }}>اشترك في تحديثات Deema</h2>
+          <p style={{ fontSize: 15, color: 'var(--ink-muted)', maxWidth: 440, margin: '0 auto 32px' }}>
+            نُرسل إشعاراً فوراً عند كل إصدار جديد — ميزات، إصلاحات، وتحسينات مباشرة في بريدك.
+          </p>
+          {subscribed ? (
+            <div style={{ fontSize: 16, color: '#22c55e', fontWeight: 600 }}>✅ تم الاشتراك! ستصلك التحديثات مباشرة.</div>
+          ) : (
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="بريدك الإلكتروني"
+                style={{
+                  background: 'var(--canvas)',
+                  border: '1px solid var(--hairline)',
+                  borderRadius: 9999,
+                  padding: '13px 20px',
+                  fontSize: 14,
+                  color: 'var(--ink)',
+                  minWidth: 280,
+                  outline: 'none',
+                }}
+              />
+              <button
+                onClick={() => email && setSubscribed(true)}
+                style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', color: '#fff', borderRadius: 9999, padding: '13px 28px', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+              >
+                اشترك ←
+              </button>
+            </div>
+          )}
+        </div>
+
+      </main>
     </PageLayout>
   )
 }

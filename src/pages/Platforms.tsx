@@ -6,236 +6,162 @@ const platforms = [
   {
     emoji: '🛍️',
     name: 'Shopify',
-    tagline: 'أكبر منصة تجارة إلكترونية في العالم',
-    desc: 'ربط Deema بمتجر Shopify الخاص بك في خطوات بسيطة. بعد الربط، يمكن لـ Deema إدارة طلباتك ومخزونك وشحناتك مباشرة من المحادثة.',
-    steps: ['افتح إعدادات التطبيق في Deema', 'اختر "إضافة متجر Shopify"', 'أدخل رابط متجرك وأذونات API', 'وافق على الصلاحيات في لوحة Shopify', 'ابدأ الإدارة فوراً'],
-    features: ['مزامنة الطلبات الفورية', 'إدارة المخزون', 'بيانات العملاء', 'تقارير المبيعات'],
+    desc: 'أكبر منصة تجارة إلكترونية في العالم. اربط متجر Shopify بـ Deema في دقيقتين واستمتع بإدارة ذكية كاملة بالعربي.',
+  },
+  {
+    emoji: '🟢',
+    name: 'سلة',
+    desc: 'منصة التجارة الإلكترونية الرائدة في السعودية. اربط متجرك على سلة وادر طلباتك السعودية بالكامل بالعربية.',
+  },
+  {
+    emoji: '🔵',
+    name: 'زد',
+    desc: 'منصة سعودية متكاملة تخدم آلاف التجار. Deema يتكامل مع زد لإدارة الطلبات والشحن والتقارير من مكان واحد.',
   },
   {
     emoji: '🌐',
     name: 'Wuilt',
-    tagline: 'منصة التجارة الإلكترونية العربية',
-    desc: 'Wuilt منصة عربية متخصصة للتجارة الإلكترونية. الربط مع Deema يعطيك قوة الذكاء الاصطناعي فوق تجربة Wuilt الرائعة.',
-    steps: ['اذهب إلى إعدادات Deema', 'اختر "إضافة متجر Wuilt"', 'سجّل دخولك على Wuilt وأنشئ API Key', 'الصق الـ API Key في Deema', 'اكتمل الربط — ابدأ فوراً'],
-    features: ['تزامن الطلبات تلقائياً', 'إدارة المنتجات', 'متابعة الشحنات', 'إشعارات فورية'],
+    desc: 'منصة التجارة الإلكترونية العربية. الربط مع Deema يمنحك قوة الذكاء الاصطناعي فوق تجربة Wuilt الرائعة.',
   },
   {
     emoji: '🏪',
     name: 'Shantaweb',
-    tagline: 'منصة التجارة الإلكترونية المصرية',
-    desc: 'Shantaweb منصة مصرية متخصصة تفهم السوق المحلي. اربطها بـ Deema وادر متجرك المصري بالكامل بالعربي.',
-    steps: ['افتح إعدادات المتاجر في Deema', 'اختر "إضافة متجر Shantaweb"', 'أدخل بيانات حسابك في Shantaweb', 'فعّل الربط من لوحة Shantaweb', 'استمتع بإدارة Deema الذكية'],
-    features: ['إدارة الطلبات المصرية', 'تكامل شحن محلي', 'بوابات الدفع المصرية', 'دعم العملة المصرية'],
-  },
-  {
-    emoji: '📘',
-    name: 'Facebook & Instagram',
-    tagline: 'البيع عبر Meta Commerce Platform',
-    desc: 'فيسبوك وإنستغرام يستخدمان نفس منصة Meta Commerce. اربط صفحتك بـ Deema لإدارة طلبات الفيسبوك والإنستغرام من مكان واحد بالكامل.',
-    steps: [
-      'افتح Meta Business Suite على business.facebook.com',
-      'اذهب إلى: الإعدادات ← حسابات ← الصفحات',
-      'اختر صفحتك وافتح إعدادات Commerce',
-      'اذهب إلى: الإعدادات المتقدمة ← رموز الوصول',
-      'أنشئ System User Token بصلاحية manage_pages وانسخه في Deema',
-    ],
-    features: ['إدارة طلبات فيسبوك وإنستغرام', 'تحديث حالة الشحن تلقائياً', 'إلغاء الطلبات من Deema', 'مزامنة بيانات العملاء'],
-  },
-  {
-    emoji: '🎵',
-    name: 'TikTok Shop',
-    tagline: 'البيع عبر متجر تيك توك',
-    desc: 'TikTok Shop منصة تجارة إلكترونية سريعة النمو. اربط متجرك بـ Deema وادر طلبات TikTok مع باقي متاجرك من لوحة واحدة.',
-    steps: [
-      'افتح TikTok Seller Center على seller.tiktok.com',
-      'اذهب إلى: My Account ← Developer',
-      'اضغط "Apply for API Access"',
-      'بعد الموافقة اذهب إلى: API Management ← Access Token',
-      'انسخ الـ Access Token والـ Shop ID والصقهما في Deema',
-    ],
-    features: ['إدارة طلبات TikTok Shop', 'إنشاء شحنات تلقائياً', 'إلغاء الطلبات من Deema', 'مزامنة حالة الطلبات'],
+    desc: 'منصة مصرية متخصصة تفهم السوق المحلي. اربطها بـ Deema وادر متجرك المصري بالكامل بالعربي والجنيه المصري.',
   },
   {
     emoji: '🛒',
-    name: 'Salla — سلة',
-    tagline: 'منصة التجارة الإلكترونية السعودية الرائدة',
-    desc: 'سلة منصة التجارة الإلكترونية الأكثر انتشاراً في المملكة العربية السعودية. اربط متجرك على سلة بـ Deema وادر طلباتك السعودية بالكامل بالعربية.',
-    steps: [
-      'افتح لوحة تحكم سلة على salla.com',
-      'اذهب إلى: التطبيقات ← مطوري سلة',
-      'اضغط "إنشاء تطبيق جديد" واختر Private App',
-      'فعّل الصلاحيات: الطلبات، المنتجات، الشحن',
-      'انسخ Access Token والصقه في Deema',
-    ],
-    features: ['مزامنة طلبات سلة تلقائياً', 'تحديث حالة الشحن', 'إلغاء الطلبات من Deema', 'دعم العملة السعودية'],
-  },
-  {
-    emoji: '🏬',
-    name: 'Zid — زد',
-    tagline: 'منصة التجارة الإلكترونية السعودية المتكاملة',
-    desc: 'زد منصة سعودية متكاملة للتجارة الإلكترونية تخدم آلاف التجار. اربط متجرك على زد بـ Deema واستمتع بإدارة ذكية بالكامل.',
-    steps: [
-      'افتح لوحة تحكم زد على zid.sa',
-      'اذهب إلى: الإعدادات ← واجهة برمجة التطبيقات',
-      'اضغط "إنشاء رمز وصول جديد"',
-      'فعّل الصلاحيات: إدارة الطلبات، المنتجات',
-      'انسخ Manager Token والصقه في Deema',
-    ],
-    features: ['مزامنة طلبات زد تلقائياً', 'تتبع الشحنات', 'إلغاء الطلبات من Deema', 'دعم متجر زد الكامل'],
+    name: 'WooCommerce',
+    desc: 'أشهر إضافة تجارة إلكترونية على WordPress. إذا كان موقعك على WooCommerce، يمكنك ربطه بـ Deema في دقيقة واحدة.',
   },
   {
     emoji: '📦',
     name: 'Amazon',
-    tagline: 'أكبر سوق إلكتروني في العالم',
-    desc: 'Amazon SP-API (Selling Partner API) يتيح ربط حساب بائع Amazon بـ Deema. ادر طلباتك على أمازون مصر والسعودية والإمارات من لوحة واحدة.',
-    steps: [
-      'افتح Seller Central على sellercentral.amazon.com',
-      'اذهب إلى: Apps & Services ← Develop Apps',
-      'أنشئ تطبيقاً جديداً واحصل على Client ID و Client Secret',
-      'من صفحة Authorize، احصل على Refresh Token',
-      'أدخل البيانات بالصيغة: clientId:clientSecret:refreshToken',
-    ],
-    features: ['إدارة طلبات Amazon', 'تأكيد الشحنات تلقائياً', 'إلغاء الطلبات من Deema', 'دعم Amazon Egypt/KSA/UAE'],
+    desc: 'أكبر سوق إلكتروني في العالم. ادر طلباتك على أمازون مصر والسعودية والإمارات من لوحة Deema الواحدة.',
   },
   {
     emoji: '🌙',
     name: 'Noon',
-    tagline: 'أكبر سوق إلكتروني في الشرق الأوسط',
-    desc: 'Noon أكبر سوق إلكتروني في منطقة الشرق الأوسط ويخدم مصر والسعودية والإمارات. اربط حساب البائع بـ Deema وادر كل طلباتك من مكان واحد.',
-    steps: [
-      'افتح Noon Seller Lab على sell.noon.com',
-      'اذهب إلى: الإعدادات ← API & Integrations',
-      'اضغط "Generate New API Token"',
-      'امنح الصلاحيات: Orders Management, Shipments',
-      'انسخ الـ Bearer Token والصقه في Deema',
-    ],
-    features: ['إدارة طلبات Noon', 'شحن وتتبع تلقائي', 'إلغاء الطلبات من Deema', 'دعم مصر والسعودية والإمارات'],
+    desc: 'أكبر سوق إلكتروني في الشرق الأوسط. اربط حساب البائع بـ Deema وادر كل طلبات نون من مكان واحد.',
   },
   {
-    emoji: '🛍️',
+    emoji: '🛵',
     name: 'Jumia',
-    tagline: 'أكبر سوق إلكتروني في أفريقيا ومصر',
-    desc: 'Jumia يمتلك 3.7 مليون زائر شهري في مصر وحدها ويخدم 11 دولة أفريقية. اربط متجرك بـ Deema وادر طلبات Jumia مع باقي متاجرك بسهولة.',
-    steps: [
-      'افتح Jumia Seller Center على seller.jumia.com.eg',
-      'اذهب إلى: الإعدادات ← API Access',
-      'اطلب رمز الوصول من فريق الدعم أو من لوحة Developer',
-      'بعد الحصول على الرمز، أدخل رمز البلد (eg لمصر)',
-      'أدخل البيانات بالصيغة: eg:accessToken',
-    ],
-    features: ['إدارة طلبات Jumia', 'تحديث حالة الشحن', 'إلغاء الطلبات من Deema', 'دعم مصر وأفريقيا'],
+    desc: 'أكبر سوق إلكتروني في أفريقيا ومصر. اربط متجرك بـ Deema وادر طلبات Jumia مع باقي متاجرك بسهولة تامة.',
   },
   {
-    emoji: '🔌',
-    name: 'WooCommerce',
-    tagline: 'إضافة التجارة الإلكترونية الأشهر على WordPress',
-    desc: 'WooCommerce تشغّل أكثر من 28% من جميع المتاجر الإلكترونية في العالم. إذا كان موقعك على WordPress مع WooCommerce، يمكنك ربطه بـ Deema بمفتاح API مباشرة.',
-    steps: [
-      'افتح لوحة تحكم WordPress',
-      'اذهب إلى: WooCommerce ← الإعدادات ← المتقدم ← REST API',
-      'اضغط "إضافة مفتاح" وامنح صلاحية القراءة والكتابة',
-      'انسخ Consumer Key و Consumer Secret',
-      'أدخل البيانات بالصيغة: consumerKey:consumerSecret',
-    ],
-    features: ['مزامنة طلبات WooCommerce', 'إتمام الشحن تلقائياً', 'إلغاء الطلبات من Deema', 'دعم جميع العملات'],
+    emoji: '🔷',
+    name: 'BigCommerce',
+    desc: 'منصة تجارة إلكترونية عالمية للمتاجر الكبيرة. API واضح وسريع يتيح ربط كامل مع Deema في دقائق.',
   },
   {
     emoji: '🎨',
-    name: 'Wix Stores',
-    tagline: 'منصة بناء المواقع الأشهر مع متجر متكامل',
-    desc: 'Wix تخدم أكثر من 250 مليون موقع حول العالم. إذا كان لديك متجر على Wix، يمكنك ربطه بـ Deema عبر Wix Headless API لإدارة طلباتك من مكان واحد.',
-    steps: [
-      'افتح Wix Business Manager على manage.wix.com',
-      'اذهب إلى: الإعدادات ← Advanced Settings ← API Keys',
-      'أنشئ مفتاح API جديد وامنح صلاحيات eCommerce',
-      'انسخ الـ API Key و Site ID',
-      'أدخل البيانات بالصيغة: siteId:apiKey',
-    ],
-    features: ['مزامنة طلبات Wix Stores', 'تأكيد التوصيل تلقائياً', 'إلغاء الطلبات من Deema', 'دعم متاجر Wix الكاملة'],
+    name: 'Wix',
+    desc: 'منصة بناء المواقع الأشهر مع متجر متكامل. اربط متجر Wix بـ Deema عبر Wix Headless API وادر طلباتك بسهولة.',
   },
   {
-    emoji: '🏢',
-    name: 'BigCommerce',
-    tagline: 'منصة تجارة إلكترونية عالمية للمتاجر الكبيرة',
-    desc: 'BigCommerce منصة قوية تخدم العلامات التجارية الكبيرة مثل Ben & Jerry\'s وSkullcandy. API واضح وسريع يتيح ربط كامل مع Deema.',
-    steps: [
-      'افتح لوحة تحكم BigCommerce',
-      'اذهب إلى: Advanced Settings ← API Accounts',
-      'أنشئ حساب API جديد من نوع V2/V3',
-      'امنح الصلاحيات: Orders (Read/Write), Shipping (Write)',
-      'أدخل البيانات بالصيغة: storeHash:accessToken',
-    ],
-    features: ['مزامنة طلبات BigCommerce', 'إنشاء شحنات تلقائياً', 'إلغاء الطلبات من Deema', 'دعم العملات المتعددة'],
+    emoji: '🎵',
+    name: 'TikTok Shop',
+    desc: 'منصة تجارة إلكترونية سريعة النمو. اربط متجرك بـ Deema وادر طلبات TikTok مع باقي متاجرك من لوحة واحدة.',
+  },
+  {
+    emoji: '💙',
+    name: 'Facebook Shop',
+    desc: 'البيع عبر Meta Commerce Platform. ادر طلبات فيسبوك وإنستغرام من مكان واحد في Deema بدون أي تعقيد.',
   },
   {
     emoji: '🧩',
     name: 'Ecwid',
-    tagline: 'منصة متجر مدمجة مع أي موقع',
-    desc: 'Ecwid (Lightspeed E-Series) يمكن تضمينها في أي موقع. تخدم أكثر من 130,000 متجر في 175 دولة. ربطها بـ Deema يعطيك إدارة مركزية لكل طلباتك.',
-    steps: [
-      'افتح لوحة تحكم Ecwid',
-      'اذهب إلى: My Profile ← Apps ← Legacy API Keys',
-      'انقر "Create Key" واختر الصلاحيات المطلوبة',
-      'انسخ الـ Store ID و Secret Token',
-      'أدخل البيانات بالصيغة: storeId:secretToken',
-    ],
-    features: ['مزامنة طلبات Ecwid', 'تحديث حالة الشحن', 'إلغاء الطلبات من Deema', 'دعم Ecwid على أي موقع'],
+    desc: 'منصة متجر مدمجة مع أي موقع. ربطها بـ Deema يعطيك إدارة مركزية لكل طلباتك من أي متجر Ecwid.',
   },
 ]
+
+const eyebrow: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 700,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  marginBottom: 16,
+}
 
 export default function Platforms() {
   return (
     <PageLayout>
-
       <main style={{ padding: '64px 200px' }}>
+
+        {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.05em', marginBottom: 16 }}>المنصات المدعومة</h1>
-          <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.5 }}>اربط متجرك في دقائق — بدون خبرة تقنية</p>
+          <div style={{
+            ...eyebrow,
+            display: 'inline-block',
+            background: 'linear-gradient(135deg, #6a4cf5, #d44df0)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
+            المنصات
+          </div>
+          <h1 style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: 20, lineHeight: 1.15 }}>
+            ربط متجرك في دقيقتين
+          </h1>
+          <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.7, maxWidth: 600, margin: '0 auto' }}>
+            Deema يدعم ١٤ منصة تجارة إلكترونية عربية وعالمية. بغض النظر عن أين تبيع — سلة أو أمازون أو TikTok Shop — ادر كل شيء من مكان واحد بالعربي.
+          </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+        {/* Stats bar */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 64 }}>
+          {[
+            { value: '١٤', label: 'منصة مدعومة' },
+            { value: 'دقيقتان', label: 'متوسط وقت الربط' },
+            { value: '٠', label: 'خبرة تقنية مطلوبة' },
+          ].map(s => (
+            <div key={s.label} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)', textAlign: 'center' }}>
+              <div style={{ fontSize: 32, fontWeight: 800, background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: 8 }}>{s.value}</div>
+              <div style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Platforms Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 64 }}>
           {platforms.map(p => (
-            <div key={p.name} style={{ background: 'var(--canvas-soft)', borderRadius: 20, padding: '32px', border: '1px solid var(--hairline)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-                <div style={{ fontSize: 40 }}>{p.emoji}</div>
-                <div>
-                  <h2 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.5px', marginBottom: 4 }}>{p.name}</h2>
-                  <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{p.tagline}</p>
+            <div key={p.name} style={{ background: 'var(--canvas-soft)', borderRadius: 16, padding: '24px', border: '1px solid var(--hairline)', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+              <div style={{ fontSize: 40, flexShrink: 0, lineHeight: 1 }}>{p.emoji}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.3px' }}>{p.name}</h2>
+                  <Link
+                    to="/signup"
+                    style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', color: '#fff', borderRadius: 9999, padding: '6px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
+                  >
+                    ربط الآن
+                  </Link>
                 </div>
-              </div>
-
-              <p style={{ fontSize: 15, color: 'var(--ink-muted)', lineHeight: 1.6, marginBottom: 24 }}>{p.desc}</p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                <div>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 12, letterSpacing: '0.05em', textTransform: 'uppercase' }}>خطوات الربط</h3>
-                  <ol style={{ paddingRight: 20, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {p.steps.map((s, i) => (
-                      <li key={i} style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.5 }}>{s}</li>
-                    ))}
-                  </ol>
-                </div>
-                <div>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 12, letterSpacing: '0.05em', textTransform: 'uppercase' }}>ما تحصل عليه</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {p.features.map(f => (
-                      <div key={f} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <TickCircle size={14} color="#22c55e" variant="Outline" />
-                        <span style={{ fontSize: 14, color: 'var(--ink-muted)' }}>{f}</span>
-                      </div>
-                    ))}
-                  </div>
+                <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.6 }}>{p.desc}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
+                  <TickCircle size={14} color="#22c55e" variant="Outline" />
+                  <span style={{ fontSize: 12, color: 'var(--ink-muted)' }}>ربط فوري · بدون خبرة تقنية</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 48 }}>
-          <Link to="/onboarding" className="btn-primary" style={{ fontSize: 16, padding: '14px 32px' }}>ابدأ الربط الآن</Link>
+        {/* Closing CTA */}
+        <div style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', borderRadius: 20, padding: '56px 40px', textAlign: 'center' }}>
+          <div style={{ ...eyebrow, color: 'rgba(255,255,255,0.7)' }}>ابدأ الربط</div>
+          <h2 style={{ fontSize: 36, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em', marginBottom: 16 }}>اربط متجرك الآن مجاناً</h2>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', maxWidth: 480, margin: '0 auto 32px' }}>
+            سجّل حساباً وابدأ ربط متجرك في أقل من دقيقتين. لا بطاقة ائتمان مطلوبة.
+          </p>
+          <Link
+            to="/signup"
+            style={{ background: '#fff', color: '#6a4cf5', borderRadius: 9999, padding: '13px 28px', fontSize: 15, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+          >
+            ابدأ مجاناً ←
+          </Link>
         </div>
-      </main>
 
+      </main>
     </PageLayout>
   )
 }
