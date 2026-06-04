@@ -14,7 +14,7 @@ export default function LandingNav() {
 
   return (
     <nav style={{
-      position: 'sticky', top: 0, zIndex: 50,
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       background: 'rgba(14,14,18,0.92)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',

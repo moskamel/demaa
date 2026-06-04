@@ -224,7 +224,7 @@ export default function Landing() {
 
 
   return (
-    <div dir="rtl" style={{ background: T.canvas, color: T.ink, minHeight: '100vh', overflowX: 'hidden', fontFamily: 'Zain, sans-serif' }}>
+    <div dir="rtl" style={{ background: T.canvas, color: T.ink, minHeight: '100vh', overflowX: 'hidden', fontFamily: 'Zain, sans-serif', paddingTop: 64 }}>
 
       <LandingNav />
 
