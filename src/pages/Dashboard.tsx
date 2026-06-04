@@ -100,14 +100,17 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
 
 function renderMarkdown(text: string) {
   return text.split('\n').map((line, i) => {
-    const parts = line.split(/\*\*(.+?)\*\*/g)
+    const isBullet = /^[•\-\*]\s*/.test(line) && line.trim().length > 1
+    const content = isBullet ? line.replace(/^[•\-\*]\s*/, '') : line
+    const parts = content.split(/\*\*(.+?)\*\*/g)
     const rendered = parts.map((part, j) => j % 2 === 1
       ? <strong key={j} style={{ color: 'var(--ink)', fontWeight: 700 }}>{part}</strong>
       : part)
-    const isBullet = /^[•\-]\s/.test(line)
     return (
       <span key={i} style={{ display: 'block', marginBottom: line === '' ? 6 : 2 }}>
-        {isBullet ? <><span style={{ color: 'var(--ink-muted)', marginLeft: 4 }}>•</span><span style={{ marginRight: 6 }}>{rendered.slice(1)}</span></> : rendered}
+        {isBullet
+          ? <><span style={{ color: 'var(--ink-muted)', marginLeft: 6 }}>•</span><span style={{ marginRight: 4 }}>{rendered}</span></>
+          : rendered}
       </span>
     )
   })
