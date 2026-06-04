@@ -31,7 +31,10 @@ const BOTTOM_NAV = [
 
 export default function AppSidebar({ convList, activeConv, onSelectConv, onNewChat, onDeleteConv, onRenameConv }: AppSidebarProps = {}) {
   const [collapsed, setCollapsed] = useState(() => {
-    try { return localStorage.getItem('sidebar_collapsed') === '1' } catch { return false }
+    try {
+      if (window.innerWidth < 768) return true
+      return localStorage.getItem('sidebar_collapsed') === '1'
+    } catch { return false }
   })
   const [unreadCount, setUnreadCount] = useState(0)
   const [internalConvList, setInternalConvList] = useState<Conversation[]>([])

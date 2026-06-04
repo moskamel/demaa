@@ -204,6 +204,7 @@ export default function Customers() {
   const [search, setSearch] = useState('')
   const [segFilter, setSegFilter] = useState<SegFilter>('all')
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [showBlocked, setShowBlocked] = useState(false)
   const debouncedSearch = useDebounce(search, 250)
 
   useEffect(() => {
@@ -214,6 +215,8 @@ export default function Customers() {
   }, [])
 
   const filtered = allCustomers.filter(c => {
+    if (showBlocked) return !!c.isBlocked
+    if (c.isBlocked) return false
     const matchSeg = segFilter === 'all' || c.segment === segFilter
     const q = debouncedSearch.toLowerCase()
     const matchSearch = !q || c.name.toLowerCase().includes(q) || (c.phone || '').includes(q) || (c.city || '').toLowerCase().includes(q)
@@ -256,6 +259,14 @@ export default function Customers() {
             <SearchNormal1 size={13} variant="Outline" style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-muted)', pointerEvents: 'none' }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث باسم أو رقم جوال أو مدينة..." style={{ width: '100%', padding: '9px 34px 9px 14px', borderRadius: 10, border: '1px solid var(--hairline)', background: 'var(--canvas-soft)', color: 'var(--ink)', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
           </div>
+          <button onClick={() => setShowBlocked(!showBlocked)} style={{
+            padding: '6px 12px', borderRadius: 8, border: '1px solid var(--hairline)',
+            background: showBlocked ? 'rgba(239,68,68,0.1)' : 'var(--canvas-soft)',
+            color: showBlocked ? '#ef4444' : 'var(--ink-muted)',
+            fontSize: 12, cursor: 'pointer', fontFamily: 'inherit'
+          }}>
+            {showBlocked ? '🚫 المحظورون' : 'عرض المحظورين'}
+          </button>
           <div style={{ display: 'flex', gap: 4, background: 'var(--canvas-soft)', borderRadius: 9, padding: 3 }}>
             {(['all', 'vip', 'loyal', 'regular', 'new'] as SegFilter[]).map(s => (
               <button key={s} onClick={() => setSegFilter(s)} style={{ padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, background: segFilter === s ? 'var(--canvas-soft-2)' : 'transparent', color: segFilter === s ? 'var(--ink)' : 'var(--ink-muted)' }}>
@@ -300,6 +311,7 @@ export default function Customers() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{c.name}</span>
                     <span style={{ fontSize: 10, fontWeight: 700, color: segmentColors[c.segment] || '#6a4cf5', background: segmentBg[c.segment] || 'rgba(106,76,245,0.1)', borderRadius: 5, padding: '2px 7px' }}>{segmentLabels[c.segment] || c.segment}</span>
+                    {c.isBlocked && <span style={{ fontSize: 10, fontWeight: 700, color: '#ef4444', background: 'rgba(239,68,68,0.1)', borderRadius: 5, padding: '2px 7px' }}>محظور</span>}
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{c.phone || '—'} · {c.city || '—'}</div>
                 </div>

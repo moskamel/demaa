@@ -179,10 +179,24 @@ export default function OrderDetailDrawer({ orderId, onClose }: Props) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{(item.totalPrice / 100).toLocaleString('ar-SA')} ر.س</div>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإجمالي</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('ar-SA')} ر.س</span>
-            </div>
+            {(() => {
+              const vatAmount = order.total * 0.15 / 1.15
+              return (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--hairline)', marginTop: 4 }}>
+                    <span style={{ fontSize: 12, color: '#f59e0b', fontWeight: 500 }}>ضريبة القيمة المضافة (15%)</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#f59e0b' }}>{(vatAmount / 100).toLocaleString('ar-SA')} ر.س</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 8, marginTop: 2 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>الإجمالي</span>
+                    <div style={{ textAlign: 'left' }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>{(order.total / 100).toLocaleString('ar-SA')} ر.س</div>
+                      <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>شامل ضريبة القيمة المضافة 15%</div>
+                    </div>
+                  </div>
+                </>
+              )
+            })()}
           </Section>
 
           {/* payment & shipping */}
