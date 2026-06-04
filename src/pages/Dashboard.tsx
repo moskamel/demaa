@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useConfirm } from '../hooks/useConfirm'
@@ -6,7 +6,7 @@ import {
   Notification as NotifIcon, Add, Send2, ArrowDown2, Setting2, Clock, Box, Warning2,
   Shop, Electricity, People, ChartSquare,
   Card, Lamp, MessageAdd1, CloseCircle, Cpu,
-  Logout,
+  Logout, Copy, Edit2,
 } from 'iconsax-react'
 import { conversations as convApi, orders as ordersApi, notifications as notifApi, storesApi, clearToken, type Notification as ApiNotif, type StoreData } from '../lib/api'
 import type { Message, OrderRow, ProductRow } from '../types/chat'
@@ -116,10 +116,39 @@ function renderMarkdown(text: string) {
   })
 }
 
+function MsgActions({ text, onEdit, isUser }: { text: string; onEdit?: () => void; isUser?: boolean }) {
+  const [copied, setCopied] = React.useState(false)
+  const copy = () => {
+    navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) })
+  }
+  const btnStyle: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    width: 26, height: 26, borderRadius: 7, border: '1px solid var(--hairline)',
+    background: 'var(--canvas-soft)', cursor: 'pointer', color: 'var(--ink-muted)',
+    transition: 'background 0.15s, color 0.15s', flexShrink: 0,
+  }
+  return (
+    <div style={{ display: 'flex', gap: 4, opacity: 0, transition: 'opacity 0.15s' }} className="msg-actions">
+      <button title={copied ? 'تم النسخ!' : 'نسخ'} onClick={copy} style={{ ...btnStyle, color: copied ? '#22c55e' : 'var(--ink-muted)' }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas)'; e.currentTarget.style.color = 'var(--ink)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas-soft)'; e.currentTarget.style.color = copied ? '#22c55e' : 'var(--ink-muted)' }}>
+        <Copy size={13} variant="Outline" />
+      </button>
+      {onEdit && (
+        <button title="تعديل" onClick={onEdit} style={btnStyle}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--canvas)'; e.currentTarget.style.color = 'var(--ink)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--canvas-soft)'; e.currentTarget.style.color = 'var(--ink-muted)' }}>
+          <Edit2 size={13} variant="Outline" />
+        </button>
+      )}
+    </div>
+  )
+}
+
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-      <div style={{ maxWidth: '70%', width: 'fit-content' }}>
+      <div style={{ maxWidth: '70%', width: 'fit-content' }} className="msg-wrapper">
         <div style={{ background: 'var(--canvas-soft)', borderRadius: '4px 14px 14px 14px', padding: '14px 16px', fontSize: 14, lineHeight: 1.65, letterSpacing: '-0.14px', boxShadow: '0px 1px 2px rgba(0,0,0,0.04)' }}>
           <div style={{ color: 'var(--ink)', marginBottom: msg.stats || msg.orderList || msg.productList || msg.actions ? 12 : 0 }}>{renderMarkdown(msg.content)}</div>
           {msg.stats && (
@@ -145,6 +174,9 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
               ))}
             </div>
           )}
+        </div>
+        <div style={{ marginTop: 4, display: 'flex', justifyContent: 'flex-end' }}>
+          <MsgActions text={msg.content} />
         </div>
       </div>
     </div>
@@ -461,7 +493,7 @@ export default function Dashboard() {
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
                     <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+                      <div className="msg-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
                         <motion.div className="chat-message-user"
                           initial={{ scale: 0.9, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
@@ -469,7 +501,10 @@ export default function Dashboard() {
                           style={{ background: '#6a4cf5', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#fff', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(106,76,245,0.25)', maxWidth: '50vw', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
                           {msg.content}
                         </motion.div>
-                        {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
+                          <MsgActions text={msg.content} isUser onEdit={() => setInput(msg.content)} />
+                        </div>
                       </div>
                     </div>
                   )}

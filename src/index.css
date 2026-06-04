@@ -596,3 +596,7 @@ a.content-link:hover::after {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Chat message action buttons ───────────────────────────────────────── */
+.msg-wrapper:hover .msg-actions { opacity: 1 !important; }
+
