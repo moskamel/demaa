@@ -241,7 +241,7 @@ export default function Billing() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
         <AppHeader title="الاشتراك" />
 
-        <div style={{ padding: '24px 20px', boxSizing: 'border-box' }}>
+        <div style={{ padding: '24px 200px', boxSizing: 'border-box' }}>
 
           {/* Alert banner */}
           {sub && <AlertBanner sub={sub} />}
