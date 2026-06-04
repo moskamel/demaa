@@ -43,7 +43,7 @@ router.get('/', async (req: AuthRequest, res) => {
     ...c,
     status: stateMap[c.type]?.status || 'disconnected',
     lastUsed: stateMap[c.type]?.lastUsedAt
-      ? new Date(stateMap[c.type].lastUsedAt!).toLocaleDateString('ar-SA')
+      ? new Date(stateMap[c.type].lastUsedAt!).toLocaleDateString('en-US')
       : undefined,
   }))
   res.json({ connectors })

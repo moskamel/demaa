@@ -63,7 +63,7 @@ export interface StoreInsight {
 
 export const STORE_INSIGHTS: StoreInsight[] = [
   { key: 'preferred_carrier', value: 'smsa', confidence: 0.92, label: 'شركة الشحن المفضلة', lastUpdated: 'منذ يومين' },
-  { key: 'cod_rejection_threshold', value: '1000', confidence: 0.85, label: 'حد رفض الكاش (ر.س)', lastUpdated: 'منذ أسبوع' },
+  { key: 'cod_rejection_threshold', value: '1000', confidence: 0.85, label: 'حد رفض الكاش ($)', lastUpdated: 'منذ أسبوع' },
   { key: 'best_sales_day', value: 'friday', confidence: 0.78, label: 'أفضل يوم مبيعات', lastUpdated: 'منذ أسبوع' },
   { key: 'top_city', value: 'cairo', confidence: 0.95, label: 'أعلى مدينة مبيعاً', lastUpdated: 'اليوم' },
   { key: 'avg_order_value', value: '340', confidence: 0.99, label: 'متوسط قيمة الطلب', lastUpdated: 'اليوم' },
@@ -94,7 +94,7 @@ export function computeRiskScore(order: Omit<Order, 'riskScore' | 'suspiciousRea
     }
     if (order.total > 800) {
       score += 20
-      reasons.push(`قيمة عالية (${order.total} ر.س)`)
+      reasons.push(`قيمة عالية (${order.total} $)`)
     } else if (order.total > 500) {
       score += 10
     }
@@ -144,7 +144,7 @@ export const ORDERS: Order[] = [
   { id: '10231', customer: 'محمد الحسيني', phone: '01012345678', city: 'القاهرة', total: 340, status: 'pending', payment: 'card', items: [{ name: 'عطر العود الملكي', qty: 1, price: 340 }], createdAt: '2025-01-15T06:12:00', address: 'حي المعادي، القاهرة', isNewCustomer: false },
   { id: '10232', customer: 'سارة علي', phone: '01112345678', city: 'الإسكندرية', total: 520, status: 'pending', payment: 'tabby', items: [{ name: 'سماعة JBL', qty: 1, price: 520 }], createdAt: '2025-01-15T06:45:00', address: 'حي سيدي بشر، الإسكندرية', isNewCustomer: false },
   { id: '10233', customer: 'كريم عبدالله', phone: '01212345678', city: 'القاهرة', total: 180, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 2, price: 90 }], createdAt: '2025-01-15T07:10:00', address: 'حي مدينة نصر، القاهرة', isNewCustomer: false },
-  { id: '10234', customer: 'فاطمة محمد', phone: '01512345678', city: 'الجيزة', total: 750, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 2, price: 340 }, { name: 'كريم الوجه', qty: 1, price: 90 }], createdAt: '2025-01-15T07:30:00', address: 'حي الدقي، الجيزة', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 80, suspiciousReason: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 ر.س' },
+  { id: '10234', customer: 'فاطمة محمد', phone: '01512345678', city: 'الجيزة', total: 750, status: 'pending', payment: 'cash', items: [{ name: 'عطر العود الملكي', qty: 2, price: 340 }, { name: 'كريم الوجه', qty: 1, price: 90 }], createdAt: '2025-01-15T07:30:00', address: 'حي الدقي، الجيزة', issue: 'عميل يدفع كاش', isNewCustomer: true, riskScore: 80, suspiciousReason: 'كاش عند الاستلام · عميلة جديدة · قيمة 750 $' },
   { id: '10235', customer: 'أحمد إبراهيم', phone: '01034567890', city: 'القاهرة', total: 290, status: 'pending', payment: 'card', items: [{ name: 'ساعة سمارت', qty: 1, price: 290 }], createdAt: '2025-01-15T07:55:00', address: 'حي مصر الجديدة، القاهرة', isNewCustomer: false },
   { id: '10236', customer: 'نورا مصطفى', phone: '01145678901', city: 'المنصورة', total: 430, status: 'pending', payment: 'tamara', items: [{ name: 'حقيبة جلد', qty: 1, price: 430 }], createdAt: '2025-01-15T08:15:00', address: 'شارع الجمهورية، المنصورة', isNewCustomer: false },
   { id: '10237', customer: 'عمر حسن', phone: '01256789012', city: 'القاهرة', total: 195, status: 'pending', payment: 'card', items: [{ name: 'كريم الوجه', qty: 1, price: 90 }, { name: 'عطر صغير', qty: 1, price: 105 }], createdAt: '2025-01-15T08:40:00', address: 'حي الزمالك، القاهرة', isNewCustomer: false },
@@ -246,10 +246,10 @@ export interface Notification {
 
 export const NOTIFICATIONS: Notification[] = [
   { id: 'N1', type: 'low_stock', priority: 'urgent', title: 'مخزون ينفد!', body: 'كريم الوجه — باقي 8 قطع فقط', createdAt: 'منذ 10 دقائق' },
-  { id: 'N2', type: 'suspicious_order', priority: 'urgent', title: 'طلب يحتاج مراجعة', body: 'طلب #10234 من فاطمة — كاش 750 ر.س · عميلة جديدة', createdAt: 'منذ 18 دقيقة' },
+  { id: 'N2', type: 'suspicious_order', priority: 'urgent', title: 'طلب يحتاج مراجعة', body: 'طلب #10234 من فاطمة — كاش 750 $ · عميلة جديدة', createdAt: 'منذ 18 دقيقة' },
   { id: 'N3', type: 'pending_too_long', priority: 'important', title: 'طلبات معلقة أكثر من ساعتين', body: '12 طلب في الانتظار منذ الصباح', createdAt: 'منذ 30 دقيقة' },
   { id: 'N4', type: 'connector_expired', priority: 'important', title: 'انتهت صلاحية تمارا', body: 'يحتاج تجديد الربط لاستمرار الدفع بالتقسيط', createdAt: 'منذ ساعتين' },
-  { id: 'N5', type: 'weekly_report', priority: 'info', title: 'تقرير الأسبوع جاهز', body: '312 طلب · 124,680 ر.س · نمو 18%', createdAt: 'أمس', readAt: 'أمس' },
+  { id: 'N5', type: 'weekly_report', priority: 'info', title: 'تقرير الأسبوع جاهز', body: '312 طلب · 124,680 $ · نمو 18%', createdAt: 'أمس', readAt: 'أمس' },
   { id: 'N6', type: 'shipment_created', priority: 'info', title: 'تم إنشاء 3 بوالص شحن', body: 'أرامكس · الطلبات 10210، 10211، 10212', createdAt: 'أمس', readAt: 'أمس' },
 ]
 
@@ -292,7 +292,7 @@ export const store = {
     if (o) {
       const before = o.status
       o.status = 'accepted'
-      store.activitiesLog.unshift({ time: now(), action: `قبول طلب #${id}`, detail: `${o.customer} — ${o.total} ر.س`, before: { status: before }, after: { status: 'accepted' } })
+      store.activitiesLog.unshift({ time: now(), action: `قبول طلب #${id}`, detail: `${o.customer} — ${o.total} $`, before: { status: before }, after: { status: 'accepted' } })
     }
     return o
   },
@@ -322,7 +322,7 @@ export const store = {
     if (p) {
       const old = p.price
       p.price = newPrice
-      store.activitiesLog.unshift({ time: now(), action: `تحديث سعر ${p.name}`, detail: `من ${old} → ${newPrice} ر.س`, before: { price: old }, after: { price: newPrice } })
+      store.activitiesLog.unshift({ time: now(), action: `تحديث سعر ${p.name}`, detail: `من ${old} → ${newPrice} $`, before: { price: old }, after: { price: newPrice } })
     }
     return p
   },
@@ -330,18 +330,18 @@ export const store = {
   addProduct: (product: Omit<Product, 'id'>) => {
     const p = { ...product, id: `P${String(store.products.length + 1).padStart(3, '0')}` }
     store.products.push(p)
-    store.activitiesLog.unshift({ time: now(), action: `إضافة منتج ${p.name}`, detail: `${p.price} ر.س · مخزون: ${p.stock}` })
+    store.activitiesLog.unshift({ time: now(), action: `إضافة منتج ${p.name}`, detail: `${p.price} $ · مخزون: ${p.stock}` })
     return p
   },
 
   addCoupon: (coupon: Omit<Coupon, 'uses'>) => {
     const c = { ...coupon, uses: 0 }
     store.coupons.push(c)
-    store.activitiesLog.unshift({ time: now(), action: `إنشاء كوبون ${c.code}`, detail: `خصم ${c.discount}${c.type === 'percent' ? '%' : ' ر.س'}` })
+    store.activitiesLog.unshift({ time: now(), action: `إنشاء كوبون ${c.code}`, detail: `خصم ${c.discount}${c.type === 'percent' ? '%' : ' $'}` })
     return c
   },
 }
 
 function now() {
-  return new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+  return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }

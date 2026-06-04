@@ -45,7 +45,7 @@ export default function Pricing() {
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-muted)', marginBottom: 8, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Pro</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'center', marginBottom: 8 }}>
               <span style={{ fontSize: 56, fontWeight: 700, letterSpacing: '-3px' }}>٠</span>
-              <span style={{ fontSize: 16, color: 'var(--ink-muted)' }}>ر.س / شهر</span>
+              <span style={{ fontSize: 16, color: 'var(--ink-muted)' }}>$ / شهر</span>
             </div>
             <div style={{ fontSize: 14, color: '#22c55e', fontWeight: 500, marginBottom: 32 }}>مجاناً خلال فترة البيتا</div>
 

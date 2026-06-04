@@ -67,7 +67,7 @@ function OrderListView({ rows, onOrderClick }: { rows: OrderRow[]; onOrderClick?
             </div>
           </div>
           <div style={{ textAlign: 'left', flexShrink: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{(o.total / 100).toLocaleString('ar-SA')} ر.س</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>{(o.total / 100).toLocaleString('en-US')} $</div>
             <div style={{ fontSize: 10, color: statusColors[o.status], textAlign: 'center', marginTop: 2 }}>{statusLabels[o.status]}</div>
           </div>
         </div>
@@ -86,7 +86,7 @@ function ProductListView({ rows }: { rows: ProductRow[] }) {
             <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{p.category} · {p.id}</div>
           </div>
           <div style={{ textAlign: 'left', flexShrink: 0, display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{p.price.toLocaleString('ar-SA')} ر.س</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{p.price.toLocaleString('en-US')} $</div>
             <div style={{ fontSize: 11, fontWeight: 600, color: p.stock === 0 ? 'var(--gradient-coral)' : p.stock < 5 ? 'var(--gradient-orange)' : 'var(--semantic-success)', background: p.stock === 0 ? 'rgba(255,85,119,0.1)' : p.stock < 5 ? 'rgba(255,122,61,0.1)' : 'rgba(34,197,94,0.1)', borderRadius: 6, padding: '3px 8px', minWidth: 40, textAlign: 'center' }}>
               {p.stock === 0 ? 'نافد' : `${p.stock}`}
             </div>
@@ -108,9 +108,31 @@ const SUGGESTED = [
   { icon: '🎟️', title: 'كوبون خصم', cmd: 'اعمل لي كوبون خصم 10%' },
 ]
 
+function UserMessage({ msg, onEdit }: { msg: Message; onEdit: (text: string) => void }) {
+  const [hovering, setHovering] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const copy = () => { navigator.clipboard.writeText(msg.content).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }) }
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-start' }} onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3, maxWidth: '70%' }}>
+        <div className="chat-message-user" style={{ background: '#ffffff', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, color: '#111', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(0,0,0,0.15)' }}>
+          {msg.content}
+        </div>
+        <div style={{ display: 'flex', gap: 4, opacity: hovering ? 1 : 0, transition: 'opacity 0.15s', paddingRight: 4 }}>
+          <button onClick={copy} title="نسخ" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 7px', borderRadius: 6, fontSize: 11, color: copied ? '#22c55e' : 'var(--ink-muted)', fontFamily: 'inherit' }}>{copied ? '✓' : '⎘'} نسخ</button>
+          <button onClick={() => onEdit(msg.content)} title="تعديل" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 7px', borderRadius: 6, fontSize: 11, color: 'var(--ink-muted)', fontFamily: 'inherit' }}>✏️ تعديل</button>
+          {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', padding: '2px 4px' }}>{new Date(msg.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction: (cmd: string) => void; onOrderClick?: (id: string) => void }) {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
   const [hovering, setHovering] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const copyMsg = () => { navigator.clipboard.writeText(msg.content).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500) }) }
   return (
     <div
       style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
@@ -143,7 +165,9 @@ function DeemaMessage({ msg, onAction, onOrderClick }: { msg: Message; onAction:
               ))}
             </div>
           )}
-          <div style={{ display: 'flex', gap: 4, marginTop: 6, opacity: hovering ? 1 : 0, transition: 'opacity 0.15s' }}>
+          <div style={{ display: 'flex', gap: 4, marginTop: 8, opacity: hovering ? 1 : 0, transition: 'opacity 0.15s', borderTop: '1px solid var(--hairline)', paddingTop: 8 }}>
+            <button onClick={copyMsg} title="نسخ" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 11, color: copied ? '#22c55e' : 'var(--ink-muted)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 3 }}>{copied ? '✓ تم النسخ' : '⎘ نسخ'}</button>
+            <div style={{ width: 1, background: 'var(--hairline)', margin: '0 2px' }} />
             <button onClick={() => setFeedback('up')} style={{ background: feedback === 'up' ? 'rgba(34,197,94,0.15)' : 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 13, color: feedback === 'up' ? '#22c55e' : 'var(--ink-muted)' }}>👍</button>
             <button onClick={() => setFeedback('down')} style={{ background: feedback === 'down' ? 'rgba(239,68,68,0.1)' : 'none', border: 'none', cursor: 'pointer', padding: '3px 7px', borderRadius: 6, fontSize: 13, color: feedback === 'down' ? '#ef4444' : 'var(--ink-muted)' }}>👎</button>
           </div>
@@ -171,7 +195,7 @@ function NotifFlyout({ onClose, notifs, unreadCount }: { onClose: () => void; no
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: n.isRead ? 400 : 600, color: 'var(--ink)', marginBottom: 2 }}>{n.title}</div>
                 <div style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{n.body}</div>
-                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('ar-SA')}</div>
+                <div style={{ fontSize: 10, color: 'var(--ink-muted)', marginTop: 3 }}>{new Date(n.createdAt).toLocaleDateString('en-US')}</div>
               </div>
             </div>
           </div>
@@ -433,14 +457,7 @@ export default function Dashboard() {
                   {msg.role === 'deema' ? (
                     <DeemaMessage msg={msg} onAction={handleSend} onOrderClick={setSelectedOrderId} />
                   ) : (
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-                        <div className="chat-message-user" style={{ background: '#ffffff', borderRadius: '14px 4px 14px 14px', padding: '11px 15px', fontSize: 14, maxWidth: '55vw', color: '#111', letterSpacing: '-0.14px', lineHeight: 1.55, boxShadow: '0px 2px 8px rgba(0,0,0,0.15)' }}>
-                          {msg.content}
-                        </div>
-                        {msg.createdAt && <span style={{ fontSize: 10, color: 'var(--ink-muted)', paddingLeft: 4 }}>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>}
-                      </div>
-                    </div>
+                    <UserMessage msg={msg} onEdit={setInput} />
                   )}
                 </div>
               ))}

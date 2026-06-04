@@ -59,7 +59,7 @@ export default function Reports() {
         )}
       </div>
       <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px', marginBottom: 4 }}>
-        <AnimatedNumber value={numericValue} suffix={unit ? ` ${unit}` : ''} decimals={unit === 'ر.س' ? 0 : 0} />
+        <AnimatedNumber value={numericValue} suffix={unit ? ` ${unit}` : ''} decimals={unit === '$' ? 0 : 0} />
       </div>
       <div style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{label}</div>
       {sub && <div style={{ fontSize: 11, color, marginTop: 4 }}>{sub}</div>}
@@ -105,9 +105,9 @@ export default function Reports() {
           <>
             {/* KPI grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-              <KPI icon={DollarCircle} label="إجمالي الإيرادات" numericValue={overview.totalRevenue} unit="ر.س" sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
+              <KPI icon={DollarCircle} label="إجمالي الإيرادات" numericValue={overview.totalRevenue} unit="$" sub="خلال الفترة المحددة" color="#6a4cf5" trend="up" />
               <KPI icon={ShoppingCart} label="إجمالي الطلبات" numericValue={overview.totalOrders} sub={`${overview.pendingOrders} معلق`} color="#0099ff" trend="up" />
-              <KPI icon={DollarCircle} label="متوسط قيمة الطلب" numericValue={Math.round(overview.avgOrderValue)} unit="ر.س" color="#22c55e" trend="up" />
+              <KPI icon={DollarCircle} label="متوسط قيمة الطلب" numericValue={Math.round(overview.avgOrderValue)} unit="$" color="#22c55e" trend="up" />
               <KPI icon={Box} label="طلبات مرفوضة" numericValue={overview.rejectedOrders} sub={overview.totalOrders > 0 ? `${Math.round((overview.rejectedOrders / overview.totalOrders) * 100)}% معدل الرفض` : '—'} color="#ff5577" trend="down" />
             </div>
 
@@ -134,7 +134,7 @@ export default function Reports() {
                                 <span style={{ fontSize: 12, color: 'var(--ink)', fontWeight: 500 }}>{city}</span>
                                 <span style={{ fontSize: 10, color: 'var(--ink-muted)' }}>{data.orders} طلب</span>
                               </div>
-                              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)' }}>{data.revenue.toLocaleString('ar-SA')} ر.س</span>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)' }}>{data.revenue.toLocaleString('en-US')} $</span>
                             </div>
                             <div style={{ height: 5, background: 'var(--canvas-soft-2)', borderRadius: 3, overflow: 'hidden' }}>
                               <div style={{
@@ -224,7 +224,7 @@ export default function Reports() {
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>{p.name}</div>
                       <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{p.category || '—'} · {p.sku || p.id}</div>
                     </div>
-                    <div key={`${p.id}-price`} style={{ padding: '12px 20px', fontSize: 13, fontWeight: 600, color: 'var(--ink)', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center' }}>{(p.price / 100).toLocaleString('ar-SA')} ر.س</div>
+                    <div key={`${p.id}-price`} style={{ padding: '12px 20px', fontSize: 13, fontWeight: 600, color: 'var(--ink)', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center' }}>{(p.price / 100).toLocaleString('en-US')} $</div>
                     <div key={`${p.id}-stock`} style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center' }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: p.stock === 0 ? '#ff5577' : p.stock < 5 ? '#ff7a3d' : 'var(--ink)' }}>{p.stock}</span>
                     </div>

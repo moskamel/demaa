@@ -46,7 +46,7 @@ export default function AnimatedNumber({ value, duration = 900, decimals = 0, pr
 
   const formatted = formatter
     ? formatter(display)
-    : display.toLocaleString('ar-SA', { maximumFractionDigits: decimals, minimumFractionDigits: decimals })
+    : display.toLocaleString('en-US', { maximumFractionDigits: decimals, minimumFractionDigits: decimals })
 
   return (
     <span style={{

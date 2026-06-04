@@ -155,16 +155,16 @@ export default function Stores() {
                       </div>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 14 }}>
-                      {s.lastSyncAt ? `آخر تزامن: ${new Date(s.lastSyncAt).toLocaleString('ar-SA')}` : 'لم يتم التزامن بعد'}
+                      {s.lastSyncAt ? `آخر تزامن: ${new Date(s.lastSyncAt).toLocaleString('en-US')}` : 'لم يتم التزامن بعد'}
                     </div>
 
                     <div style={{ display: 'flex', gap: 24, marginBottom: 14 }}>
                       <div>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{s._count.orders.toLocaleString('ar-SA')}</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{s._count.orders.toLocaleString('en-US')}</div>
                         <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>إجمالي الطلبات</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{s._count.products.toLocaleString('ar-SA')}</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{s._count.products.toLocaleString('en-US')}</div>
                         <div style={{ fontSize: 11, color: 'var(--ink-muted)' }}>إجمالي المنتجات</div>
                       </div>
                     </div>

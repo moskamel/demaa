@@ -23,20 +23,20 @@ const T = {
 const DEMO_COMMANDS = [
   {
     cmd: 'وريني الطلبات المعلقة',
-    response: 'عندك ٣٥ طلب معلق 📦\n١٤,٥٠٠ ر.س إجمالي',
-    stats: [{ n: '35', l: 'معلق', c: '#ff7a3d' }, { n: '14,500', l: 'ر.س', c: T.ink }, { n: '8', l: 'كاش ⚠️', c: '#ff5577' }],
+    response: 'عندك ٣٥ طلب معلق 📦\n١٤,٥٠٠ $ إجمالي',
+    stats: [{ n: '35', l: 'معلق', c: '#ff7a3d' }, { n: '14,500', l: '$', c: T.ink }, { n: '8', l: 'كاش ⚠️', c: '#ff5577' }],
     actions: ['اقبل الجاهزة', 'وريني المشاكل'],
   },
   {
     cmd: 'اقبل الطلبات السليمة',
-    response: '✅ هقبل ٢٧ طلب — ١١,٢٠٠ ر.س\n⏩ وهنشئ بوالص الشحن تلقائياً',
+    response: '✅ هقبل ٢٧ طلب — ١١,٢٠٠ $\n⏩ وهنشئ بوالص الشحن تلقائياً',
     stats: [{ n: '27', l: 'هيتقبل', c: '#22c55e' }, { n: '8', l: 'مشكلة', c: '#ff5577' }, { n: '2', l: 'دقيقة', c: '#0099ff' }],
     actions: ['نعم، نفّذ', 'وريني المشاكل الأول'],
   },
   {
     cmd: 'مبيعات الأسبوع',
-    response: 'أسبوع قوي 💪\nالأسبوع ده: ٣٨,٤٠٠ ر.س\nنمو +٢٣٪ عن الأسبوع اللي فات',
-    stats: [{ n: '38,400', l: 'ر.س', c: T.ink }, { n: '+23%', l: 'نمو', c: '#22c55e' }, { n: '142', l: 'طلب', c: '#0099ff' }],
+    response: 'أسبوع قوي 💪\nالأسبوع ده: ٣٨,٤٠٠ $\nنمو +٢٣٪ عن الأسبوع اللي فات',
+    stats: [{ n: '38,400', l: '$', c: T.ink }, { n: '+23%', l: 'نمو', c: '#22c55e' }, { n: '142', l: 'طلب', c: '#0099ff' }],
     actions: ['تقرير مفصل', 'قارن بالشهر'],
   },
   {
@@ -141,7 +141,7 @@ export default function Landing() {
   const [demoIdx, setDemoIdx] = useState(0)
   const [demoInput, setDemoInput] = useState('')
   const [demoMessages, setDemoMessages] = useState<Array<{ role: 'user' | 'ai'; text: string; stats?: typeof DEMO_COMMANDS[0]['stats']; actions?: string[] }>>([
-    { role: 'ai', text: 'صباح الخير! 🌅 أنا ديما، مساعدك الذكي. كيف أساعدك اليوم؟', stats: [{ n: '47', l: 'طلب جديد', c: '#ff7a3d' }, { n: '14k', l: 'ر.س اليوم', c: T.ink }, { n: '3', l: 'مشاكل', c: '#ff5577' }] },
+    { role: 'ai', text: 'صباح الخير! 🌅 أنا ديما، مساعدك الذكي. كيف أساعدك اليوم؟', stats: [{ n: '47', l: 'طلب جديد', c: '#ff7a3d' }, { n: '14k', l: '$ اليوم', c: T.ink }, { n: '3', l: 'مشاكل', c: '#ff5577' }] },
   ])
   const [typing, setTyping] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -313,9 +313,9 @@ export default function Landing() {
             </div>
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12, height: 320, overflowY: 'auto' }}>
               {[
-                { text: 'صباح الخير! ٤٧ طلب جديد، ١٤k ر.س 🌅', isAi: true },
+                { text: 'صباح الخير! ٤٧ طلب جديد، ١٤k $ 🌅', isAi: true },
                 { text: 'اقبل الطلبات السليمة', isAi: false },
-                { text: '✅ هقبل ٣٥ طلب — ١١,٢٠٠ ر.س\n⏩ بوالص الشحن جاهزة', isAi: true },
+                { text: '✅ هقبل ٣٥ طلب — ١١,٢٠٠ $\n⏩ بوالص الشحن جاهزة', isAi: true },
               ].map((m, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: m.isAi ? 'flex-end' : 'flex-start' }}>
                   <div style={{
@@ -349,9 +349,9 @@ export default function Landing() {
       <section style={{ padding: '0 40px 80px', maxWidth: 1200, margin: '0 auto' }}>
         <div ref={statsRef} style={{ background: T.canvas, border: `1px solid ${T.hairline}`, borderRadius: 28, padding: '48px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
           {[
-            { value: countOrders.toLocaleString('ar-SA') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Box size={20} color="#ff7a3d" variant="Outline" /> },
-            { value: countRevenue + 'M+', label: 'ر.س حجم المبيعات', sub: 'عبر منصات متعددة', icon: <TrendUp size={20} color="#22c55e" variant="Outline" /> },
-            { value: countMerchants.toLocaleString('ar-SA') + '+', label: 'تاجر يثق بديما', sub: 'في مصر والسعودية والخليج', icon: <People size={20} color={T.blue} variant="Outline" /> },
+            { value: countOrders.toLocaleString('en-US') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Box size={20} color="#ff7a3d" variant="Outline" /> },
+            { value: countRevenue + 'M+', label: '$ حجم المبيعات', sub: 'عبر منصات متعددة', icon: <TrendUp size={20} color="#22c55e" variant="Outline" /> },
+            { value: countMerchants.toLocaleString('en-US') + '+', label: 'تاجر يثق بديما', sub: 'في مصر والسعودية والخليج', icon: <People size={20} color={T.blue} variant="Outline" /> },
           ].map((s, i) => (
             <div key={s.label} style={{ textAlign: 'center', padding: '0 40px', borderRight: i < 2 ? `1px solid ${T.hairline}` : 'none' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>{s.icon}</div>
@@ -587,7 +587,7 @@ export default function Landing() {
                 features: ['متجر واحد', '٥٠ طلب/شهر', 'المنصات الأساسية', 'دعم إيميل', 'تقارير أساسية'],
               },
               {
-                name: 'برو', price: '٩٩', period: 'ر.س/شهر', tag: '🔥 الأكثر شعبية', featured: true,
+                name: 'برو', price: '٩٩', period: '$/شهر', tag: '🔥 الأكثر شعبية', featured: true,
                 features: ['٣ متاجر', 'طلبات غير محدودة', 'جميع شركات الشحن', 'كشف الطلبات المشبوهة', 'تقارير متقدمة', 'دعم أولوية'],
               },
             ].map(tier => (

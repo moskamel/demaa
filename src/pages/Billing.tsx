@@ -54,9 +54,9 @@ export default function Billing() {
         {/* stats — first */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {[
-            { label: 'أعضاء الفريق', value: loading ? '...' : (memberCount ?? 0).toLocaleString('ar-SA'), icon: People, color: '#22c55e' },
-            { label: 'المتاجر المربوطة', value: loading ? '...' : (storeCount ?? 0).toLocaleString('ar-SA'), icon: Shop, color: '#0099ff' },
-            { label: 'الطلبات المعالجة', value: loading ? '...' : (orderCount ?? 0).toLocaleString('ar-SA'), icon: Box, color: '#6a4cf5' },
+            { label: 'أعضاء الفريق', value: loading ? '...' : (memberCount ?? 0).toLocaleString('en-US'), icon: People, color: '#22c55e' },
+            { label: 'المتاجر المربوطة', value: loading ? '...' : (storeCount ?? 0).toLocaleString('en-US'), icon: Shop, color: '#0099ff' },
+            { label: 'الطلبات المعالجة', value: loading ? '...' : (orderCount ?? 0).toLocaleString('en-US'), icon: Box, color: '#6a4cf5' },
           ].map(({ label, value, icon: Icon, color }, i) => (
             <div key={label} className="animate-fade-in-up hover-lift" style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px 16px', textAlign: 'center', animationDelay: `${i * 60}ms` }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>

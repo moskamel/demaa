@@ -31,8 +31,8 @@ const INSIGHT_VALUE_LABELS: Record<string, (v: string) => string> = {
   preferred_carrier: v => v === 'smsa' ? 'SMSA' : v,
   top_city: v => v === 'cairo' ? 'القاهرة' : v,
   best_sales_day: v => ({ friday: 'الجمعة', thursday: 'الخميس', saturday: 'السبت' }[v] ?? v),
-  avg_order_value: v => `${v} ر.س`,
-  cod_rejection_threshold: v => `>${v} ر.س`,
+  avg_order_value: v => `${v} $`,
+  cod_rejection_threshold: v => `>${v} $`,
   peak_hour: v => v,
   return_rate: v => `${(parseFloat(v) * 100).toFixed(0)}%`,
   cash_ratio: v => `${(parseFloat(v) * 100).toFixed(0)}%`,
@@ -156,8 +156,8 @@ export default function Insights() {
                     <span style={{ fontSize: 12, color: 'var(--ink-muted)', fontWeight: 500 }}>الاستخدام هذا الشهر</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 8 }}>
-                    <span style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-1px' }}>{latestUsage.ordersProcessed.toLocaleString('ar-SA')}</span>
-                    <span style={{ fontSize: 13, color: 'var(--ink-muted)' }}>/ {planLimit.toLocaleString('ar-SA')} طلب</span>
+                    <span style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-1px' }}>{latestUsage.ordersProcessed.toLocaleString('en-US')}</span>
+                    <span style={{ fontSize: 13, color: 'var(--ink-muted)' }}>/ {planLimit.toLocaleString('en-US')} طلب</span>
                   </div>
                   <div style={{ height: 6, background: 'var(--hairline)', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ width: `${usagePct}%`, height: '100%', background: usagePct > 80 ? '#ff5577' : usagePct > 60 ? '#ff7a3d' : '#6a4cf5', borderRadius: 4 }} />
@@ -166,7 +166,7 @@ export default function Insights() {
                 {[...usageRecords].reverse().map(rec => (
                   <div key={rec.id} style={{ textAlign: 'center', minWidth: 80 }}>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 4 }}>{rec.month}</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{rec.ordersProcessed.toLocaleString('ar-SA')}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{rec.ordersProcessed.toLocaleString('en-US')}</div>
                     <div style={{ fontSize: 10, color: 'var(--ink-muted)' }}>
                       {rec.messagesUsed} رسالة
                     </div>
@@ -255,27 +255,27 @@ export default function Insights() {
                 <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>إجمالي الإيرادات</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: '#22c55e', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
-                    {pnl.revenue.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}
+                    {pnl.revenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>ر.س</div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>$</div>
                 </div>
 
                 {/* Cost */}
                 <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>إجمالي التكاليف</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: '#ff5577', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
-                    {pnl.cost.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}
+                    {pnl.cost.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>ر.س (تقديري 60%)</div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>$ (تقديري 60%)</div>
                 </div>
 
                 {/* Profit */}
                 <div style={{ background: 'var(--canvas-soft)', borderRadius: 14, border: '1px solid var(--hairline)', padding: '20px' }}>
                   <div style={{ fontSize: 11, color: 'var(--ink-muted)', fontWeight: 500, marginBottom: 10 }}>صافي الربح</div>
                   <div style={{ fontSize: 22, fontWeight: 700, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.8px', lineHeight: 1.2 }}>
-                    {pnl.profit.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}
+                    {pnl.profit.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>ر.س</div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>$</div>
                 </div>
 
                 {/* Margin */}
@@ -294,17 +294,17 @@ export default function Insights() {
                 <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
                   <div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 6 }}>طلبات COD المعلقة</div>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: '#ff7a3d' }}>{pnl.codPending.toLocaleString('ar-SA')}</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#ff7a3d' }}>{pnl.codPending.toLocaleString('en-US')}</div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>طلب</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 6 }}>قيمة COD المعلقة</div>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: '#ff5577' }}>{pnl.codPendingValue.toLocaleString('ar-SA', { maximumFractionDigits: 0 })}</div>
-                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>ر.س</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#ff5577' }}>{pnl.codPendingValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>$</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 6 }}>طلبات COD المحصّلة</div>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: '#22c55e' }}>{pnl.codCollected.toLocaleString('ar-SA')}</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#22c55e' }}>{pnl.codCollected.toLocaleString('en-US')}</div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>طلب</div>
                   </div>
                 </div>
@@ -326,7 +326,7 @@ export default function Insights() {
                               <span style={{ fontSize: 11, color: 'var(--ink-muted)', background: 'var(--hairline)', borderRadius: 5, padding: '1px 7px' }}>{c.orders} طلب</span>
                             </div>
                             <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>
-                              {c.revenue.toLocaleString('ar-SA', { maximumFractionDigits: 0 })} ر.س
+                              {c.revenue.toLocaleString('en-US', { maximumFractionDigits: 0 })} $
                             </span>
                           </div>
                           <div style={{ height: 6, background: 'var(--hairline)', borderRadius: 4, overflow: 'hidden' }}>
