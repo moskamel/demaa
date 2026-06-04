@@ -452,9 +452,14 @@ export default function Billing() {
       {showCancelConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           onClick={() => setShowCancelConfirm(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1a1a1a', borderRadius: 18, padding: '28px', width: 340, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', direction: 'rtl', fontFamily: 'inherit' }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(239,68,68,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
-              <CloseCircle size={22} color="#ef4444" variant="Outline" />
+          <div onClick={e => e.stopPropagation()} style={{ background: '#1a1a1a', borderRadius: 18, padding: '28px', width: 480, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 32px 80px rgba(0,0,0,0.6)', direction: 'rtl', fontFamily: 'inherit' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(239,68,68,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CloseCircle size={22} color="#ef4444" variant="Outline" />
+              </div>
+              <button onClick={() => setShowCancelConfirm(false)} style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                ×
+              </button>
             </div>
             <div style={{ fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 8 }}>تأكيد إلغاء الاشتراك</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginBottom: 20 }}>
