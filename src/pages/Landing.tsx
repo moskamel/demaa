@@ -231,12 +231,12 @@ export default function Landing() {
 
       {/* ── NAV ── */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(14,14,18,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${T.hairline}`, height: 64, display: 'flex', alignItems: 'center', padding: '0 200px', gap: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>D</span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none', flexShrink: 0 }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>D</span>
           </div>
-          <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.5px', color: T.ink }}>Deema</span>
-        </div>
+          <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.4px', color: T.ink }}>Deema</span>
+        </Link>
         <div style={{ display: 'flex', gap: 32, flex: 1, justifyContent: 'center' }}>
           {[{ label: 'المميزات', to: '/features' }, { label: 'الأسعار', to: '/pricing' }, { label: 'المنصات', to: '/platforms' }, { label: 'المدونة', to: '/blog' }].map(l => (
             <Link key={l.label} to={l.to} style={{ color: T.slate, textDecoration: 'none', fontSize: 14, fontWeight: 500, letterSpacing: '-0.14px', transition: 'color 0.15s' }}
@@ -245,9 +245,18 @@ export default function Landing() {
             >{l.label}</Link>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Link to={loginTo} style={{ ...btnOutline, padding: '8px 20px', fontSize: 13 }}>دخول</Link>
-          <Link to={ctaTo} style={{ ...btnPrimary, padding: '8px 20px', fontSize: 13 }}>ابدأ مجاناً</Link>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+          <Link to={loginTo} style={{
+            padding: '9px 20px', borderRadius: 9999, border: '1px solid rgba(255,255,255,0.18)',
+            background: 'transparent', color: T.ink, fontSize: 14, fontWeight: 500,
+            textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
+          }}>{isAuthed ? 'لوحة التحكم' : 'دخول'}</Link>
+          <Link to={ctaTo} style={{
+            padding: '9px 20px', borderRadius: 9999, border: 'none',
+            background: isAuthed ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : '#fff',
+            color: isAuthed ? '#fff' : '#0e0e12', fontSize: 14, fontWeight: 500,
+            textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
+          }}>{isAuthed ? 'الذهاب للمساعد' : 'ابدأ مجاناً'}</Link>
         </div>
       </nav>
 
