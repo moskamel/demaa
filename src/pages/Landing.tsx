@@ -265,43 +265,51 @@ export default function Landing() {
       </nav>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section style={{ padding: '96px 40px 80px', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: '80px 40px 60px' }}>
+        {/* Glow orbs */}
+        <div style={{ position: 'absolute', top: '-120px', right: '10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(106,76,245,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '0', left: '15%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,77,240,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-          {/* Right: copy (RTL = right is first) */}
-          <div className="animate-fade-in-up">
-            {/* Badge */}
-            <div className="animate-pop-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: T.yellow, borderRadius: 9999, padding: '6px 16px', marginBottom: 28 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          {/* Top badge — centered */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+            <div className="animate-pop-in" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,208,47,0.12)', border: '1px solid rgba(255,208,47,0.3)', borderRadius: 9999, padding: '6px 18px' }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', animation: 'pulse 1.5s infinite', flexShrink: 0 }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>+١٢٠٠ تاجر نشط</span>
-            </div>
-
-            <h1 style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 500, lineHeight: 1.05, letterSpacing: '-2px', color: T.ink, margin: '0 0 20px' }}>
-              وفّر ساعتين<br />
-              كل يوم<br />
-              على طلباتك
-            </h1>
-
-            <p style={{ fontSize: 18, lineHeight: 1.5, color: T.slate, margin: '0 0 36px', maxWidth: 440 }}>
-              ديما تقبل طلباتك، تشحن، وترسل التقارير — بجملة واحدة بالعربي.
-              بدون تدريب، بدون تقنيات معقدة.
-            </p>
-
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 32 }}>
-              <Link to={ctaTo} style={{ ...btnPrimary, padding: '14px 28px', fontSize: 15 }}>
-                ابدأ مجاناً ←
-              </Link>
-            </div>
-
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-              {['✅ لا يحتاج بطاقة ائتمانية', '✅ ربط في دقيقتين', '✅ استرداد ٣٠ يوماً'].map(t => (
-                <span key={t} style={{ fontSize: 13, color: T.slate }}>{t}</span>
-              ))}
+              <span style={{ fontSize: 13, fontWeight: 600, color: T.yellow }}>+١٢٠٠ تاجر نشط الآن</span>
             </div>
           </div>
 
-          {/* Left: interactive chat demo */}
-          <div className="animate-fade-in-up" style={{ background: T.surface, borderRadius: 24, border: `1px solid ${T.hairline}`, overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.6)', animationDelay: '120ms' }}>
+          {/* Headline — centered, large */}
+          <div className="animate-fade-in-up" style={{ textAlign: 'center', marginBottom: 28 }}>
+            <h1 style={{ fontSize: 'clamp(52px, 7vw, 96px)', fontWeight: 700, lineHeight: 1.0, letterSpacing: '-3px', color: T.ink, margin: 0 }}>
+              وفّر ساعتين
+              <span style={{ display: 'block', background: 'linear-gradient(90deg, #6a4cf5, #d44df0, #ff7a3d)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                كل يوم
+              </span>
+              على طلباتك
+            </h1>
+          </div>
+
+          <p className="animate-fade-in-up" style={{ fontSize: 'clamp(16px,2vw,20px)', lineHeight: 1.6, color: T.slate, textAlign: 'center', maxWidth: 560, margin: '0 auto 40px', animationDelay: '80ms' }}>
+            ديما تقبل طلباتك، تشحن، وترسل التقارير — بجملة واحدة بالعربي.
+            بدون تدريب، بدون تقنيات معقدة.
+          </p>
+
+          <div className="animate-fade-in-up" style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 20, animationDelay: '140ms' }}>
+            <Link to={ctaTo} style={{ background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 9999, padding: '14px 32px', fontSize: 16, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 8px 32px rgba(106,76,245,0.4)' }}>
+              ابدأ مجاناً ←
+            </Link>
+            <Link to={loginTo} style={{ ...btnOutline, padding: '14px 28px', fontSize: 15 }}>دخول</Link>
+          </div>
+
+          <div className="animate-fade-in-up" style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 60, animationDelay: '180ms' }}>
+            {['✅ لا يحتاج بطاقة ائتمانية', '✅ ربط في دقيقتين', '✅ استرداد ٣٠ يوماً'].map(t => (
+              <span key={t} style={{ fontSize: 13, color: T.slate }}>{t}</span>
+            ))}
+          </div>
+
+          {/* Chat demo — centered card */}
+          <div style={{ maxWidth: 740, margin: '0 auto', borderRadius: 24, overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(106,76,245,0.2)', background: T.surface }}>
             {/* Window chrome */}
             <div style={{ background: T.well, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${T.hairline}` }}>
               {['#ff5f57', '#ffbd2e', '#28c940'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
@@ -390,13 +398,12 @@ export default function Landing() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* ── STATS ────────────────────────────────────────────────────────────── */}
       <section style={{ padding: '0 40px 80px', maxWidth: 1200, margin: '0 auto' }}>
-        <div ref={statsRef} style={{ background: T.canvas, border: `1px solid ${T.hairline}`, borderRadius: 28, padding: '48px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
+        <div ref={statsRef} style={{ background: 'linear-gradient(135deg, rgba(106,76,245,0.08), rgba(212,77,240,0.06))', border: `1px solid rgba(106,76,245,0.2)`, borderRadius: 28, padding: '48px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
           {[
             { value: countOrders.toLocaleString('en-US') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Box size={20} color="#ff7a3d" variant="Outline" /> },
             { value: countRevenue + 'M+', label: '$ حجم المبيعات', sub: 'عبر منصات متعددة', icon: <TrendUp size={20} color="#22c55e" variant="Outline" /> },
