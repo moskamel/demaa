@@ -285,6 +285,34 @@ const GROQ_TOOLS: Groq.Chat.ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'track_shipment',
+      description: 'تتبع شحنة حقيقي عبر Aramex أو SMSA أو J&T — يجلب آخر حالة وتاريخ الأحداث',
+      parameters: {
+        type: 'object',
+        properties: {
+          trackingNumber: { type: 'string', description: 'رقم التتبع' },
+          carrier: { type: 'string', enum: ['aramex', 'smsa', 'jtexpress'], description: 'شركة الشحن' },
+          orderId: { type: 'string', description: 'معرف الطلب — يُستخدم إذا لم يُعطَ رقم التتبع' },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_failed_deliveries',
+      description: 'جلب الشحنات الفاشلة والمعادة والطلبات العالقة منذ أكثر من 10 أيام',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'number' },
+        },
+      },
+    },
+  },
 ]
 
 async function buildSystemPrompt(ctx: ChatContext): Promise<string> {

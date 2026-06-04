@@ -1,5 +1,6 @@
 // Tool executor — runs AI tool calls against the real database
 import prisma from '../prisma.js'
+import { trackShipment } from '../platforms/shipTracking.js'
 
 interface ToolContext {
   orgId: string
@@ -550,6 +551,94 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       })
 
       return { productId, name: product.name, oldStock, newStock: updatedStock, added: updatedStock - oldStock }
+    }
+
+    case 'track_shipment': {
+      const { trackingNumber, carrier, orderId } = input as {
+        trackingNumber?: string; carrier?: string; orderId?: string
+      }
+
+      // Resolve from orderId if no tracking number given
+      let tn = trackingNumber
+      let c = carrier || 'aramex'
+
+      if (!tn && orderId) {
+        const shipment = await prisma.shipment.findFirst({
+          where: { orderId },
+          orderBy: { createdAt: 'desc' },
+        })
+        if (!shipment) return { error: `لا توجد شحنة للطلب ${orderId}` }
+        tn = shipment.trackingNumber || undefined
+        c = shipment.carrier
+      }
+
+      if (!tn) return { error: 'رقم التتبع مطلوب' }
+
+      const result = await trackShipment(tn, c)
+
+      // Update shipment status in DB
+      await prisma.shipment.updateMany({
+        where: { trackingNumber: tn },
+        data: {
+          status: result.status,
+          lastEvent: result.lastEvent || undefined,
+          lastEventAt: result.lastEventAt ? new Date(result.lastEventAt) : undefined,
+          updatedAt: new Date(),
+        },
+      })
+
+      // If delivered, update order status
+      if (result.status === 'delivered') {
+        const shipment = await prisma.shipment.findFirst({ where: { trackingNumber: tn } })
+        if (shipment) {
+          await prisma.order.update({ where: { id: shipment.orderId }, data: { status: 'delivered' } })
+        }
+      }
+
+      return result
+    }
+
+    case 'get_failed_deliveries': {
+      const { limit = 20 } = input as { limit?: number }
+
+      const failedShipments = await prisma.shipment.findMany({
+        where: { status: { in: ['failed', 'returned'] } },
+        include: { order: true },
+        orderBy: { updatedAt: 'desc' },
+        take: Number(limit),
+      })
+
+      // Also get orders shipped > 10 days ago still not delivered
+      const tenDaysAgo = new Date(); tenDaysAgo.setDate(tenDaysAgo.getDate() - 10)
+      const stuckOrders = await prisma.order.findMany({
+        where: {
+          status: 'shipped',
+          updatedAt: { lt: tenDaysAgo },
+          ...(storeId && { storeId }),
+        },
+        include: { shipments: true },
+        take: 10,
+      })
+
+      return {
+        failed: failedShipments.map(s => ({
+          trackingNumber: s.trackingNumber,
+          carrier: s.carrier,
+          status: s.status,
+          orderId: s.orderId,
+          customerName: s.order.customerName,
+          city: s.order.city,
+        })),
+        stuck: stuckOrders.map(o => ({
+          orderId: o.id,
+          customerName: o.customerName,
+          city: o.city,
+          trackingNumber: o.shipments[0]?.trackingNumber,
+          carrier: o.shipments[0]?.carrier,
+          daysSinceShipped: Math.floor((Date.now() - o.updatedAt.getTime()) / 86400000),
+        })),
+        totalIssues: failedShipments.length + stuckOrders.length,
+      }
     }
 
     default:
