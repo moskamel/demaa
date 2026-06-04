@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Sun1, ShieldTick, Notification, Flash, Global, Profile, Lock, Electricity } from 'iconsax-react'
+import { Sun1, ShieldTick, Notification, Flash, Global, Profile, Lock, Electricity, Eye, EyeSlash } from 'iconsax-react'
 import { settingsApi } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
@@ -60,6 +60,7 @@ export default function Settings() {
 
   const [profile, setProfile] = useState({ name: '', email: '', phone: '' })
   const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' })
+  const [showPass, setShowPass] = useState({ current: false, newPass: false, confirm: false })
   const [saving, setSaving] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
   const [profileMsg, setProfileMsg] = useState('')
@@ -150,18 +151,28 @@ export default function Settings() {
         {/* Password section */}
         <Section icon={Lock} title="تغيير كلمة المرور">
           <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>كلمة المرور الحالية</label>
-              <input type="password" value={passwords.current} onChange={e => setPasswords(p => ({ ...p, current: e.target.value }))} style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>كلمة المرور الجديدة</label>
-              <input type="password" value={passwords.newPass} onChange={e => setPasswords(p => ({ ...p, newPass: e.target.value }))} style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>تأكيد كلمة المرور</label>
-              <input type="password" value={passwords.confirm} onChange={e => setPasswords(p => ({ ...p, confirm: e.target.value }))} style={{ ...inputStyle, direction: 'ltr', textAlign: 'right' }} />
-            </div>
+            {(['current', 'newPass', 'confirm'] as const).map(key => (
+              <div key={key}>
+                <label style={{ fontSize: 12, color: 'var(--ink-muted)', marginBottom: 6, display: 'block' }}>
+                  {key === 'current' ? 'كلمة المرور الحالية' : key === 'newPass' ? 'كلمة المرور الجديدة' : 'تأكيد كلمة المرور'}
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPass[key] ? 'text' : 'password'}
+                    value={passwords[key]}
+                    onChange={e => setPasswords(p => ({ ...p, [key]: e.target.value }))}
+                    style={{ ...inputStyle, direction: 'ltr', textAlign: 'right', paddingLeft: 40 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(p => ({ ...p, [key]: !p[key] }))}
+                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--ink-muted)' }}
+                  >
+                    {showPass[key] ? <EyeSlash size={16} variant="Outline" /> : <Eye size={16} variant="Outline" />}
+                  </button>
+                </div>
+              </div>
+            ))}
             {passwordError && (
               <div style={{ fontSize: 12, color: '#ff5577', background: 'rgba(255,85,119,0.08)', borderRadius: 8, padding: '8px 12px' }}>{passwordError}</div>
             )}
