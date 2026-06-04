@@ -46,13 +46,20 @@ const DEMO_COMMANDS = [
 ]
 
 const PLATFORMS = [
-  { name: 'Shopify', emoji: '🛍️' }, { name: 'Salla', emoji: '🟢' },
-  { name: 'Zid', emoji: '🔵' }, { name: 'Wuilt', emoji: '🌐' },
-  { name: 'Shantaweb', emoji: '🏪' }, { name: 'WooCommerce', emoji: '🛒' },
-  { name: 'Amazon', emoji: '📦' }, { name: 'Noon', emoji: '🌙' },
-  { name: 'Jumia', emoji: '🛵' }, { name: 'BigCommerce', emoji: '🔷' },
-  { name: 'Wix', emoji: '🎨' }, { name: 'Ecwid', emoji: '🧩' },
-  { name: 'TikTok Shop', emoji: '🎵' }, { name: 'Facebook Shop', emoji: '💙' },
+  { name: 'Shopify',      logo: '/logos/Shopify.png' },
+  { name: 'Salla',        logo: '/logos/Salla.png' },
+  { name: 'Zid',          logo: '/logos/Zid.png' },
+  { name: 'Wuilt',        logo: '/logos/Wuilt.jpg' },
+  { name: 'Shantaweb',    logo: '/logos/Shantaweb.png' },
+  { name: 'WooCommerce',  logo: '/logos/WooCommerce.png' },
+  { name: 'Amazon',       logo: '/logos/Amazon.png' },
+  { name: 'Noon',         logo: '/logos/Noon.png' },
+  { name: 'Jumia',        logo: '/logos/Jumia.png' },
+  { name: 'BigCommerce',  logo: '/logos/BigCommerce.webp' },
+  { name: 'Wix',          logo: '/logos/Wix.png' },
+  { name: 'Ecwid',        logo: '/logos/Ecwid.png' },
+  { name: 'TikTok Shop',  logo: '/logos/TikTok_Shop.png' },
+  { name: 'Facebook Shop',logo: '/logos/Facebook_Shop.png' },
 ]
 
 const TESTIMONIALS = [
@@ -373,8 +380,8 @@ export default function Landing() {
         <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 600, color: T.slate, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 18 }}>يتصل بـ ١٤ منصة تجارية</p>
         <div style={{ display: 'flex', gap: 0, animation: 'ticker 22s linear infinite', width: 'max-content' }}>
           {[...PLATFORMS, ...PLATFORMS].map((p, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 28px', borderRight: `1px solid ${T.hairline}`, whiteSpace: 'nowrap' }}>
-              <span style={{ fontSize: 17 }}>{p.emoji}</span>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 28px', borderRight: `1px solid ${T.hairline}`, whiteSpace: 'nowrap' }}>
+              <img src={p.logo} alt={p.name} style={{ width: 22, height: 22, objectFit: 'contain', borderRadius: 4 }} />
               <span style={{ fontSize: 13, fontWeight: 500, color: T.slate }}>{p.name}</span>
             </div>
           ))}

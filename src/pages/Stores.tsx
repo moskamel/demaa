@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock, Pause, Play, Trash } from 'iconsax-react'
 import { storesApi, type StoreData } from '../lib/api'
+import { getPlatformLogo } from '../lib/platformLogos'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
@@ -141,8 +142,11 @@ export default function Stores() {
                 <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 3, background: pColor, borderRadius: '0 16px 16px 0' }} />
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: pColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: pColor }}>{s.name[0]}</span>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 6, boxSizing: 'border-box' }}>
+                    {getPlatformLogo(s.platform)
+                      ? <img src={getPlatformLogo(s.platform)} alt={s.platform} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      : <span style={{ fontSize: 18, fontWeight: 700, color: pColor }}>{s.name[0]}</span>
+                    }
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>

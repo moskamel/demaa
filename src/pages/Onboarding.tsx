@@ -2,28 +2,21 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { TickCircle, ArrowLeft2, ExportSquare, Refresh2, SearchNormal1 } from 'iconsax-react'
 import { storesApi } from '../lib/api'
+import { getPlatformLogo } from '../lib/platformLogos'
 
 type Platform = 'shopify' | 'wuilt' | 'shantaweb' | 'facebook' | 'tiktok' | 'salla' | 'zid' | 'amazon' | 'noon' | 'jumia' | 'woocommerce' | 'wix' | 'bigcommerce' | 'ecwid' | null
 
 const PlatformLogo = ({ domain, name }: { domain: string; name: string }) => {
-  const [err, setErr] = useState(false)
-  const initial = name[0].toUpperCase()
-  const colors: Record<string, string> = { shopify: '#96BF48', wuilt: '#4F46E5', shantaweb: '#E63946', facebook: '#1877F2', tiktok: '#010101', salla: '#5B4FCF', zid: '#E4003B', amazon: '#FF9900', noon: '#FEEE00', jumia: '#F68B1E', woocommerce: '#96588A', wix: '#0C6EBD', bigcommerce: '#34313F', ecwid: '#F05523' }
-  if (err) return (
-    <div style={{ width: 32, height: 32, borderRadius: 8, background: colors[domain] || '#444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{initial}</span>
+  const logo = getPlatformLogo(domain)
+  if (logo) return (
+    <div style={{ width: 32, height: 32, borderRadius: 8, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 3, boxSizing: 'border-box', flexShrink: 0 }}>
+      <img src={logo} alt={name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
     </div>
   )
-  const logoDomains: Record<string, string> = { zid: 'zid.sa', salla: 'salla.com', amazon: 'amazon.com', noon: 'noon.com', jumia: 'jumia.com', woocommerce: 'woocommerce.com', wix: 'wix.com', bigcommerce: 'bigcommerce.com', ecwid: 'ecwid.com' }
-  const logoDomain = logoDomains[domain] ?? `${domain}.com`
   return (
-    <img
-      src={`https://logo.clearbit.com/${logoDomain}`}
-      alt={name}
-      width={32} height={32}
-      style={{ borderRadius: 8, objectFit: 'contain', background: '#fff', padding: 2 }}
-      onError={() => setErr(true)}
-    />
+    <div style={{ width: 32, height: 32, borderRadius: 8, background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{name[0].toUpperCase()}</span>
+    </div>
   )
 }
 

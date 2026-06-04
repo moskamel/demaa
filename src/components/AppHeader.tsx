@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { ArrowDown2, TickCircle, Add, ArrowRight, Pause, Play, Trash } from 'iconsax-react'
 import { orders as ordersApi, storesApi, type StoreData } from '../lib/api'
+import { getPlatformLogo } from '../lib/platformLogos'
 // clearToken handled in AppSidebar
 
 const PAGE_TITLES: Record<string, string> = {
@@ -173,11 +174,12 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
           {activeStore ? (
             <>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: activeStore.isActive ? '#22c55e' : '#ff7a3d', flexShrink: 0 }} />
+              {getPlatformLogo(activeStore.platform)
+                ? <img src={getPlatformLogo(activeStore.platform)} alt={activeStore.platform} style={{ width: 18, height: 18, objectFit: 'contain', borderRadius: 3, background: '#fff', padding: 1, flexShrink: 0 }} />
+                : <span style={{ fontSize: 10, color: pColor, background: pColor + '18', borderRadius: 4, padding: '1px 6px', fontWeight: 600 }}>{activeStore.platform}</span>
+              }
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {activeStore.name}
-              </span>
-              <span style={{ fontSize: 10, color: pColor, background: pColor + '18', borderRadius: 4, padding: '1px 6px', fontWeight: 600 }}>
-                {activeStore.platform}
               </span>
             </>
           ) : (
@@ -222,8 +224,11 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
                     onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--canvas-soft-2)' }}
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '' }}
                   >
-                    <div style={{ width: 30, height: 30, borderRadius: 8, background: c + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: c }}>{s.name[0]}</span>
+                    <div style={{ width: 30, height: 30, borderRadius: 8, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 4, boxSizing: 'border-box' }}>
+                      {getPlatformLogo(s.platform)
+                        ? <img src={getPlatformLogo(s.platform)} alt={s.platform} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        : <span style={{ fontSize: 13, fontWeight: 700, color: c }}>{s.name[0]}</span>
+                      }
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>

@@ -4,7 +4,7 @@ import PageLayout from '../components/PageLayout'
 type Status = 'live' | 'soon' | 'partner'
 
 const platforms: {
-  emoji: string
+  logo: string
   name: string
   desc: string
   status: Status
@@ -13,7 +13,7 @@ const platforms: {
 }[] = [
   // ── Live: Public API, no partner needed ─────────────────────────────────────
   {
-    emoji: '🛍️',
+    logo: '/logos/Shopify.png',
     name: 'Shopify',
     status: 'live',
     desc: 'أكبر منصة تجارة إلكترونية في العالم. API عام وموثق. اربط متجرك بـ Deema في دقيقتين عبر Admin API Key.',
@@ -21,7 +21,7 @@ const platforms: {
     tokenHint: 'من لوحة Shopify ← Apps ← API credentials',
   },
   {
-    emoji: '🛒',
+    logo: '/logos/WooCommerce.png',
     name: 'WooCommerce',
     status: 'live',
     desc: 'أشهر إضافة تجارة على WordPress. REST API مدمج ومفتوح بالكامل. Consumer Key + Secret يكفيان للربط الكامل.',
@@ -29,7 +29,7 @@ const platforms: {
     tokenHint: 'من WooCommerce ← Settings ← Advanced ← REST API',
   },
   {
-    emoji: '🔷',
+    logo: '/logos/BigCommerce.webp',
     name: 'BigCommerce',
     status: 'live',
     desc: 'منصة احترافية للمتاجر الكبيرة. API v2 عام وموثق بالكامل. Store Hash + Access Token من لوحة التحكم مباشرة.',
@@ -37,7 +37,7 @@ const platforms: {
     tokenHint: 'من BigCommerce ← Settings ← API Accounts',
   },
   {
-    emoji: '🎨',
+    logo: '/logos/Wix.png',
     name: 'Wix',
     status: 'live',
     desc: 'منصة المواقع الأشهر مع متجر متكامل. Wix eCommerce REST API عام وموثق. Site ID + API Key للربط الفوري.',
@@ -45,7 +45,7 @@ const platforms: {
     tokenHint: 'من Wix ← Business Manager ← API Keys',
   },
   {
-    emoji: '🧩',
+    logo: '/logos/Ecwid.png',
     name: 'Ecwid',
     status: 'live',
     desc: 'متجر مدمج مع أي موقع. API عام وموثق من Lightspeed. Store ID + Secret Token للوصول الكامل للطلبات.',
@@ -55,7 +55,7 @@ const platforms: {
 
   // ── Live: Arabic platforms (implemented) ────────────────────────────────────
   {
-    emoji: '🌐',
+    logo: '/logos/Wuilt.jpg',
     name: 'Wuilt',
     status: 'live',
     desc: 'منصة التجارة الإلكترونية العربية. Deema يتكامل مع Wuilt لإدارة الطلبات والشحن والتقارير من مكان واحد.',
@@ -63,7 +63,7 @@ const platforms: {
     tokenHint: 'من لوحة Wuilt ← الإعدادات ← المطورين',
   },
   {
-    emoji: '🏪',
+    logo: '/logos/Shantaweb.png',
     name: 'Shantaweb',
     status: 'live',
     desc: 'منصة مصرية متخصصة تفهم السوق المحلي. اربطها بـ Deema وادر متجرك بالكامل بالعربي والجنيه المصري.',
@@ -73,43 +73,43 @@ const platforms: {
 
   // ── Coming Soon: require partner/developer approval ──────────────────────────
   {
-    emoji: '🟢',
+    logo: '/logos/Salla.png',
     name: 'سلة',
     status: 'soon',
     desc: 'منصة التجارة الرائدة في السعودية. يتطلب تسجيل تطبيق كشريك في Salla Partners — قريباً.',
   },
   {
-    emoji: '🔵',
+    logo: '/logos/Zid.png',
     name: 'زد',
     status: 'soon',
     desc: 'منصة سعودية متكاملة تخدم آلاف التجار. يتطلب الانضمام لبرنامج شركاء زد — قريباً.',
   },
   {
-    emoji: '📦',
+    logo: '/logos/Amazon.png',
     name: 'Amazon',
     status: 'partner',
     desc: 'SP-API يتطلب موافقة Amazon وتسجيل تطبيق رسمي. نعمل على الحصول على الموافقة.',
   },
   {
-    emoji: '🌙',
+    logo: '/logos/Noon.png',
     name: 'Noon',
     status: 'partner',
     desc: 'Seller API يتطلب شراكة رسمية مع Noon. نعمل على الحصول على API للبائعين.',
   },
   {
-    emoji: '🛵',
+    logo: '/logos/Jumia.png',
     name: 'Jumia',
     status: 'partner',
     desc: 'يتطلب اتفاقية شراكة مع Jumia للوصول لـ Seller API. نعمل على الموافقة.',
   },
   {
-    emoji: '🎵',
+    logo: '/logos/TikTok_Shop.png',
     name: 'TikTok Shop',
     status: 'partner',
     desc: 'يتطلب قبول في برنامج TikTok Developer Partner. طلبنا قيد المراجعة.',
   },
   {
-    emoji: '💙',
+    logo: '/logos/Facebook_Shop.png',
     name: 'Facebook Shop',
     status: 'partner',
     desc: 'Meta Commerce API يتطلب مراجعة تطبيق Meta وموافقة خاصة. طلبنا قيد المراجعة.',
@@ -148,7 +148,9 @@ function PlatformCard({ p }: { p: typeof platforms[0] }) {
       alignItems: 'flex-start',
       opacity: p.status === 'partner' ? 0.75 : 1,
     }}>
-      <div style={{ fontSize: 36, flexShrink: 0, lineHeight: 1 }}>{p.emoji}</div>
+      <div style={{ width: 48, height: 48, borderRadius: 10, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 6, boxSizing: 'border-box' }}>
+        <img src={p.logo} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+      </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 8, flexWrap: 'wrap' }}>
           <h2 style={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.3px' }}>{p.name}</h2>
