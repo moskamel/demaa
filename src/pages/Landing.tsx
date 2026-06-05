@@ -4,6 +4,9 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { fadeUp, fadeIn, scaleIn, slideInRight, stagger, buttonTap, popIn } from '../lib/animations'
 import LandingNav from '../components/LandingNav'
 import { PLANS } from '../lib/plans'
+import { useCurrency } from '../context/CurrencyContext'
+import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
+import CurrencySelector from '../components/CurrencySelector'
 import {
   ArrowLeft2, TickCircle, ArrowDown2, Flash, Box, ChartSquare,
   MessageText1, ShieldTick, Global, Star1, Clock, TrendUp,
@@ -165,6 +168,7 @@ function TestimonialsSlider() {
 export default function Landing() {
   const isAuthed = !!localStorage.getItem('deema_token')
   const ctaTo = isAuthed ? '/dashboard' : '/signup'
+  const { currency } = useCurrency()
 
   const [demoIdx, setDemoIdx] = useState(0)
   const [demoInput, setDemoInput] = useState('')
@@ -598,8 +602,11 @@ export default function Landing() {
           <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>الأسعار</p>
           <h2 style={{ fontSize: 'clamp(32px,4vw,50px)', fontWeight: 800, letterSpacing: '-1.5px', color: T.ink, marginBottom: 12 }}>ابدأ مجاناً — طوّر متى تريد</h2>
           <p style={{ fontSize: 15, color: T.slate }}>لا توجد عقود · إلغاء وقتما تريد · استرداد ٣٠ يوماً</p>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+            <CurrencySelector />
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, position: 'relative', zIndex: 1, paddingTop: 18 }}>
           {PLANS.map((tier, i) => (
             <motion.div key={tier.id}
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
@@ -619,8 +626,12 @@ export default function Landing() {
               )}
               <div style={{ fontSize: 13, fontWeight: 700, color: tier.color, marginBottom: 10, letterSpacing: '0.02em' }}>{tier.name}</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6, direction: 'ltr', justifyContent: 'flex-end' }}>
-                {tier.price > 0 && <span style={{ fontSize: 14, fontWeight: 700, color: T.slate }}>$</span>}
-                <span style={{ fontSize: 52, fontWeight: 800, color: T.ink, fontVariantNumeric: 'tabular-nums', letterSpacing: '-3px', lineHeight: 1 }}>{tier.price === 0 ? 'مجاناً' : tier.price}</span>
+                <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, fontVariantNumeric: 'tabular-nums', letterSpacing: '-2px', lineHeight: 1 }}>
+                  {(() => {
+                    const amount = getPlanAmount(tier.id, currency, 'monthly')
+                    return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
+                  })()}
+                </span>
               </div>
               <div style={{ fontSize: 12, color: T.slate, marginBottom: 28 }}>{tier.period}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 28, flex: 1 }}>

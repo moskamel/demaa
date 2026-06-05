@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageLayout from '../components/PageLayout'
 import { TickCircle, ArrowLeft2 } from 'iconsax-react'
 import { PLANS } from '../lib/plans'
+import { CURRENCIES, PLAN_PRICES, formatPrice } from '../lib/currency'
+import { useCurrency } from '../context/CurrencyContext'
+import CurrencySelector from '../components/CurrencySelector'
 
 const T = {
   ink: '#f0f0f5',
@@ -14,51 +17,6 @@ const T = {
   pink: '#d44df0',
   well: '#080810',
   surface: '#18181e',
-}
-
-// ── Currency config ────────────────────────────────────────────────────────────
-
-type CurrencyCode = 'SAR' | 'EGP' | 'AED' | 'QAR' | 'KWD' | 'BHD' | 'USD'
-
-interface CurrencyInfo {
-  code: CurrencyCode
-  label: string
-  flag: string
-  symbol: string
-  symbolAfter: boolean   // true = amount then symbol (Arabic), false = $ then amount
-  decimals: 0 | 2 | 3
-}
-
-const CURRENCIES: CurrencyInfo[] = [
-  { code: 'SAR', label: 'ريال سعودي',   flag: '🇸🇦', symbol: 'ر.س', symbolAfter: true,  decimals: 0 },
-  { code: 'EGP', label: 'جنيه مصري',    flag: '🇪🇬', symbol: 'ج.م', symbolAfter: true,  decimals: 0 },
-  { code: 'AED', label: 'درهم إماراتي', flag: '🇦🇪', symbol: 'د.إ', symbolAfter: true,  decimals: 0 },
-  { code: 'QAR', label: 'ريال قطري',    flag: '🇶🇦', symbol: 'ر.ق', symbolAfter: true,  decimals: 0 },
-  { code: 'KWD', label: 'دينار كويتي',  flag: '🇰🇼', symbol: 'د.ك', symbolAfter: true,  decimals: 3 },
-  { code: 'BHD', label: 'دينار بحريني', flag: '🇧🇭', symbol: 'د.ب', symbolAfter: true,  decimals: 3 },
-  { code: 'USD', label: 'دولار',         flag: '🌍',  symbol: '$',   symbolAfter: false, decimals: 2 },
-]
-
-// Hardcoded prices: [monthly, yearly]
-const PLAN_PRICES: Record<string, Partial<Record<CurrencyCode, [number, number]>>> = {
-  free:       { SAR: [0,0],    EGP: [0,0],     AED: [0,0],    QAR: [0,0],    KWD: [0,0],   BHD: [0,0],   USD: [0,0] },
-  starter:    { SAR: [79,790], EGP: [249,2490], AED: [79,790], QAR: [79,790], KWD: [7,70],  BHD: [9,90],  USD: [22,220] },
-  growth:     { SAR: [199,1990], EGP: [599,5990], AED: [199,1990], QAR: [199,1990], KWD: [17,170], BHD: [21,210], USD: [55,550] },
-  pro:        { SAR: [399,3990], EGP: [1199,11990], AED: [399,3990], QAR: [399,3990], KWD: [33,330], BHD: [41,410], USD: [109,1090] },
-  enterprise: { SAR: [799,7990], EGP: [2499,24990], AED: [799,7990], QAR: [799,7990], KWD: [65,650], BHD: [81,810], USD: [219,2190] },
-}
-
-// Country → currency mapping for auto-detect
-const COUNTRY_CURRENCY: Record<string, CurrencyCode> = {
-  SA: 'SAR', EG: 'EGP', AE: 'AED', QA: 'QAR', KW: 'KWD', BH: 'BHD',
-  US: 'USD', GB: 'USD', CA: 'USD', AU: 'USD', DE: 'USD', FR: 'USD',
-}
-
-function formatPrice(amount: number, currency: CurrencyInfo): string {
-  if (amount === 0) return ''
-  const num = amount.toFixed(currency.decimals)
-  // Always put symbol on the left for consistent LTR price display
-  return currency.code === 'USD' ? `${currency.symbol}${num}` : `${currency.symbol} ${num}`
 }
 
 const COMPARE_ROWS = [
@@ -72,8 +30,6 @@ const COMPARE_ROWS = [
   { label: 'مدير حساب مخصص', values: [false, false, false, false, true] },
   { label: 'SLA 99.9%',       values: [false, false, false, false, true] },
 ]
-
-// ── Animated price number ──────────────────────────────────────────────────────
 
 function AnimatedPrice({ text }: { text: string }) {
   return (
@@ -92,40 +48,14 @@ function AnimatedPrice({ text }: { text: string }) {
   )
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────────
-
 export default function Pricing() {
-  const [currency, setCurrency] = useState<CurrencyCode>('SAR')
+  const { currency } = useCurrency()
   const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly')
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-
-  // Load from localStorage or auto-detect
-  useEffect(() => {
-    const saved = localStorage.getItem('deema_currency') as CurrencyCode | null
-    if (saved && CURRENCIES.find(c => c.code === saved)) {
-      setCurrency(saved)
-      return
-    }
-    fetch('https://ipapi.co/json/')
-      .then(r => r.json())
-      .then(data => {
-        const mapped = COUNTRY_CURRENCY[data.country_code as string]
-        setCurrency(mapped ?? 'SAR')
-      })
-      .catch(() => {})
-  }, [])
-
-  const selectCurrency = (code: CurrencyCode) => {
-    setCurrency(code)
-    localStorage.setItem('deema_currency', code)
-    setDropdownOpen(false)
-  }
 
   const currencyInfo = CURRENCIES.find(c => c.code === currency)!
   const billingIdx = billing === 'monthly' ? 0 : 1
 
-  const getPlanPrice = (planId: string) =>
-    (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[billingIdx]
+  const getPlanPrice = (planId: string) => (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[billingIdx]
 
   const getDisplayPrice = (planId: string) => {
     const amount = getPlanPrice(planId)
@@ -135,22 +65,17 @@ export default function Pricing() {
 
   const getComparePrice = (planId: string) => {
     const amount = getPlanPrice(planId)
-    if (amount === 0) return 'مجاناً'
-    return formatPrice(amount, currencyInfo)
+    return amount === 0 ? 'مجاناً' : formatPrice(amount, currencyInfo)
   }
 
-  // Yearly savings badge (2 months free = ~16%)
   const getSavings = (planId: string) => {
     if (billing !== 'yearly') return null
     const monthly = (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[0]
-    const yearly = (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[1]
+    const yearly  = (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[1]
     if (!monthly || !yearly) return null
     const saved = monthly * 12 - yearly
-    if (saved <= 0) return null
-    return formatPrice(saved, currencyInfo)
+    return saved > 0 ? formatPrice(saved, currencyInfo) : null
   }
-
-  const selectedCurrencyInfo = currencyInfo
 
   return (
     <PageLayout>
@@ -170,106 +95,35 @@ export default function Pricing() {
           </p>
         </div>
 
-        {/* ── Controls: billing toggle + currency selector ── */}
+        {/* Controls: billing toggle + currency selector */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 40, flexWrap: 'wrap' }}>
-
           {/* Billing toggle */}
           <div style={{ display: 'flex', background: T.surface, borderRadius: 9999, padding: 4, border: `1px solid ${T.hairline}`, gap: 4 }}>
             {(['monthly', 'yearly'] as const).map(b => (
-              <button
-                key={b}
-                onClick={() => setBilling(b)}
-                style={{
-                  padding: '7px 18px', borderRadius: 9999, border: 'none', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
-                  background: billing === b ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'transparent',
-                  color: billing === b ? '#fff' : T.slate,
-                  transition: 'all 0.2s',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                }}
-              >
+              <button key={b} onClick={() => setBilling(b)} style={{
+                padding: '7px 18px', borderRadius: 9999, border: 'none', cursor: 'pointer',
+                fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+                background: billing === b ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'transparent',
+                color: billing === b ? '#fff' : T.slate,
+                transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6,
+              }}>
                 {b === 'monthly' ? 'شهري' : 'سنوي'}
                 {b === 'yearly' && (
-                  <span style={{ fontSize: 10, fontWeight: 700, background: billing === 'yearly' ? 'rgba(255,255,255,0.2)' : 'rgba(34,197,94,0.15)', color: billing === 'yearly' ? '#fff' : '#22c55e', borderRadius: 9999, padding: '1px 6px' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, borderRadius: 9999, padding: '1px 6px', background: billing === 'yearly' ? 'rgba(255,255,255,0.2)' : 'rgba(34,197,94,0.15)', color: billing === 'yearly' ? '#fff' : '#22c55e' }}>
                     وفّر ١٦٪
                   </span>
                 )}
               </button>
             ))}
           </div>
-
-          {/* Currency dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setDropdownOpen(o => !o)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: T.surface, border: `1px solid ${dropdownOpen ? T.purple : T.hairline}`,
-                borderRadius: 9999, padding: '8px 16px', cursor: 'pointer', fontFamily: 'inherit',
-                fontSize: 13, fontWeight: 600, color: T.ink,
-                transition: 'border-color 0.15s',
-              }}
-            >
-              <span>{selectedCurrencyInfo.flag}</span>
-              <span>{selectedCurrencyInfo.label}</span>
-              <span style={{ color: T.slate, fontSize: 11, marginRight: 2, transition: 'transform 0.2s', display: 'inline-block', transform: dropdownOpen ? 'rotate(180deg)' : 'none' }}>▾</span>
-            </button>
-
-            <AnimatePresence>
-              {dropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                  transition={{ duration: 0.15 }}
-                  style={{
-                    position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 50,
-                    background: '#1e1e26', border: `1px solid ${T.hairline}`, borderRadius: 14,
-                    padding: 6, minWidth: 180, boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-                  }}
-                >
-                  {CURRENCIES.map(c => (
-                    <button
-                      key={c.code}
-                      onClick={() => selectCurrency(c.code)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-                        padding: '9px 12px', borderRadius: 9, border: 'none', cursor: 'pointer',
-                        background: currency === c.code ? 'rgba(106,76,245,0.15)' : 'transparent',
-                        fontFamily: 'inherit', fontSize: 13, fontWeight: currency === c.code ? 700 : 500,
-                        color: currency === c.code ? T.ink : T.slate,
-                        textAlign: 'right',
-                        transition: 'background 0.1s',
-                      }}
-                      onMouseEnter={e => { if (currency !== c.code) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
-                      onMouseLeave={e => { if (currency !== c.code) e.currentTarget.style.background = 'transparent' }}
-                    >
-                      <span style={{ fontSize: 16 }}>{c.flag}</span>
-                      <span style={{ flex: 1 }}>{c.label}</span>
-                      <span style={{ fontSize: 11, color: T.muted }}>{c.symbol}</span>
-                      {currency === c.code && <span style={{ color: T.purple, fontSize: 12 }}>✓</span>}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <CurrencySelector />
         </div>
-
-        {/* Click-away to close dropdown */}
-        {dropdownOpen && (
-          <div
-            style={{ position: 'fixed', inset: 0, zIndex: 40 }}
-            onClick={() => setDropdownOpen(false)}
-          />
-        )}
 
         {/* Plans grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, alignItems: 'stretch', marginBottom: 80, paddingTop: 18 }}>
           {PLANS.map((plan, i) => {
             const displayPrice = getDisplayPrice(plan.id)
             const savings = getSavings(plan.id)
-
             return (
               <motion.div key={plan.id}
                 initial={{ opacity: 0, y: 24 }}
@@ -290,14 +144,12 @@ export default function Pricing() {
                     <span style={{ background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 9999, padding: '4px 12px', fontSize: 10, fontWeight: 700 }}>{plan.tag}</span>
                   </div>
                 )}
-
                 {plan.featured && (
                   <div style={{ position: 'absolute', top: 0, right: 0, left: 0, height: 3, borderRadius: '24px 24px 0 0', background: 'linear-gradient(90deg,#6a4cf5,#d44df0)' }} />
                 )}
 
                 <div style={{ fontSize: 13, fontWeight: 700, color: plan.color, marginBottom: 8, letterSpacing: '0.02em' }}>{plan.name}</div>
 
-                {/* Price */}
                 <div style={{ marginBottom: 2, minHeight: 52, display: 'flex', alignItems: 'baseline' }}>
                   {displayPrice === null
                     ? <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, letterSpacing: '-1.5px', lineHeight: 1 }}>مجاناً</span>
@@ -307,20 +159,14 @@ export default function Pricing() {
                   }
                 </div>
 
-                {/* Period + savings */}
                 <div style={{ marginBottom: 20, minHeight: 34 }}>
                   <div style={{ fontSize: 12, color: T.muted }}>
                     {plan.price === 0 ? 'للأبد' : billing === 'monthly' ? '/ شهر' : '/ سنة'}
                   </div>
                   {savings && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginTop: 3 }}
-                    >
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginTop: 3 }}>
                       وفّر <AnimatedPrice text={savings} />
-                    </motion.div>
+                    </div>
                   )}
                 </div>
 
@@ -341,9 +187,7 @@ export default function Pricing() {
                     ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', boxShadow: '0 4px 16px rgba(106,76,245,0.35)' }
                     : { background: 'rgba(255,255,255,0.06)', color: T.ink, border: `1px solid ${T.hairline}` }
                   ),
-                }}>
-                  ابدأ الآن
-                </Link>
+                }}>ابدأ الآن</Link>
               </motion.div>
             )
           })}

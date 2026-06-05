@@ -2,9 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TickCircle, Lock, ArrowLeft2, Refresh2, Edit } from 'iconsax-react'
 import { PLANS } from '../lib/plans'
+import { useCurrency } from '../context/CurrencyContext'
+import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
+import CurrencySelector from '../components/CurrencySelector'
 
 export default function Subscribe() {
   const navigate = useNavigate()
+  const { currency } = useCurrency()
   const [selectedPlan, setSelectedPlan] = useState('growth')
   const [step, setStep] = useState<'plan' | 'payment'>('plan')
   const [loading, setLoading] = useState(false)
@@ -59,6 +63,9 @@ export default function Subscribe() {
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
               <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, letterSpacing: '-1px', margin: '0 0 10px', color: 'var(--ink)' }}>اختر خطتك</h1>
               <p style={{ fontSize: 16, color: 'var(--ink-muted)' }}>ابدأ مجاناً أو اشترك في برو للحصول على كل المميزات</p>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                <CurrencySelector />
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12, marginBottom: 32 }}>
@@ -97,9 +104,11 @@ export default function Subscribe() {
 
                     <div style={{ fontSize: 12, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
-                      {plan.price > 0 && <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)' }}>$</span>}
-                      <span style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', color: 'var(--ink)', lineHeight: 1 }}>
-                        {plan.price === 0 ? 'مجاناً' : plan.price}
+                      <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-1px', color: 'var(--ink)', lineHeight: 1, direction: 'ltr' }}>
+                        {(() => {
+                          const amount = getPlanAmount(plan.id, currency, 'monthly')
+                          return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
+                        })()}
                       </span>
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 14 }}>{plan.period}</div>

@@ -6,6 +6,9 @@ import {
 } from 'iconsax-react'
 import { storesApi, teamApi } from '../lib/api'
 import { PLANS } from '../lib/plans'
+import { useCurrency } from '../context/CurrencyContext'
+import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
+import CurrencySelector from '../components/CurrencySelector'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
@@ -107,6 +110,7 @@ function AlertBanner({ sub }: { sub: SubStatus }) {
 
 export default function Billing() {
   const navigate = useNavigate()
+  const { currency } = useCurrency()
   const [sub, setSub] = useState<SubStatus | null>(null)
   const [storeCount, setStoreCount] = useState(0)
   const [memberCount, setMemberCount] = useState(0)
@@ -317,7 +321,10 @@ export default function Billing() {
 
           {/* Plans comparison */}
           <div id="plans-section">
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>اختر الباقة المناسبة لك</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>اختر الباقة المناسبة لك</div>
+              <CurrencySelector />
+            </div>
 
             <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, alignItems: 'stretch' }}>
               {PLANS.map(plan => {
@@ -343,8 +350,11 @@ export default function Billing() {
 
                     <div style={{ fontSize: 14, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
                     <div style={{ marginBottom: 14 }}>
-                      <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px' }}>
-                        {plan.price === 0 ? 'مجاناً' : `$${plan.price}`}
+                      <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px', direction: 'ltr', display: 'inline-block' }}>
+                        {(() => {
+                          const amount = getPlanAmount(plan.id, currency, 'monthly')
+                          return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
+                        })()}
                       </span>
                       {plan.price > 0 && <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{plan.period}</span>}
                     </div>
