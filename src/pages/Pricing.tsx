@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PageLayout from '../components/PageLayout'
-import { TickCircle, ArrowLeft2 } from 'iconsax-react'
+import { ArrowLeft2 } from 'iconsax-react'
 import { PLANS } from '../lib/plans'
 import { CURRENCIES, PLAN_PRICES, formatPrice } from '../lib/currency'
 import { useCurrency } from '../context/CurrencyContext'
 import CurrencySelector from '../components/CurrencySelector'
+import PlanCard from '../components/PlanCard'
 
 const T = {
   ink: '#f0f0f5',
@@ -121,76 +122,26 @@ export default function Pricing() {
 
         {/* Plans grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, alignItems: 'stretch', marginBottom: 80, paddingTop: 18 }}>
-          {PLANS.map((plan, i) => {
-            const displayPrice = getDisplayPrice(plan.id)
-            const savings = getSavings(plan.id)
-            return (
-              <motion.div key={plan.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.45 }}
-                whileHover={{ y: -8, boxShadow: plan.featured ? '0 32px 80px rgba(106,76,245,0.3)' : '0 24px 56px rgba(0,0,0,0.4)' }}
-                style={{
-                  background: plan.featured ? 'linear-gradient(135deg,rgba(106,76,245,0.14),rgba(212,77,240,0.07))' : T.surface,
-                  borderRadius: 24, padding: '28px 22px',
-                  border: plan.featured ? '1px solid rgba(106,76,245,0.4)' : `1px solid ${T.hairline}`,
-                  position: 'relative', display: 'flex', flexDirection: 'column',
-                  boxShadow: plan.featured ? '0 16px 48px rgba(106,76,245,0.15)' : 'none',
-                }}>
-
-                {plan.tag && (
-                  <div style={{ position: 'absolute', top: -13, right: 16 }}>
-                    <span style={{ background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 9999, padding: '4px 12px', fontSize: 10, fontWeight: 700 }}>{plan.tag}</span>
-                  </div>
-                )}
-                {plan.featured && (
-                  <div style={{ position: 'absolute', top: 0, right: 0, left: 0, height: 3, borderRadius: '24px 24px 0 0', background: 'linear-gradient(90deg,#6a4cf5,#d44df0)' }} />
-                )}
-
-                <div style={{ fontSize: 13, fontWeight: 700, color: plan.color, marginBottom: 8, letterSpacing: '0.02em' }}>{plan.name}</div>
-
-                <div style={{ marginBottom: 2, minHeight: 52, display: 'flex', alignItems: 'baseline' }}>
-                  {displayPrice === null
-                    ? <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, letterSpacing: '-1.5px', lineHeight: 1 }}>مجاناً</span>
-                    : <span style={{ fontSize: currencyInfo.decimals > 0 ? 28 : 36, fontWeight: 800, color: T.ink, letterSpacing: '-1.5px', lineHeight: 1, direction: 'ltr' }}>
-                        <AnimatedPrice text={displayPrice} />
-                      </span>
-                  }
-                </div>
-
-                <div style={{ marginBottom: 20, minHeight: 34 }}>
-                  <div style={{ fontSize: 12, color: T.muted }}>
-                    {plan.price === 0 ? 'للأبد' : billing === 'monthly' ? '/ شهر' : '/ سنة'}
-                  </div>
-                  {savings && (
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginTop: 3 }}>
-                      وفّر <AnimatedPrice text={savings} />
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 24, flex: 1 }}>
-                  {plan.features.map(f => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
-                      <TickCircle size={13} color={plan.featured ? '#22c55e' : plan.color} variant="Outline" style={{ flexShrink: 0, marginTop: 2 }} />
-                      <span style={{ fontSize: 12, color: plan.featured ? T.slate : T.muted, lineHeight: 1.45 }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-
+          {PLANS.map((plan, i) => (
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              currency={currency}
+              billing={billing}
+              index={i}
+              cta={
                 <Link to="/signup" style={{
                   display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6,
-                  textDecoration: 'none', borderRadius: 9999, padding: '11px 16px',
+                  textDecoration: 'none', borderRadius: 9999, padding: '12px 16px',
                   fontSize: 13, fontWeight: 700,
                   ...(plan.featured
                     ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', boxShadow: '0 4px 16px rgba(106,76,245,0.35)' }
                     : { background: 'rgba(255,255,255,0.06)', color: T.ink, border: `1px solid ${T.hairline}` }
                   ),
                 }}>ابدأ الآن</Link>
-              </motion.div>
-            )
-          })}
+              }
+            />
+          ))}
         </div>
 
         {/* Comparison table */}

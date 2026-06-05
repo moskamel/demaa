@@ -7,6 +7,7 @@ import { PLANS } from '../lib/plans'
 import { useCurrency } from '../context/CurrencyContext'
 import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
 import CurrencySelector from '../components/CurrencySelector'
+import PlanCard from '../components/PlanCard'
 import {
   ArrowLeft2, TickCircle, ArrowDown2, Flash, Box, ChartSquare,
   MessageText1, ShieldTick, Global, Star1, Clock, TrendUp,
@@ -627,63 +628,24 @@ export default function Landing() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, position: 'relative', zIndex: 1, paddingTop: 18 }}>
           {PLANS.map((tier, i) => (
-            <motion.div key={tier.id}
-              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
-              transition={{ delay: i * 0.1, duration: 0.45 }}
-              whileHover={{ y: -8, boxShadow: tier.featured ? '0 32px 80px rgba(106,76,245,0.3)' : '0 24px 56px rgba(0,0,0,0.4)' }}
-              style={{
-                background: tier.featured ? 'linear-gradient(135deg,rgba(106,76,245,0.15),rgba(212,77,240,0.08))' : 'rgba(255,255,255,0.03)',
-                borderRadius: 28, padding: '32px 28px', position: 'relative',
-                border: tier.featured ? '1px solid rgba(106,76,245,0.4)' : `1px solid ${T.hairline}`,
-                display: 'flex', flexDirection: 'column',
-                boxShadow: tier.featured ? '0 20px 60px rgba(106,76,245,0.15)' : 'none',
-              }}>
-              {tier.tag && (
-                <div style={{ position: 'absolute', top: -14, right: 24 }}>
-                  <span style={{ background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 9999, padding: '4px 14px', fontSize: 11, fontWeight: 700 }}>{tier.tag}</span>
-                </div>
-              )}
-              <div style={{ fontSize: 13, fontWeight: 700, color: tier.color, marginBottom: 10, letterSpacing: '0.02em' }}>{tier.name}</div>
-              <div style={{ direction: 'ltr', marginBottom: 4 }}>
-                <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, fontVariantNumeric: 'tabular-nums', letterSpacing: '-2px', lineHeight: 1 }}>
-                  {(() => {
-                    const amount = getPlanAmount(tier.id, currency, pricingBilling)
-                    return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
-                  })()}
-                </span>
-              </div>
-              <div style={{ fontSize: 12, color: T.slate, marginBottom: pricingBilling === 'yearly' ? 4 : 28 }}>
-                {tier.price === 0 ? 'للأبد' : pricingBilling === 'monthly' ? '/ شهر' : '/ سنة'}
-              </div>
-              {pricingBilling === 'yearly' && tier.price > 0 && (() => {
-                const currInfo = CURRENCIES.find(c => c.code === currency)!
-                const monthly = getPlanAmount(tier.id, currency, 'monthly')
-                const yearly = getPlanAmount(tier.id, currency, 'yearly')
-                const saved = monthly * 12 - yearly
-                return saved > 0 ? (
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginBottom: 16 }}>
-                    وفّر {formatPrice(saved, currInfo)}
-                  </div>
-                ) : <div style={{ marginBottom: 16 }} />
-              })()}
-              {pricingBilling === 'monthly' && <div style={{ marginBottom: 0 }} />}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 28, flex: 1 }}>
-                {tier.features.map(f => (
-                  <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <TickCircle size={14} color={tier.featured ? '#22c55e' : T.muted} variant="Outline" style={{ flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, color: tier.featured ? T.ink : T.slate }}>{f}</span>
-                  </div>
-                ))}
-              </div>
-              <Link to={ctaTo} style={{
-                display: 'flex', justifyContent: 'center', textDecoration: 'none',
-                borderRadius: 9999, padding: '13px 24px', fontSize: 14, fontWeight: 700,
-                ...(tier.featured
-                  ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', boxShadow: '0 4px 20px rgba(106,76,245,0.4)' }
-                  : { background: 'rgba(255,255,255,0.06)', color: T.ink, border: `1px solid ${T.hairline}` }
-                ),
-              }}>ابدأ الآن</Link>
-            </motion.div>
+            <PlanCard
+              key={tier.id}
+              plan={tier}
+              currency={currency}
+              billing={pricingBilling}
+              index={i}
+              cta={
+                <Link to={ctaTo} style={{
+                  display: 'flex', justifyContent: 'center', alignItems: 'center',
+                  textDecoration: 'none', borderRadius: 9999, padding: '12px 16px',
+                  fontSize: 13, fontWeight: 700,
+                  ...(tier.featured
+                    ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', boxShadow: '0 4px 20px rgba(106,76,245,0.4)' }
+                    : { background: 'rgba(255,255,255,0.06)', color: T.ink, border: `1px solid ${T.hairline}` }
+                  ),
+                }}>ابدأ الآن</Link>
+              }
+            />
           ))}
         </div>
         <p style={{ textAlign: 'center', marginTop: 28, fontSize: 13, color: T.muted, position: 'relative', zIndex: 1 }}>

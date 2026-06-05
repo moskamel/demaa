@@ -9,6 +9,7 @@ import { PLANS } from '../lib/plans'
 import { useCurrency } from '../context/CurrencyContext'
 import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
 import CurrencySelector from '../components/CurrencySelector'
+import PlanCard from '../components/PlanCard'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
@@ -343,86 +344,50 @@ export default function Billing() {
               </div>
             </div>
 
-            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, alignItems: 'stretch', paddingTop: 14 }}>
-              {PLANS.map(plan => {
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, paddingTop: 14 }}>
+              {PLANS.map((plan, i) => {
                 const isCurrent = plan.id === sub?.planId
                 const isUpgrade = PLANS.findIndex(p => p.id === plan.id) > PLANS.findIndex(p => p.id === sub?.planId)
                 const isProcessing = upgrading === plan.id
-
                 return (
-                  <StaggerItem key={plan.id} style={{ height: '100%' }}><div style={{
-                    background: plan.featured ? 'rgba(106,76,245,0.06)' : 'var(--canvas-soft)',
-                    borderRadius: 14,
-                    border: isCurrent ? `2px solid ${plan.color}` : plan.featured ? '1px solid rgba(106,76,245,0.3)' : '1px solid var(--hairline)',
-                    padding: '18px 16px',
-                    position: 'relative',
-                    display: 'flex', flexDirection: 'column',
-                    height: '100%', boxSizing: 'border-box',
-                  }}>
-                    {plan.tag && (
-                      <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 10, fontWeight: 700, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 20, padding: '3px 8px' }}>
-                        {plan.tag}
-                      </div>
-                    )}
-
-                    <div style={{ fontSize: 14, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
-                    <div style={{ marginBottom: billing === 'yearly' && plan.price > 0 ? 4 : 14 }}>
-                      <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px', direction: 'ltr', display: 'inline-block' }}>
-                        {(() => {
-                          const amount = getPlanAmount(plan.id, currency, billing)
-                          return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
-                        })()}
-                      </span>
-                      {plan.price > 0 && <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{billing === 'monthly' ? '/ شهر' : '/ سنة'}</span>}
-                    </div>
-                    {billing === 'yearly' && plan.price > 0 && (() => {
-                      const currInfo = CURRENCIES.find(c => c.code === currency)!
-                      const saved = getPlanAmount(plan.id, currency, 'monthly') * 12 - getPlanAmount(plan.id, currency, 'yearly')
-                      return saved > 0 ? (
-                        <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginBottom: 10 }}>وفّر {formatPrice(saved, currInfo)}</div>
-                      ) : <div style={{ marginBottom: 10 }} />
-                    })()}
-
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
-                      {plan.features.map(f => (
-                        <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                          <TickCircle size={12} color={plan.color} variant="Outline" style={{ marginTop: 2, flexShrink: 0 }} />
-                          <span style={{ fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>{f}</span>
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    currency={currency}
+                    billing={billing}
+                    index={i}
+                    selected={isCurrent}
+                    cta={
+                      isCurrent ? (
+                        <div style={{ borderRadius: 9999, padding: '10px 16px', background: `${plan.color}20`, color: plan.color, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                          ✓ باقتك الحالية
                         </div>
-                      ))}
-                    </div>
-
-                    {isCurrent ? (
-                      <div style={{ padding: '8px', borderRadius: 8, background: `${plan.color}15`, color: plan.color, fontSize: 12, fontWeight: 600, textAlign: 'center' }}>
-                        ✓ باقتك الحالية
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handleUpgrade(plan.id)}
-                        disabled={!!upgrading}
-                        style={{
-                          padding: '8px', borderRadius: 8, border: 'none', cursor: upgrading ? 'not-allowed' : 'pointer',
-                          background: isUpgrade ? `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)` : 'var(--canvas)',
-                          color: isUpgrade ? '#fff' : 'var(--ink-muted)',
-                          fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                          opacity: upgrading && !isProcessing ? 0.5 : 1,
-                          transition: 'opacity 0.15s',
-                        }}
-                      >
-                        {isProcessing ? (
-                          <span>جارٍ التغيير...</span>
-                        ) : isUpgrade ? (
-                          <><ArrowUp size={12} /> ترقية</>
-                        ) : (
-                          'تخفيض'
-                        )}
-                      </button>
-                    )}
-                  </div></StaggerItem>
+                      ) : (
+                        <button
+                          onClick={() => handleUpgrade(plan.id)}
+                          disabled={!!upgrading}
+                          style={{
+                            width: '100%', padding: '10px 16px', borderRadius: 9999, border: 'none',
+                            cursor: upgrading ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                            background: plan.featured
+                              ? 'linear-gradient(135deg,#6a4cf5,#d44df0)'
+                              : isUpgrade ? `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)` : 'rgba(255,255,255,0.06)',
+                            color: isUpgrade || plan.featured ? '#fff' : '#9090a2',
+                            fontSize: 12, fontWeight: 700,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                            opacity: upgrading && !isProcessing ? 0.5 : 1,
+                            transition: 'opacity 0.15s',
+                            border: isUpgrade || plan.featured ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                          } as React.CSSProperties}
+                        >
+                          {isProcessing ? 'جارٍ التغيير...' : isUpgrade ? <><ArrowUp size={12} /> ترقية</> : 'تخفيض'}
+                        </button>
+                      )
+                    }
+                  />
                 )
               })}
-            </StaggerList>
+            </div>
           </div>
 
         </PageEnter>

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TickCircle, Lock, ArrowLeft2, Refresh2, Edit } from 'iconsax-react'
+import { Lock, ArrowLeft2, Refresh2, Edit } from 'iconsax-react'
 import { PLANS } from '../lib/plans'
 import { useCurrency } from '../context/CurrencyContext'
 import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
 import CurrencySelector from '../components/CurrencySelector'
+import PlanCard from '../components/PlanCard'
 
 export default function Subscribe() {
   const navigate = useNavigate()
@@ -84,69 +85,29 @@ export default function Subscribe() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12, marginBottom: 32, paddingTop: 14 }}>
-              {PLANS.map(plan => {
-                const isFeatured = !!plan.featured
-                const isSelected = selectedPlan === plan.id
-                return (
-                  <div
-                    key={plan.id}
-                    onClick={() => setSelectedPlan(plan.id)}
-                    style={{
-                      borderRadius: 18, padding: '22px 18px', cursor: 'pointer', position: 'relative',
-                      background: isFeatured ? 'linear-gradient(135deg, rgba(106,76,245,0.12), rgba(212,77,240,0.06))' : 'var(--canvas-soft)',
-                      border: `2px solid ${isSelected ? plan.color : isFeatured ? 'rgba(106,76,245,0.3)' : 'var(--hairline)'}`,
-                      transition: 'border-color 0.15s, box-shadow 0.15s',
-                      boxShadow: isSelected ? `0 0 0 4px ${plan.color}22` : 'none',
-                      display: 'flex', flexDirection: 'column',
-                    }}
-                  >
-                    {plan.tag && (
-                      <div style={{ position: 'absolute', top: -12, right: 12 }}>
-                        <span style={{ background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700 }}>{plan.tag}</span>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-                      <div style={{
-                        width: 20, height: 20, borderRadius: '50%',
-                        border: `2px solid ${isSelected ? plan.color : 'var(--hairline)'}`,
-                        background: isSelected ? plan.color : 'transparent',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        {isSelected && <TickCircle size={11} color="#fff" variant="Bold" />}
-                      </div>
+              {PLANS.map((plan, i) => (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  currency={currency}
+                  billing={billing}
+                  index={i}
+                  selected={selectedPlan === plan.id}
+                  onClick={() => setSelectedPlan(plan.id)}
+                  cta={
+                    <div style={{
+                      borderRadius: 9999, padding: '10px 16px', textAlign: 'center',
+                      fontSize: 12, fontWeight: 700,
+                      ...(plan.featured
+                        ? { background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff' }
+                        : { background: 'rgba(255,255,255,0.06)', color: '#f0f0f5', border: '1px solid rgba(255,255,255,0.08)' }
+                      ),
+                    }}>
+                      {selectedPlan === plan.id ? '✓ محدد' : 'اختر'}
                     </div>
-
-                    <div style={{ fontSize: 12, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
-                      <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-1px', color: 'var(--ink)', lineHeight: 1, direction: 'ltr' }}>
-                        {(() => {
-                          const amount = getPlanAmount(plan.id, currency, billing)
-                          return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
-                        })()}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: billing === 'yearly' && plan.price > 0 ? 4 : 14 }}>
-                      {plan.price === 0 ? plan.period : billing === 'monthly' ? '/ شهر' : '/ سنة'}
-                    </div>
-                    {billing === 'yearly' && plan.price > 0 && (() => {
-                      const currInfo = CURRENCIES.find(c => c.code === currency)!
-                      const saved = getPlanAmount(plan.id, currency, 'monthly') * 12 - getPlanAmount(plan.id, currency, 'yearly')
-                      return saved > 0 ? (
-                        <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginBottom: 10 }}>وفّر {formatPrice(saved, currInfo)}</div>
-                      ) : <div style={{ marginBottom: 10 }} />
-                    })()}
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-                      {plan.features.map(f => (
-                        <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>
-                          <TickCircle size={11} color={plan.color} variant="Outline" style={{ flexShrink: 0, marginTop: 1 }} /> {f}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
+                  }
+                />
+              ))}
             </div>
 
             <button onClick={handleContinue} style={{
