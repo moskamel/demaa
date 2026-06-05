@@ -456,11 +456,14 @@ export default function Dashboard() {
                   placeholder="اكتب أمرك أو سؤالك..."
                   style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#fff', fontSize: 16, fontFamily: 'inherit', direction: 'rtl', letterSpacing: '-0.2px' }}
                 />
-                <VoiceMicButton onTranscript={t => { setInput(t); setTimeout(() => handleSend(t), 100) }} size={18} color="rgba(255,255,255,0.5)" />
-                <button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
-                  style={{ width: 34, height: 34, borderRadius: '50%', border: 'none', flexShrink: 0, background: input.trim() ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() ? 'pointer' : 'default', transition: 'background 0.2s' }}>
-                  <Send2 size={14} color={input.trim() ? '#fff' : 'rgba(255,255,255,0.3)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
-                </button>
+                {input.trim() ? (
+                  <button onClick={() => !isTyping && handleSend(input)} disabled={isTyping}
+                    style={{ width: 34, height: 34, borderRadius: '50%', border: 'none', flexShrink: 0, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    <Send2 size={14} color="#fff" variant="Outline" style={{ transform: 'scaleX(-1)' }} />
+                  </button>
+                ) : (
+                  <VoiceMicButton onTranscript={t => { setInput(t); setTimeout(() => handleSend(t), 100) }} size={18} color="rgba(255,255,255,0.5)" />
+                )}
               </div>
 
               {/* Quick prompts */}
@@ -562,13 +565,18 @@ export default function Dashboard() {
                   onFocus={e => { e.target.style.boxShadow = 'rgba(0,153,255,0.15) 0 0 0 1px'; e.target.style.borderColor = '#0099ff' }}
                   onBlur={e => { e.target.style.boxShadow = 'none'; e.target.style.borderColor = 'var(--hairline)' }}
                 />
-                <VoiceMicButton onTranscript={t => { setInput(t); setTimeout(() => handleSend(t), 100) }} size={18} />
-                <motion.button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
-                  whileHover={input.trim() && !isTyping ? { scale: 1.1 } : {}}
-                  whileTap={input.trim() && !isTyping ? { scale: 0.9 } : {}}
-                  style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: input.trim() && !isTyping ? 'var(--primary)' : 'var(--canvas-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: input.trim() && !isTyping ? 'pointer' : 'default', transition: 'background 0.2s' }}>
-                  <Send2 size={14} color={input.trim() && !isTyping ? '#000' : 'var(--ink-muted)'} variant="Outline" style={{ transform: 'scaleX(-1)' }} />
-                </motion.button>
+                {input.trim() ? (
+                  <motion.button onClick={() => !isTyping && handleSend(input)} disabled={!input.trim() || isTyping}
+                    initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.15 }}
+                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                    style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.2s' }}>
+                    <Send2 size={14} color="#000" variant="Outline" style={{ transform: 'scaleX(-1)' }} />
+                  </motion.button>
+                ) : (
+                  <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.15 }}>
+                    <VoiceMicButton onTranscript={t => { setInput(t); setTimeout(() => handleSend(t), 100) }} size={18} />
+                  </motion.div>
+                )}
               </div>
             </div>
           </>
