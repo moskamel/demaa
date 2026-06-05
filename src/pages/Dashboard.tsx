@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useConfirm } from '../hooks/useConfirm'
@@ -190,19 +191,42 @@ function renderMarkdown(text: string) {
 // ── QuickTag with popup ───────────────────────────────────────────────────────
 function QuickTag({ q, onSend, dark = false }: { q: typeof QUICK[0]; onSend: (cmd: string) => void; dark?: boolean }) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({})
+  const btnRef = useRef<HTMLButtonElement>(null)
+
+  const updatePosition = useCallback(() => {
+    if (!btnRef.current) return
+    const r = btnRef.current.getBoundingClientRect()
+    setPopupStyle({
+      position: 'fixed',
+      bottom: window.innerHeight - r.top + 8,
+      right: window.innerWidth - r.right,
+      zIndex: 9999,
+    })
+  }, [])
+
+  const toggle = () => {
+    if (!open) updatePosition()
+    setOpen(o => !o)
+  }
 
   useEffect(() => {
     if (!open) return
-    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    const close = (e: MouseEvent) => {
+      if (btnRef.current && !btnRef.current.contains(e.target as Node)) {
+        const popup = document.getElementById('quick-tag-popup')
+        if (!popup || !popup.contains(e.target as Node)) setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
   }, [open])
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <>
       <button
-        onClick={() => setOpen(o => !o)}
+        ref={btnRef}
+        onClick={toggle}
         style={{
           background: open
             ? 'linear-gradient(135deg,rgba(106,76,245,0.3),rgba(212,77,240,0.2))'
@@ -211,22 +235,22 @@ function QuickTag({ q, onSend, dark = false }: { q: typeof QUICK[0]; onSend: (cm
           border: open ? '1px solid rgba(106,76,245,0.5)' : dark ? '1px solid var(--hairline)' : '1px solid rgba(255,255,255,0.1)',
           borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 500,
           cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit',
+          flexShrink: 0,
           transition: 'all 0.15s',
         }}
-        onMouseEnter={e => { if (!open) { e.currentTarget.style.background = dark ? 'var(--canvas-soft-2)' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = dark ? 'var(--ink)' : '#fff' } }}
-        onMouseLeave={e => { if (!open) { e.currentTarget.style.background = dark ? 'var(--canvas-soft)' : 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = dark ? 'var(--ink-muted)' : 'rgba(255,255,255,0.7)' } }}
       >
         {q.label}
       </button>
 
-      {open && (
-        <div style={{
-          position: 'absolute', bottom: 'calc(100% + 8px)', right: 0,
+      {open && createPortal(
+        <div id="quick-tag-popup" style={{
+          ...popupStyle,
           background: '#1a1a24', border: '1px solid rgba(106,76,245,0.3)',
-          borderRadius: 14, padding: 6, zIndex: 200, minWidth: 220,
+          borderRadius: 14, padding: 6, minWidth: 220,
           boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           animation: 'fadeInUp 0.15s ease',
         }}>
+          <style>{`@keyframes fadeInUp { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }`}</style>
           {q.suggestions.map((s, i) => (
             <button key={i} onClick={() => { onSend(s); setOpen(false) }}
               style={{
@@ -241,10 +265,10 @@ function QuickTag({ q, onSend, dark = false }: { q: typeof QUICK[0]; onSend: (cm
               {s}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
-      <style>{`@keyframes fadeInUp { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }`}</style>
-    </div>
+    </>
   )
 }
 
