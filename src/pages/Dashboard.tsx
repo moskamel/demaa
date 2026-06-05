@@ -33,13 +33,83 @@ const paymentLabels: Record<string, string> = {
 
 // ── Quick actions ────────────────────────────────────────────────────────────
 const QUICK = [
-  { label: 'الطلبات', cmd: 'وريني الطلبات المعلقة' },
-  { label: 'مبيعات اليوم', cmd: 'مبيعات اليوم' },
-  { label: 'المخزون', cmd: 'كام باقي من المنتجات' },
-  { label: 'الشحن', cmd: 'اشحن الطلبات المقبولة' },
-  { label: 'المنتجات', cmd: 'وريني المنتجات' },
-  { label: 'كوبون خصم', cmd: 'اعمل كوبون خصم 15%' },
-  { label: 'الأنشطة', cmd: 'سجل الأنشطة' },
+  {
+    label: 'الطلبات',
+    cmd: 'وريني الطلبات المعلقة',
+    suggestions: [
+      'كم عدد الطلبات اليوم؟',
+      'وريني الطلبات المعلقة',
+      'وريني الطلبات الملغية',
+      'ما متوسط قيمة الطلب؟',
+      'وريني آخر 10 طلبات',
+    ],
+  },
+  {
+    label: 'مبيعات اليوم',
+    cmd: 'مبيعات اليوم',
+    suggestions: [
+      'كم مبيعات اليوم؟',
+      'قارن مبيعات اليوم بالأمس',
+      'ما أكثر المنتجات مبيعاً اليوم؟',
+      'وريني إيرادات هذا الأسبوع',
+      'وريني تقرير المبيعات الشهري',
+    ],
+  },
+  {
+    label: 'المخزون',
+    cmd: 'كام باقي من المنتجات',
+    suggestions: [
+      'ما المنتجات التي تنفد قريباً؟',
+      'كم باقي من المنتجات؟',
+      'وريني المنتجات غير المتوفرة',
+      'نبهني عند نفاد المخزون',
+      'ما أكثر المنتجات طلباً؟',
+    ],
+  },
+  {
+    label: 'الشحن',
+    cmd: 'اشحن الطلبات المقبولة',
+    suggestions: [
+      'اشحن الطلبات المقبولة',
+      'كم طلب في انتظار الشحن؟',
+      'وريني الطلبات المشحونة اليوم',
+      'ما متوسط وقت التوصيل؟',
+      'وريني الطلبات المتأخرة',
+    ],
+  },
+  {
+    label: 'المنتجات',
+    cmd: 'وريني المنتجات',
+    suggestions: [
+      'وريني جميع المنتجات',
+      'ما أغلى منتج لدي؟',
+      'وريني المنتجات غير النشطة',
+      'أضف منتج جديد',
+      'ما أكثر المنتجات ربحاً؟',
+    ],
+  },
+  {
+    label: 'كوبون خصم',
+    cmd: 'اعمل كوبون خصم 15%',
+    suggestions: [
+      'اعمل كوبون خصم 10%',
+      'اعمل كوبون خصم 15%',
+      'اعمل كوبون خصم 20%',
+      'وريني الكوبونات النشطة',
+      'كم مرة استُخدم كل كوبون؟',
+    ],
+  },
+  {
+    label: 'الأنشطة',
+    cmd: 'سجل الأنشطة',
+    suggestions: [
+      'وريني سجل الأنشطة',
+      'ما آخر العمليات في المتجر؟',
+      'وريني تقرير الأداء',
+      'من أكثر العملاء شراءً؟',
+      'وريني إحصائيات هذا الشهر',
+    ],
+  },
 ]
 
 
@@ -115,6 +185,67 @@ function renderMarkdown(text: string) {
       </span>
     )
   })
+}
+
+// ── QuickTag with popup ───────────────────────────────────────────────────────
+function QuickTag({ q, onSend, dark = false }: { q: typeof QUICK[0]; onSend: (cmd: string) => void; dark?: boolean }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          background: open
+            ? 'linear-gradient(135deg,rgba(106,76,245,0.3),rgba(212,77,240,0.2))'
+            : dark ? 'var(--canvas-soft)' : 'rgba(255,255,255,0.07)',
+          color: open ? '#fff' : dark ? 'var(--ink-muted)' : 'rgba(255,255,255,0.7)',
+          border: open ? '1px solid rgba(106,76,245,0.5)' : dark ? '1px solid var(--hairline)' : '1px solid rgba(255,255,255,0.1)',
+          borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 500,
+          cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit',
+          transition: 'all 0.15s',
+        }}
+        onMouseEnter={e => { if (!open) { e.currentTarget.style.background = dark ? 'var(--canvas-soft-2)' : 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = dark ? 'var(--ink)' : '#fff' } }}
+        onMouseLeave={e => { if (!open) { e.currentTarget.style.background = dark ? 'var(--canvas-soft)' : 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = dark ? 'var(--ink-muted)' : 'rgba(255,255,255,0.7)' } }}
+      >
+        {q.label}
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', bottom: 'calc(100% + 8px)', right: 0,
+          background: '#1a1a24', border: '1px solid rgba(106,76,245,0.3)',
+          borderRadius: 14, padding: 6, zIndex: 200, minWidth: 220,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          animation: 'fadeInUp 0.15s ease',
+        }}>
+          {q.suggestions.map((s, i) => (
+            <button key={i} onClick={() => { onSend(s); setOpen(false) }}
+              style={{
+                width: '100%', display: 'block', textAlign: 'right', background: 'none',
+                border: 'none', borderRadius: 9, padding: '9px 13px',
+                fontSize: 13, color: 'rgba(255,255,255,0.8)', cursor: 'pointer',
+                fontFamily: 'inherit', transition: 'background 0.1s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(106,76,245,0.15)'; e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)' }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+      <style>{`@keyframes fadeInUp { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }`}</style>
+    </div>
+  )
 }
 
 function MsgActions({ text, onEdit, isUser }: { text: string; onEdit?: () => void; isUser?: boolean }) {
@@ -468,13 +599,8 @@ export default function Dashboard() {
 
               {/* Quick prompts */}
               <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {QUICK.map((q, i) => (
-                  <button key={q.label} onClick={() => handleSend(q.cmd)}
-                    className="animate-fade-in btn-press"
-                    style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 100, padding: '6px 14px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', animationDelay: `${i * 50}ms`, transition: 'background 0.15s, color 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-                  >{q.label}</button>
+                {QUICK.map(q => (
+                  <QuickTag key={q.label} q={q} onSend={handleSend} />
                 ))}
               </div>
             </div>
@@ -540,15 +666,8 @@ export default function Dashboard() {
             <div style={{ margin: '0 200px 20px', borderRadius: 15, background: 'var(--canvas-soft)', padding: '12px 20px 14px', flexShrink: 0, boxShadow: '0 -4px 24px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.18)' }}>
               <div style={{ position: 'relative', marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
-                  {QUICK.map((q, i) => (
-                    <motion.button key={q.label} onClick={() => handleSend(q.cmd)}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.25 }}
-                      whileHover={{ scale: 1.05, backgroundColor: 'var(--canvas-soft-2)', color: 'var(--ink)' }}
-                      whileTap={{ scale: 0.95 }}
-                      style={{ background: 'var(--canvas-soft)', color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 100, padding: '5px 12px', fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '-0.12px', fontFamily: 'inherit' }}
-                    >{q.label}</motion.button>
+                  {QUICK.map(q => (
+                    <QuickTag key={q.label} q={q} onSend={handleSend} dark />
                   ))}
                 </div>
                 <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 32, background: 'linear-gradient(to left, transparent, var(--canvas))', pointerEvents: 'none' }} />
