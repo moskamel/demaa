@@ -57,7 +57,8 @@ const COUNTRY_CURRENCY: Record<string, CurrencyCode> = {
 function formatPrice(amount: number, currency: CurrencyInfo): string {
   if (amount === 0) return ''
   const num = amount.toFixed(currency.decimals)
-  return currency.symbolAfter ? `${num} ${currency.symbol}` : `${currency.symbol}${num}`
+  // Always put symbol on the left for consistent LTR price display
+  return currency.code === 'USD' ? `${currency.symbol}${num}` : `${currency.symbol} ${num}`
 }
 
 const COMPARE_ROWS = [
@@ -264,7 +265,7 @@ export default function Pricing() {
         )}
 
         {/* Plans grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, alignItems: 'stretch', marginBottom: 80 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, alignItems: 'stretch', marginBottom: 80, paddingTop: 18 }}>
           {PLANS.map((plan, i) => {
             const displayPrice = getDisplayPrice(plan.id)
             const savings = getSavings(plan.id)
