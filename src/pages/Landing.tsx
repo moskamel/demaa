@@ -618,7 +618,7 @@ export default function Landing() {
                 </div>
               )}
               <div style={{ fontSize: 13, fontWeight: 700, color: tier.color, marginBottom: 10, letterSpacing: '0.02em' }}>{tier.name}</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6, direction: 'ltr', justifyContent: 'flex-end' }}>
                 {tier.price > 0 && <span style={{ fontSize: 14, fontWeight: 700, color: T.slate }}>$</span>}
                 <span style={{ fontSize: 52, fontWeight: 800, color: T.ink, fontVariantNumeric: 'tabular-nums', letterSpacing: '-3px', lineHeight: 1 }}>{tier.price === 0 ? 'مجاناً' : tier.price}</span>
               </div>
