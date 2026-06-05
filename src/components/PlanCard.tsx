@@ -110,9 +110,9 @@ export default function PlanCard({ plan, currency, billing, cta, selected, index
       {/* Price */}
       <div style={{ marginBottom: 4 }}>
         {displayPrice === null ? (
-          <span style={{ fontSize: 52, fontWeight: 800, color: T.ink, letterSpacing: '-2px', lineHeight: 1 }}>مجاناً</span>
+          <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, letterSpacing: '-2px', lineHeight: 1 }}>مجاناً</span>
         ) : (
-          <span style={{ fontSize: isSmallCurrency ? 36 : 56, fontWeight: 800, color: T.ink, letterSpacing: '-2px', lineHeight: 1, direction: 'ltr', display: 'inline-block' }}>
+          <span style={{ fontSize: isSmallCurrency ? 26 : 36, fontWeight: 800, color: T.ink, letterSpacing: '-1.5px', lineHeight: 1, direction: 'ltr', display: 'inline-block' }}>
             <AnimatedPrice text={displayPrice} />
           </span>
         )}
