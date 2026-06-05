@@ -150,7 +150,7 @@ export default function Changelog() {
           {subscribed ? (
             <div style={{ fontSize: 16, color: '#22c55e', fontWeight: 600 }}>✅ تم الاشتراك! ستصلك التحديثات مباشرة.</div>
           ) : (
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'stretch' }}>
               <input
                 type="email"
                 value={email}
@@ -160,16 +160,18 @@ export default function Changelog() {
                   background: 'var(--canvas)',
                   border: '1px solid var(--hairline)',
                   borderRadius: 9999,
-                  padding: '13px 20px',
+                  padding: '0 20px',
                   fontSize: 14,
                   color: 'var(--ink)',
                   minWidth: 280,
                   outline: 'none',
+                  height: 'auto',
+                  boxSizing: 'border-box',
                 }}
               />
               <button
                 onClick={() => email && setSubscribed(true)}
-                style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', color: '#fff', borderRadius: 9999, padding: '13px 28px', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                style={{ background: 'linear-gradient(135deg, #6a4cf5, #d44df0)', color: '#fff', borderRadius: 9999, padding: '13px 28px', fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}
               >
                 اشترك ←
               </button>
