@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Lock, ArrowLeft2, Refresh2, Edit } from 'iconsax-react'
 import { PLANS } from '../lib/plans'
 import { useCurrency } from '../context/CurrencyContext'
-import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
 import CurrencySelector from '../components/CurrencySelector'
 import PlanCard from '../components/PlanCard'
 

@@ -58,25 +58,11 @@ export default function Pricing() {
 
   const getPlanPrice = (planId: string) => (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[billingIdx]
 
-  const getDisplayPrice = (planId: string) => {
-    const amount = getPlanPrice(planId)
-    if (amount === 0) return null
-    return formatPrice(amount, currencyInfo)
-  }
-
   const getComparePrice = (planId: string) => {
     const amount = getPlanPrice(planId)
     return amount === 0 ? 'مجاناً' : formatPrice(amount, currencyInfo)
   }
 
-  const getSavings = (planId: string) => {
-    if (billing !== 'yearly') return null
-    const monthly = (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[0]
-    const yearly  = (PLAN_PRICES[planId]?.[currency] ?? [0, 0])[1]
-    if (!monthly || !yearly) return null
-    const saved = monthly * 12 - yearly
-    return saved > 0 ? formatPrice(saved, currencyInfo) : null
-  }
 
   return (
     <PageLayout>

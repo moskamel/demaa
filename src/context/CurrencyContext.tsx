@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { CurrencyCode, CURRENCIES, COUNTRY_CURRENCY } from '../lib/currency'
+import { createContext, useContext, useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
+import type { CurrencyCode } from '../lib/currency'
+import { CURRENCIES, COUNTRY_CURRENCY } from '../lib/currency'
 
 interface CurrencyContextValue {
   currency: CurrencyCode

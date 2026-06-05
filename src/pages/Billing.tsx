@@ -7,7 +7,6 @@ import {
 import { storesApi, teamApi } from '../lib/api'
 import { PLANS } from '../lib/plans'
 import { useCurrency } from '../context/CurrencyContext'
-import { CURRENCIES, getPlanAmount, formatPrice } from '../lib/currency'
 import CurrencySelector from '../components/CurrencySelector'
 import PlanCard from '../components/PlanCard'
 import AppSidebar from '../components/AppSidebar'
@@ -367,7 +366,8 @@ export default function Billing() {
                           onClick={() => handleUpgrade(plan.id)}
                           disabled={!!upgrading}
                           style={{
-                            width: '100%', padding: '10px 16px', borderRadius: 9999, border: 'none',
+                            width: '100%', padding: '10px 16px', borderRadius: 9999,
+                            border: isUpgrade || plan.featured ? 'none' : '1px solid rgba(255,255,255,0.08)',
                             cursor: upgrading ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
                             background: plan.featured
                               ? 'linear-gradient(135deg,#6a4cf5,#d44df0)'
@@ -377,8 +377,7 @@ export default function Billing() {
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
                             opacity: upgrading && !isProcessing ? 0.5 : 1,
                             transition: 'opacity 0.15s',
-                            border: isUpgrade || plan.featured ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                          } as React.CSSProperties}
+                          }}
                         >
                           {isProcessing ? 'جارٍ التغيير...' : isUpgrade ? <><ArrowUp size={12} /> ترقية</> : 'تخفيض'}
                         </button>
