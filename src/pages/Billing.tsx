@@ -5,6 +5,7 @@ import {
   Box, Shop, People, ArrowUp, InfoCircle,
 } from 'iconsax-react'
 import { storesApi, teamApi } from '../lib/api'
+import { PLANS } from '../lib/plans'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
@@ -28,61 +29,7 @@ interface SubStatus {
   canReactivate: boolean
 }
 
-// ── Plans ─────────────────────────────────────────────────────────────────────
-
-const PLANS = [
-  {
-    id: 'free',
-    label: 'مجاني',
-    price: 0,
-    currency: '$',
-    period: 'للأبد',
-    color: '#6b7280',
-    features: ['100 طلب / شهر', '1 متجر', 'دعم أساسي', 'ذكاء اصطناعي محدود'],
-    highlight: false,
-  },
-  {
-    id: 'starter',
-    label: 'المبتدئ',
-    price: 99,
-    currency: '$',
-    period: '/ شهر',
-    color: '#3b82f6',
-    features: ['500 طلب / شهر', '1 متجر', 'جميع المنصات', 'تقارير أساسية', 'دعم بالبريد'],
-    highlight: false,
-  },
-  {
-    id: 'growth',
-    label: 'النمو',
-    price: 249,
-    currency: '$',
-    period: '/ شهر',
-    color: '#6a4cf5',
-    features: ['2,000 طلب / شهر', '2 متجر', 'جميع المنصات', 'تقارير متقدمة', 'ذكاء اصطناعي كامل', 'دعم أولوية'],
-    highlight: true,
-    badge: 'الأكثر شيوعاً',
-  },
-  {
-    id: 'pro',
-    label: 'الاحترافي',
-    price: 499,
-    currency: '$',
-    period: '/ شهر',
-    color: '#d44df0',
-    features: ['10,000 طلب / شهر', '3 متاجر', 'جميع المنصات', 'API Access', 'تصدير التقارير', 'دعم مباشر 24/7'],
-    highlight: false,
-  },
-  {
-    id: 'enterprise',
-    label: 'المؤسسات',
-    price: 999,
-    currency: '$',
-    period: '/ شهر',
-    color: '#f59e0b',
-    features: ['طلبات غير محدودة', 'متاجر غير محدودة', 'API Access كامل', 'مدير حساب مخصص', 'SLA 99.9%'],
-    highlight: false,
-  },
-]
+// PLANS imported from '../lib/plans'
 
 const BASE = '/api'
 
@@ -380,21 +327,21 @@ export default function Billing() {
 
                 return (
                   <StaggerItem key={plan.id} style={{ height: '100%' }}><div style={{
-                    background: plan.highlight ? 'rgba(106,76,245,0.06)' : 'var(--canvas-soft)',
+                    background: plan.featured ? 'rgba(106,76,245,0.06)' : 'var(--canvas-soft)',
                     borderRadius: 14,
-                    border: isCurrent ? `2px solid ${plan.color}` : plan.highlight ? '1px solid rgba(106,76,245,0.3)' : '1px solid var(--hairline)',
+                    border: isCurrent ? `2px solid ${plan.color}` : plan.featured ? '1px solid rgba(106,76,245,0.3)' : '1px solid var(--hairline)',
                     padding: '18px 16px',
                     position: 'relative',
                     display: 'flex', flexDirection: 'column',
                     height: '100%', boxSizing: 'border-box',
                   }}>
-                    {plan.badge && (
+                    {plan.tag && (
                       <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 10, fontWeight: 700, background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 20, padding: '3px 8px' }}>
-                        {plan.badge}
+                        {plan.tag}
                       </div>
                     )}
 
-                    <div style={{ fontSize: 14, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.label}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
                     <div style={{ marginBottom: 14 }}>
                       <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px' }}>
                         {plan.price === 0 ? 'مجاناً' : `$${plan.price}`}

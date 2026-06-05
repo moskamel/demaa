@@ -1,32 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TickCircle, Lock, ArrowLeft2, Refresh2, Edit } from 'iconsax-react'
-
-type Plan = 'free' | 'pro'
-
-const PLANS = [
-  {
-    id: 'free' as Plan,
-    name: 'مجاني',
-    price: '٠',
-    period: 'دائماً',
-    desc: 'ابدأ واكتشف ديما بدون أي تكلفة',
-    features: ['متجر واحد', 'حتى ١٠٠ طلب شهرياً', 'تقارير أساسية', 'دعم عبر البريد'],
-  },
-  {
-    id: 'pro' as Plan,
-    name: 'برو',
-    price: '٩٩',
-    period: 'شهرياً',
-    desc: 'للتجار الجادين في تنمية متاجرهم',
-    features: ['متاجر غير محدودة', 'طلبات غير محدودة', 'تقارير متقدمة', 'شحن تلقائي', 'دعم أولوية ٢٤/٧', 'تصدير Excel و PDF'],
-    tag: 'الأكثر طلباً',
-  },
-]
+import { PLANS } from '../lib/plans'
 
 export default function Subscribe() {
   const navigate = useNavigate()
-  const [selectedPlan, setSelectedPlan] = useState<Plan>('pro')
+  const [selectedPlan, setSelectedPlan] = useState('growth')
   const [step, setStep] = useState<'plan' | 'payment'>('plan')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -82,51 +61,53 @@ export default function Subscribe() {
               <p style={{ fontSize: 16, color: 'var(--ink-muted)' }}>ابدأ مجاناً أو اشترك في برو للحصول على كل المميزات</p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12, marginBottom: 32 }}>
               {PLANS.map(plan => {
-                const isPro = plan.id === 'pro'
+                const isFeatured = !!plan.featured
                 const isSelected = selectedPlan === plan.id
                 return (
                   <div
                     key={plan.id}
                     onClick={() => setSelectedPlan(plan.id)}
                     style={{
-                      borderRadius: 20, padding: '28px 24px', cursor: 'pointer', position: 'relative',
-                      background: isPro ? 'linear-gradient(135deg, #1a1040 0%, #2a1060 100%)' : 'var(--canvas-soft)',
-                      border: `2px solid ${isSelected ? (isPro ? '#6a4cf5' : 'var(--ink)') : (isPro ? 'rgba(106,76,245,0.3)' : 'var(--hairline)')}`,
+                      borderRadius: 18, padding: '22px 18px', cursor: 'pointer', position: 'relative',
+                      background: isFeatured ? 'linear-gradient(135deg, rgba(106,76,245,0.12), rgba(212,77,240,0.06))' : 'var(--canvas-soft)',
+                      border: `2px solid ${isSelected ? plan.color : isFeatured ? 'rgba(106,76,245,0.3)' : 'var(--hairline)'}`,
                       transition: 'border-color 0.15s, box-shadow 0.15s',
-                      boxShadow: isSelected ? (isPro ? '0 0 0 4px rgba(106,76,245,0.2)' : '0 0 0 4px rgba(255,255,255,0.06)') : 'none',
+                      boxShadow: isSelected ? `0 0 0 4px ${plan.color}22` : 'none',
+                      display: 'flex', flexDirection: 'column',
                     }}
                   >
-                    {'tag' in plan && plan.tag && (
-                      <div style={{ position: 'absolute', top: -14, right: 20 }}>
-                        <span style={{ background: '#ffd02f', color: '#1c1c1e', borderRadius: 9999, padding: '4px 14px', fontSize: 12, fontWeight: 700 }}>{plan.tag}</span>
+                    {plan.tag && (
+                      <div style={{ position: 'absolute', top: -12, right: 12 }}>
+                        <span style={{ background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', color: '#fff', borderRadius: 9999, padding: '3px 10px', fontSize: 10, fontWeight: 700 }}>{plan.tag}</span>
                       </div>
                     )}
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
                       <div style={{
-                        width: 22, height: 22, borderRadius: '50%',
-                        border: `2px solid ${isSelected ? (isPro ? '#6a4cf5' : 'var(--ink)') : 'var(--hairline)'}`,
-                        background: isSelected ? (isPro ? '#6a4cf5' : 'var(--ink)') : 'transparent',
+                        width: 20, height: 20, borderRadius: '50%',
+                        border: `2px solid ${isSelected ? plan.color : 'var(--hairline)'}`,
+                        background: isSelected ? plan.color : 'transparent',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
-                        {isSelected && <TickCircle size={12} color="#fff" variant="Bold" />}
+                        {isSelected && <TickCircle size={11} color="#fff" variant="Bold" />}
                       </div>
                     </div>
 
-                    <div style={{ fontSize: 13, fontWeight: 600, color: isPro ? 'rgba(200,180,255,0.7)' : 'var(--ink-muted)', marginBottom: 6 }}>{plan.name}</div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontSize: 44, fontWeight: 700, letterSpacing: '-1.5px', color: isPro ? '#fff' : 'var(--ink)' }}>{plan.price}</span>
-                      {plan.id === 'pro' && <span style={{ fontSize: 14, color: 'rgba(200,180,255,0.5)' }}>ج.م / {plan.period}</span>}
-                      {plan.id === 'free' && <span style={{ fontSize: 14, color: 'var(--ink-muted)' }}>ج.م</span>}
+                    <div style={{ fontSize: 12, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
+                      {plan.price > 0 && <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)' }}>$</span>}
+                      <span style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', color: 'var(--ink)', lineHeight: 1 }}>
+                        {plan.price === 0 ? 'مجاناً' : plan.price}
+                      </span>
                     </div>
-                    <p style={{ fontSize: 13, color: isPro ? 'rgba(200,180,255,0.65)' : 'var(--ink-muted)', marginBottom: 20, lineHeight: 1.5 }}>{plan.desc}</p>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 14 }}>{plan.period}</div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
                       {plan.features.map(f => (
-                        <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: isPro ? 'rgba(220,210,255,0.9)' : 'var(--ink)' }}>
-                          <TickCircle size={13} color={isPro ? '#a78bfa' : '#22c55e'} variant="Outline" /> {f}
+                        <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 11, color: 'var(--ink-muted)', lineHeight: 1.4 }}>
+                          <TickCircle size={11} color={plan.color} variant="Outline" style={{ flexShrink: 0, marginTop: 1 }} /> {f}
                         </div>
                       ))}
                     </div>

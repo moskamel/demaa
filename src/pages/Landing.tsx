@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { fadeUp, fadeIn, scaleIn, slideInRight, stagger, buttonTap, popIn } from '../lib/animations'
 import LandingNav from '../components/LandingNav'
+import { PLANS } from '../lib/plans'
 import {
   ArrowLeft2, TickCircle, ArrowDown2, Flash, Box, ChartSquare,
   MessageText1, ShieldTick, Global, Star1, Clock, TrendUp,
@@ -91,23 +92,6 @@ const FAQS = [
   { q: 'ماذا لو لم أكن راضياً عن الخدمة؟', a: 'لديك ٣٠ يوماً لاسترداد كامل المبلغ بدون أسئلة. نثق في منتجنا وأنت تجرب بدون مخاطرة.' },
 ]
 
-const PLANS_LANDING = [
-  {
-    id: 'free', name: 'مجاني', price: 0, period: 'للأبد', tag: null, featured: false,
-    features: ['١٠٠ طلب / شهر', '١ متجر', 'جميع المنصات', 'محادثة ذكية بالعربي', 'تقارير أساسية'],
-    color: '#6b7280',
-  },
-  {
-    id: 'growth', name: 'النمو', price: 249, period: '/ شهر', tag: '🔥 الأكثر شعبية', featured: true,
-    features: ['٢,٠٠٠ طلب / شهر', '٢ متجر', 'جميع المنصات', 'تقارير متقدمة', 'ذكاء اصطناعي كامل', 'دعم أولوية'],
-    color: T.purple,
-  },
-  {
-    id: 'pro', name: 'الاحترافي', price: 499, period: '/ شهر', tag: null, featured: false,
-    features: ['١٠,٠٠٠ طلب / شهر', '٣ متاجر', 'API Access', 'تصدير التقارير', 'دعم مباشر ٢٤/٧'],
-    color: T.pink,
-  },
-]
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
@@ -615,8 +599,8 @@ export default function Landing() {
           <h2 style={{ fontSize: 'clamp(32px,4vw,50px)', fontWeight: 800, letterSpacing: '-1.5px', color: T.ink, marginBottom: 12 }}>ابدأ مجاناً — طوّر متى تريد</h2>
           <p style={{ fontSize: 15, color: T.slate }}>لا توجد عقود · إلغاء وقتما تريد · استرداد ٣٠ يوماً</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          {PLANS_LANDING.map((tier, i) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, position: 'relative', zIndex: 1 }}>
+          {PLANS.map((tier, i) => (
             <motion.div key={tier.id}
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
               transition={{ delay: i * 0.1, duration: 0.45 }}

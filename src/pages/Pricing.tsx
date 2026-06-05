@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import PageLayout from '../components/PageLayout'
 import { TickCircle, ArrowLeft2 } from 'iconsax-react'
+import { PLANS } from '../lib/plans'
 
 const T = {
   ink: '#f0f0f5',
@@ -13,98 +14,6 @@ const T = {
   well: '#080810',
   surface: '#18181e',
 }
-
-const PLANS = [
-  {
-    id: 'free',
-    name: 'مجاني',
-    price: 0,
-    period: 'للأبد',
-    color: '#6b7280',
-    tag: null,
-    featured: false,
-    features: [
-      '١٠٠ طلب / شهر',
-      '١ متجر',
-      'جميع المنصات المتاحة',
-      'محادثة ذكية بالعربي',
-      'تقارير أساسية',
-      'دعم أساسي',
-    ],
-    no: ['API Access', 'تصدير التقارير', 'دعم مباشر'],
-  },
-  {
-    id: 'starter',
-    name: 'المبتدئ',
-    price: 99,
-    period: '/ شهر',
-    color: '#3b82f6',
-    tag: null,
-    featured: false,
-    features: [
-      '٥٠٠ طلب / شهر',
-      '١ متجر',
-      'جميع المنصات',
-      'تقارير أساسية',
-      'دعم بالبريد',
-    ],
-    no: ['API Access', 'تصدير التقارير', 'دعم مباشر'],
-  },
-  {
-    id: 'growth',
-    name: 'النمو',
-    price: 249,
-    period: '/ شهر',
-    color: T.purple,
-    tag: '🔥 الأكثر شعبية',
-    featured: true,
-    features: [
-      '٢,٠٠٠ طلب / شهر',
-      '٢ متجر',
-      'جميع المنصات',
-      'تقارير متقدمة',
-      'ذكاء اصطناعي كامل',
-      'دعم أولوية',
-    ],
-    no: ['API Access', 'تصدير التقارير'],
-  },
-  {
-    id: 'pro',
-    name: 'الاحترافي',
-    price: 499,
-    period: '/ شهر',
-    color: T.pink,
-    tag: null,
-    featured: false,
-    features: [
-      '١٠,٠٠٠ طلب / شهر',
-      '٣ متاجر',
-      'جميع المنصات',
-      'API Access',
-      'تصدير التقارير',
-      'دعم مباشر ٢٤/٧',
-    ],
-    no: [],
-  },
-  {
-    id: 'enterprise',
-    name: 'المؤسسات',
-    price: 999,
-    period: '/ شهر',
-    color: '#f59e0b',
-    tag: null,
-    featured: false,
-    features: [
-      'طلبات غير محدودة',
-      'متاجر غير محدودة',
-      'API Access كامل',
-      'مدير حساب مخصص',
-      'SLA 99.9%',
-      'دعم مباشر ٢٤/٧',
-    ],
-    no: [],
-  },
-]
 
 const COMPARE_ROWS = [
   { label: 'الطلبات الشهرية', values: ['١٠٠', '٥٠٠', '٢,٠٠٠', '١٠,٠٠٠', 'غير محدود'] },
