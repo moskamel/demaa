@@ -72,7 +72,7 @@ export default function VoiceMicButton({ onTranscript, size = 20, color = '#9090
   const iconColor = state === 'recording' ? '#ef4444'
     : state === 'processing' ? '#6a4cf5'
     : state === 'error' ? '#f59e0b'
-    : color
+    : '#fff'
 
   return (
     <button
@@ -82,8 +82,8 @@ export default function VoiceMicButton({ onTranscript, size = 20, color = '#9090
         width: 34, height: 34,
         background: state === 'recording' ? 'rgba(239,68,68,0.15)'
           : state === 'processing' ? 'rgba(106,76,245,0.15)'
-          : 'rgba(255,255,255,0.08)',
-        border: `1px solid ${state === 'recording' ? 'rgba(239,68,68,0.4)' : state === 'processing' ? 'rgba(106,76,245,0.4)' : 'rgba(255,255,255,0.1)'}`,
+          : 'linear-gradient(135deg,#6a4cf5,#d44df0)',
+        border: `1px solid ${state === 'recording' ? 'rgba(239,68,68,0.4)' : state === 'processing' ? 'rgba(106,76,245,0.4)' : 'transparent'}`,
         borderRadius: '50%',
         cursor: state === 'processing' ? 'default' : 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
