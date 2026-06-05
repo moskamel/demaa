@@ -169,6 +169,7 @@ export default function Landing() {
   const isAuthed = !!localStorage.getItem('deema_token')
   const ctaTo = isAuthed ? '/dashboard' : '/signup'
   const { currency } = useCurrency()
+  const [pricingBilling, setPricingBilling] = useState<'monthly' | 'yearly'>('monthly')
 
   const [demoIdx, setDemoIdx] = useState(0)
   const [demoInput, setDemoInput] = useState('')
@@ -602,7 +603,25 @@ export default function Landing() {
           <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>الأسعار</p>
           <h2 style={{ fontSize: 'clamp(32px,4vw,50px)', fontWeight: 800, letterSpacing: '-1.5px', color: T.ink, marginBottom: 12 }}>ابدأ مجاناً — طوّر متى تريد</h2>
           <p style={{ fontSize: 15, color: T.slate }}>لا توجد عقود · إلغاء وقتما تريد · استرداد ٣٠ يوماً</p>
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: 9999, padding: 4, border: `1px solid ${T.hairline}`, gap: 4 }}>
+              {(['monthly', 'yearly'] as const).map(b => (
+                <button key={b} onClick={() => setPricingBilling(b)} style={{
+                  padding: '6px 16px', borderRadius: 9999, border: 'none', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                  background: pricingBilling === b ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'transparent',
+                  color: pricingBilling === b ? '#fff' : T.slate,
+                  transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 5,
+                }}>
+                  {b === 'monthly' ? 'شهري' : 'سنوي'}
+                  {b === 'yearly' && (
+                    <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 9999, padding: '1px 5px', background: pricingBilling === 'yearly' ? 'rgba(255,255,255,0.2)' : 'rgba(34,197,94,0.15)', color: pricingBilling === 'yearly' ? '#fff' : '#22c55e' }}>
+                      وفّر ١٦٪
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
             <CurrencySelector />
           </div>
         </div>
@@ -625,15 +644,29 @@ export default function Landing() {
                 </div>
               )}
               <div style={{ fontSize: 13, fontWeight: 700, color: tier.color, marginBottom: 10, letterSpacing: '0.02em' }}>{tier.name}</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 6, direction: 'ltr', justifyContent: 'flex-end' }}>
+              <div style={{ direction: 'ltr', marginBottom: 4 }}>
                 <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, fontVariantNumeric: 'tabular-nums', letterSpacing: '-2px', lineHeight: 1 }}>
                   {(() => {
-                    const amount = getPlanAmount(tier.id, currency, 'monthly')
+                    const amount = getPlanAmount(tier.id, currency, pricingBilling)
                     return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
                   })()}
                 </span>
               </div>
-              <div style={{ fontSize: 12, color: T.slate, marginBottom: 28 }}>{tier.period}</div>
+              <div style={{ fontSize: 12, color: T.slate, marginBottom: pricingBilling === 'yearly' ? 4 : 28 }}>
+                {tier.price === 0 ? 'للأبد' : pricingBilling === 'monthly' ? '/ شهر' : '/ سنة'}
+              </div>
+              {pricingBilling === 'yearly' && tier.price > 0 && (() => {
+                const currInfo = CURRENCIES.find(c => c.code === currency)!
+                const monthly = getPlanAmount(tier.id, currency, 'monthly')
+                const yearly = getPlanAmount(tier.id, currency, 'yearly')
+                const saved = monthly * 12 - yearly
+                return saved > 0 ? (
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginBottom: 16 }}>
+                    وفّر {formatPrice(saved, currInfo)}
+                  </div>
+                ) : <div style={{ marginBottom: 16 }} />
+              })()}
+              {pricingBilling === 'monthly' && <div style={{ marginBottom: 0 }} />}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 28, flex: 1 }}>
                 {tier.features.map(f => (
                   <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>

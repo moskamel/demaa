@@ -9,6 +9,7 @@ import CurrencySelector from '../components/CurrencySelector'
 export default function Subscribe() {
   const navigate = useNavigate()
   const { currency } = useCurrency()
+  const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly')
   const [selectedPlan, setSelectedPlan] = useState('growth')
   const [step, setStep] = useState<'plan' | 'payment'>('plan')
   const [loading, setLoading] = useState(false)
@@ -63,12 +64,26 @@ export default function Subscribe() {
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
               <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, letterSpacing: '-1px', margin: '0 0 10px', color: 'var(--ink)' }}>اختر خطتك</h1>
               <p style={{ fontSize: 16, color: 'var(--ink-muted)' }}>ابدأ مجاناً أو اشترك في برو للحصول على كل المميزات</p>
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 16, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', background: 'var(--canvas-soft)', borderRadius: 9999, padding: 3, border: '1px solid var(--hairline)', gap: 3 }}>
+                  {(['monthly', 'yearly'] as const).map(b => (
+                    <button key={b} onClick={() => setBilling(b)} style={{
+                      padding: '6px 14px', borderRadius: 9999, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                      fontSize: 13, fontWeight: 600, transition: 'all 0.15s',
+                      background: billing === b ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'transparent',
+                      color: billing === b ? '#fff' : 'var(--ink-muted)',
+                      display: 'flex', alignItems: 'center', gap: 5,
+                    }}>
+                      {b === 'monthly' ? 'شهري' : 'سنوي'}
+                      {b === 'yearly' && <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 9999, padding: '1px 5px', background: billing === 'yearly' ? 'rgba(255,255,255,0.2)' : 'rgba(34,197,94,0.15)', color: billing === 'yearly' ? '#fff' : '#22c55e' }}>وفّر ١٦٪</span>}
+                    </button>
+                  ))}
+                </div>
                 <CurrencySelector />
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12, marginBottom: 32 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12, marginBottom: 32, paddingTop: 14 }}>
               {PLANS.map(plan => {
                 const isFeatured = !!plan.featured
                 const isSelected = selectedPlan === plan.id
@@ -106,12 +121,21 @@ export default function Subscribe() {
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
                       <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-1px', color: 'var(--ink)', lineHeight: 1, direction: 'ltr' }}>
                         {(() => {
-                          const amount = getPlanAmount(plan.id, currency, 'monthly')
+                          const amount = getPlanAmount(plan.id, currency, billing)
                           return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
                         })()}
                       </span>
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 14 }}>{plan.period}</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: billing === 'yearly' && plan.price > 0 ? 4 : 14 }}>
+                      {plan.price === 0 ? plan.period : billing === 'monthly' ? '/ شهر' : '/ سنة'}
+                    </div>
+                    {billing === 'yearly' && plan.price > 0 && (() => {
+                      const currInfo = CURRENCIES.find(c => c.code === currency)!
+                      const saved = getPlanAmount(plan.id, currency, 'monthly') * 12 - getPlanAmount(plan.id, currency, 'yearly')
+                      return saved > 0 ? (
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginBottom: 10 }}>وفّر {formatPrice(saved, currInfo)}</div>
+                      ) : <div style={{ marginBottom: 10 }} />
+                    })()}
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
                       {plan.features.map(f => (

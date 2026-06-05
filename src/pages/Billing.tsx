@@ -111,6 +111,7 @@ function AlertBanner({ sub }: { sub: SubStatus }) {
 export default function Billing() {
   const navigate = useNavigate()
   const { currency } = useCurrency()
+  const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly')
   const [sub, setSub] = useState<SubStatus | null>(null)
   const [storeCount, setStoreCount] = useState(0)
   const [memberCount, setMemberCount] = useState(0)
@@ -321,12 +322,28 @@ export default function Billing() {
 
           {/* Plans comparison */}
           <div id="plans-section">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>اختر الباقة المناسبة لك</div>
-              <CurrencySelector />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', background: 'var(--canvas-soft)', borderRadius: 9999, padding: 3, border: '1px solid var(--hairline)', gap: 3 }}>
+                  {(['monthly', 'yearly'] as const).map(b => (
+                    <button key={b} onClick={() => setBilling(b)} style={{
+                      padding: '5px 12px', borderRadius: 9999, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                      fontSize: 12, fontWeight: 600, transition: 'all 0.15s',
+                      background: billing === b ? 'linear-gradient(135deg,#6a4cf5,#d44df0)' : 'transparent',
+                      color: billing === b ? '#fff' : 'var(--ink-muted)',
+                      display: 'flex', alignItems: 'center', gap: 5,
+                    }}>
+                      {b === 'monthly' ? 'شهري' : 'سنوي'}
+                      {b === 'yearly' && <span style={{ fontSize: 9, fontWeight: 700, borderRadius: 9999, padding: '1px 5px', background: billing === 'yearly' ? 'rgba(255,255,255,0.2)' : 'rgba(34,197,94,0.15)', color: billing === 'yearly' ? '#fff' : '#22c55e' }}>وفّر ١٦٪</span>}
+                    </button>
+                  ))}
+                </div>
+                <CurrencySelector />
+              </div>
             </div>
 
-            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, alignItems: 'stretch' }}>
+            <StaggerList style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, alignItems: 'stretch', paddingTop: 14 }}>
               {PLANS.map(plan => {
                 const isCurrent = plan.id === sub?.planId
                 const isUpgrade = PLANS.findIndex(p => p.id === plan.id) > PLANS.findIndex(p => p.id === sub?.planId)
@@ -349,15 +366,22 @@ export default function Billing() {
                     )}
 
                     <div style={{ fontSize: 14, fontWeight: 700, color: plan.color, marginBottom: 6 }}>{plan.name}</div>
-                    <div style={{ marginBottom: 14 }}>
+                    <div style={{ marginBottom: billing === 'yearly' && plan.price > 0 ? 4 : 14 }}>
                       <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px', direction: 'ltr', display: 'inline-block' }}>
                         {(() => {
-                          const amount = getPlanAmount(plan.id, currency, 'monthly')
+                          const amount = getPlanAmount(plan.id, currency, billing)
                           return amount === 0 ? 'مجاناً' : formatPrice(amount, CURRENCIES.find(c => c.code === currency)!)
                         })()}
                       </span>
-                      {plan.price > 0 && <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{plan.period}</span>}
+                      {plan.price > 0 && <span style={{ fontSize: 11, color: 'var(--ink-muted)' }}>{billing === 'monthly' ? '/ شهر' : '/ سنة'}</span>}
                     </div>
+                    {billing === 'yearly' && plan.price > 0 && (() => {
+                      const currInfo = CURRENCIES.find(c => c.code === currency)!
+                      const saved = getPlanAmount(plan.id, currency, 'monthly') * 12 - getPlanAmount(plan.id, currency, 'yearly')
+                      return saved > 0 ? (
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', marginBottom: 10 }}>وفّر {formatPrice(saved, currInfo)}</div>
+                      ) : <div style={{ marginBottom: 10 }} />
+                    })()}
 
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
                       {plan.features.map(f => (
