@@ -112,8 +112,11 @@ export default function PlanCard({ plan, currency, billing, cta, selected, index
         {displayPrice === null ? (
           <span style={{ fontSize: 36, fontWeight: 800, color: T.ink, letterSpacing: '-2px', lineHeight: 1 }}>مجاناً</span>
         ) : (
-          <span style={{ fontSize: isSmallCurrency ? 26 : 36, fontWeight: 800, color: T.ink, letterSpacing: '-1.5px', lineHeight: 1, direction: 'ltr', display: 'inline-block' }}>
-            <AnimatedPrice text={displayPrice} />
+          <span style={{ display: 'inline-flex', flexDirection: 'row', alignItems: 'baseline', gap: 5, direction: 'ltr' }}>
+            <span style={{ fontSize: isSmallCurrency ? 14 : 16, fontWeight: 700, color: T.slate, letterSpacing: 0 }}>{currencyInfo.symbol}</span>
+            <span style={{ fontSize: isSmallCurrency ? 26 : 36, fontWeight: 800, color: T.ink, letterSpacing: '-1.5px', lineHeight: 1 }}>
+              <AnimatedPrice text={amount.toFixed(currencyInfo.decimals)} />
+            </span>
           </span>
         )}
       </div>
