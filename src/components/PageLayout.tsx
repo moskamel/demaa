@@ -1,8 +1,18 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
 import LandingNav from './LandingNav'
 
 interface Props {
   children: React.ReactNode
+}
+
+const T = {
+  canvas: '#0e0e12',
+  well: '#080810',
+  hairline: 'rgba(255,255,255,0.08)',
+  muted: '#5e5e72',
+  slate: '#9090a2',
+  purple: '#6a4cf5',
 }
 
 const FOOTER_COLS = [
@@ -13,61 +23,62 @@ const FOOTER_COLS = [
 
 export default function PageLayout({ children }: Props) {
   return (
-    <div dir="rtl" style={{ background: '#0e0e12', color: '#f0f0f5', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Zain', 'Inter', sans-serif" }}>
+    <div dir="rtl" style={{ background: T.canvas, color: '#f0f0f5', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Zain', 'Inter', sans-serif" }}>
 
       <LandingNav />
 
-      {/* CONTENT */}
-      <main style={{ flex: 1 }}>
+      {/* CONTENT — paddingTop matches fixed nav height */}
+      <div style={{ flex: 1, paddingTop: 64 }}>
         {children}
-      </main>
+      </div>
 
       {/* FOOTER */}
-      <footer style={{ background: '#1c1c1e', color: '#fff', padding: '64px 200px 40px' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
-            {/* Brand column */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 16 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#ffd02f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#1c1c1e', fontWeight: 700, fontSize: 13 }}>D</span>
-                </div>
-                <span style={{ fontSize: 16, fontWeight: 600, color: '#fff', letterSpacing: '-0.4px' }}>Deema</span>
+      <footer style={{ background: T.well, padding: '64px 200px 40px', borderTop: `1px solid ${T.hairline}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
+          {/* Brand */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,#6a4cf5,#d44df0)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(106,76,245,0.4)' }}>
+                <span style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>D</span>
               </div>
-              <p style={{ fontSize: 14, color: '#a5a8b5', lineHeight: 1.7, maxWidth: 240, marginBottom: 20 }}>
-                مساعد ذكاء اصطناعي متخصص في التجارة الإلكترونية العربية.
-              </p>
-              <div style={{ fontSize: 12, color: '#6b6f7e' }}>مصر · السعودية · الإمارات · الكويت</div>
+              <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>Deema</span>
             </div>
-
-            {/* Link columns */}
-            {FOOTER_COLS.map(col => (
-              <div key={col.title}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 16, letterSpacing: '0.3px' }}>{col.title}</div>
-                {col.links.map(l => (
-                  <div key={l.label} style={{ marginBottom: 10 }}>
-                    <Link to={l.to}
-                      style={{ fontSize: 14, color: '#a5a8b5', textDecoration: 'none', transition: 'color 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#a5a8b5')}
-                    >{l.label}</Link>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ borderTop: '1px solid #2c2c34', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-            <span style={{ fontSize: 13, color: '#6b6f7e' }}>© ٢٠٢٥ Deema. جميع الحقوق محفوظة.</span>
-            <div style={{ display: 'flex', gap: 20 }}>
-              {['تويتر', 'لينكدإن', 'إنستغرام'].map(s => (
-                <a key={s} href="#"
-                  style={{ fontSize: 13, color: '#6b6f7e', textDecoration: 'none', transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#6b6f7e')}
-                >{s}</a>
+            <p style={{ fontSize: 13, color: T.muted, lineHeight: 1.75, maxWidth: 220, marginBottom: 20 }}>
+              مساعد ذكاء اصطناعي متخصص في التجارة الإلكترونية العربية. يفهم لهجتك، يتصرف بسرعة.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['🇪🇬 مصر', '🇸🇦 السعودية', '🇦🇪 الإمارات', '🇰🇼 الكويت'].map(f => (
+                <span key={f} style={{ fontSize: 11, color: T.muted, background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.hairline}`, borderRadius: 6, padding: '3px 8px' }}>{f}</span>
               ))}
             </div>
+          </div>
+
+          {FOOTER_COLS.map(col => (
+            <div key={col.title}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 16 }}>{col.title}</div>
+              {col.links.map(l => (
+                <div key={l.label} style={{ marginBottom: 10 }}>
+                  <Link to={l.to}
+                    style={{ fontSize: 13, color: T.muted, textDecoration: 'none', transition: 'color 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                    onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
+                  >{l.label}</Link>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <span style={{ fontSize: 12, color: T.muted }}>© ٢٠٢٦ Deema. جميع الحقوق محفوظة.</span>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {['تويتر', 'لينكدإن', 'إنستغرام'].map(s => (
+              <a key={s} href="#"
+                style={{ fontSize: 12, color: T.muted, textDecoration: 'none', transition: 'color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
+              >{s}</a>
+            ))}
           </div>
         </div>
       </footer>
