@@ -6,6 +6,11 @@ import prisma from '../prisma.js'
 
 interface ChatCtx { orgId: string; userId?: string; conversationId: string }
 
+const statusLabels: Record<string, string> = {
+  pending: 'معلق', accepted: 'مقبول', shipped: 'مشحون',
+  delivered: 'مُسلَّم', rejected: 'مرفوض', cancelled: 'ملغي',
+}
+
 interface Intent {
   name: string
   patterns: RegExp[]
@@ -115,10 +120,262 @@ const INTENTS: Intent[] = [
     }
   },
 
+  // most expensive / cheapest product
+  {
+    name: 'product_price_query',
+    patterns: [/أغلى منتج|أرخص منتج|أعلى سعر|أدنى سعر|ما أغلى|وش أغلى/i],
+    async handler(msg, ctx) {
+      const r = await executeTool('get_products', { limit: 100 }, ctx) as any
+      const products = (r.products || []).sort((a: any, b: any) => b.price - a.price)
+      if (!products.length) return 'ما في منتجات مضافة بعد.'
+      if (/أرخص|أدنى/.test(msg)) {
+        const p = products[products.length - 1]
+        return `📦 **أرخص منتج لديك:**\n\n• ${p.name} — ${fmt(p.price)} — مخزون: ${p.stock}`
+      }
+      const p = products[0]
+      return `📦 **أغلى منتج لديك:**\n\n• ${p.name} — ${fmt(p.price)} — مخزون: ${p.stock}`
+    }
+  },
+
+  // stock alerts / notifications
+  {
+    name: 'stock_alert',
+    patterns: [/نبّهني|نبهني|أنبهني|تنبيه.*مخزون|إشعار.*مخزون|مخزون.*نفاد|عند نفاد/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_products', { lowStock: true, limit: 20 }, ctx) as any
+      const products = r.products || []
+      if (!products.length) return '✅ المخزون كامل الآن، ما في منتجات تقترب من النفاد. سأنبهك تلقائياً عند انخفاض أي منتج.'
+      const list = products.map((p: any) => `• ${p.name} — باقي **${p.stock}** قطعة`).join('\n')
+      return `⚠️ هذه المنتجات تقترب من النفاد الآن:\n\n${list}\n\n💡 يمكنك قول "تجديد مخزون [اسم المنتج]" لإعادة التعبئة.`
+    }
+  },
+
+  // inactive / unavailable products
+  {
+    name: 'inactive_products',
+    patterns: [/منتجات? غير النشطة|منتجات? معطلة|منتجات? غير متوفرة|غير متاحة/i],
+    async handler(_msg, ctx) {
+      const products = await (prisma as any).product.findMany({
+        where: { store: { organizationId: ctx.orgId }, isActive: false },
+        take: 20,
+      })
+      if (!products.length) return '✅ كل منتجاتك نشطة ومتاحة للبيع.'
+      const list = products.map((p: any) => `• ${p.name} — ${fmt(p.price)}`).join('\n')
+      return `⚠️ **المنتجات غير النشطة (${products.length}):**\n\n${list}`
+    }
+  },
+
+  // compare today vs yesterday
+  {
+    name: 'compare_today_yesterday',
+    patterns: [/قارن|مقارنة|مبيعات الأمس|أمس مقابل اليوم/i],
+    async handler(_msg, ctx) {
+      const [today, week] = await Promise.all([
+        executeTool('get_analytics', { period: 'today' }, ctx) as any,
+        executeTool('get_analytics', { period: '7d' }, ctx) as any,
+      ])
+      const todayRev = today.totalRevenue ?? 0
+      const avgDaily = (week.totalRevenue ?? 0) / 7
+      const diff = todayRev - avgDaily
+      const sign = diff >= 0 ? '▲' : '▼'
+      return `📊 **مقارنة المبيعات:**\n\n• اليوم: **${fmt(todayRev * 100)}**\n• متوسط يومي (7 أيام): **${fmt(avgDaily * 100)}**\n• الفرق: ${sign} ${fmt(Math.abs(diff) * 100)}`
+    }
+  },
+
+  // orders count today
+  {
+    name: 'orders_count_today',
+    patterns: [/كم عدد الطلبات اليوم|طلبات اليوم|الطلبات اليوم/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_analytics', { period: 'today' }, ctx) as any
+      return `📦 **طلبات اليوم:**\n\n• إجمالي: **${r.totalOrders ?? 0}** طلب\n• مكتملة: ${r.completedOrders ?? 0}\n• معلقة: ${r.pendingOrders ?? 0}\n• مرفوضة: ${r.rejectedOrders ?? 0}`
+    }
+  },
+
+  // average order value
+  {
+    name: 'avg_order_value',
+    patterns: [/متوسط قيمة الطلب|متوسط الطلب|معدل الطلب/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_analytics', { period: '30d' }, ctx) as any
+      return `💰 متوسط قيمة الطلب (آخر 30 يوم): **${fmt((r.avgOrderValue ?? 0) * 100)}**`
+    }
+  },
+
+  // last N orders
+  {
+    name: 'last_orders',
+    patterns: [/آخر \d+ طلب|آخر طلبات|أحدث الطلبات/i],
+    async handler(msg, ctx) {
+      const match = msg.match(/(\d+)/)
+      const limit = match ? Math.min(parseInt(match[1]), 20) : 10
+      const r = await executeTool('get_orders', { status: 'all', limit }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return 'ما في طلبات بعد.'
+      const list = orders.map((o: any) =>
+        `• #${o.externalRef || o.id.slice(-6)} — ${o.customerName} — ${fmt(o.total)} — ${statusLabels[o.status] || o.status}`
+      ).join('\n')
+      return `📦 **آخر ${orders.length} طلب:**\n\n${list}`
+    }
+  },
+
+  // shipped orders today
+  {
+    name: 'shipped_today',
+    patterns: [/الطلبات المشحونة اليوم|شحنات اليوم|تم شحنها اليوم/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_orders', { status: 'shipped', limit: 50 }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return 'ما في طلبات مشحونة اليوم.'
+      const list = orders.slice(0, 10).map((o: any) =>
+        `• #${o.externalRef || o.id.slice(-6)} — ${o.customerName}${o.shipmentId ? ' — ' + o.shipmentId : ''}`
+      ).join('\n')
+      return `🚚 **الطلبات المشحونة (${orders.length}):**\n\n${list}`
+    }
+  },
+
+  // pending shipping / awaiting shipment
+  {
+    name: 'pending_shipment',
+    patterns: [/في انتظار الشحن|طلبات بانتظار الشحن|كم طلب.*شحن|لم يُشحن/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_orders', { status: 'accepted', limit: 100 }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return '✅ ما في طلبات مقبولة بانتظار الشحن.'
+      return `📦 **${orders.length} طلب مقبول في انتظار الشحن.**\n\nقول "اشحن الطلبات المقبولة" لإنشاء الشحنات.`
+    }
+  },
+
+  // delayed / stuck orders
+  {
+    name: 'delayed_orders',
+    patterns: [/طلبات متأخرة|طلبات عالقة|متأخر|فشل التوصيل/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_failed_deliveries', { limit: 20 }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return '✅ ما في طلبات متأخرة أو عالقة.'
+      const list = orders.slice(0, 8).map((o: any) =>
+        `• #${o.externalRef || o.id.slice(-6)} — ${o.customerName} — ${o.status}`
+      ).join('\n')
+      return `⚠️ **${orders.length} طلب متأخر أو عالق:**\n\n${list}`
+    }
+  },
+
+  // top selling products
+  {
+    name: 'top_products',
+    patterns: [/أكثر المنتجات مبيعاً|أكثر المنتجات.*طلباً|أكثر منتج|أفضل منتج/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_analytics', { period: '30d' }, ctx) as any
+      const top = r.topProducts || []
+      if (!top.length) return 'ما في بيانات كافية بعد لتحديد أكثر المنتجات مبيعاً.'
+      const list = top.slice(0, 5).map(([name, count]: [string, number], i: number) =>
+        `${i + 1}. ${name} — **${count}** قطعة مباعة`
+      ).join('\n')
+      return `🏆 **أكثر المنتجات مبيعاً (آخر 30 يوم):**\n\n${list}`
+    }
+  },
+
+  // weekly / monthly revenue
+  {
+    name: 'period_revenue',
+    patterns: [/إيرادات هذا الأسبوع|مبيعات هذا الأسبوع|إيراد الأسبوع|تقرير المبيعات الشهري|إيرادات الشهر/i],
+    async handler(msg, ctx) {
+      const period = /شهر/.test(msg) ? '30d' : '7d'
+      const r = await executeTool('get_analytics', { period }, ctx) as any
+      const label = period === '30d' ? 'هذا الشهر' : 'هذا الأسبوع'
+      return `📊 **إيرادات ${label}:**\n\n💰 **${fmt((r.totalRevenue ?? 0) * 100)}**\n📦 ${r.totalOrders ?? 0} طلب\n✅ ${r.completedOrders ?? 0} مكتمل`
+    }
+  },
+
+  // active coupons
+  {
+    name: 'active_coupons',
+    patterns: [/الكوبونات النشطة|كوبونات نشطة|كوبون فعال/i],
+    async handler(_msg, ctx) {
+      const coupons = await (prisma as any).coupon.findMany({
+        where: { organizationId: ctx.orgId, isActive: true },
+        orderBy: { createdAt: 'desc' }, take: 10,
+      })
+      if (!coupons.length) return 'ما في كوبونات نشطة حالياً.'
+      const list = coupons.map((c: any) =>
+        `• **${c.code}** — ${c.type === 'percentage' ? c.value / 100 + '%' : c.value / 100 + ' $'} — استُخدم ${c.usageCount} مرة`
+      ).join('\n')
+      return `🎟️ **الكوبونات النشطة (${coupons.length}):**\n\n${list}`
+    }
+  },
+
+  // coupon usage count
+  {
+    name: 'coupon_usage',
+    patterns: [/كم مرة استُخدم|استخدام الكوبون|أداء الكوبون/i],
+    async handler(_msg, ctx) {
+      const coupons = await (prisma as any).coupon.findMany({
+        where: { organizationId: ctx.orgId },
+        orderBy: { usageCount: 'desc' }, take: 10,
+      })
+      if (!coupons.length) return 'ما في كوبونات مضافة بعد.'
+      const list = coupons.map((c: any) =>
+        `• **${c.code}** — استُخدم **${c.usageCount}** مرة${c.maxUsage ? ' من ' + c.maxUsage : ''}`
+      ).join('\n')
+      return `🎟️ **أداء الكوبونات:**\n\n${list}`
+    }
+  },
+
+  // top spenders / best customers
+  {
+    name: 'top_customers',
+    patterns: [/أكثر العملاء شراءً|أكثر العملاء إنفاقاً|أفضل العملاء|أعلى منفقين/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_customers', { segment: 'vip', limit: 10 }, ctx) as any
+      const customers = r.customers || []
+      if (!customers.length) return 'ما في بيانات عملاء كافية بعد.'
+      const list = customers.slice(0, 5).map((c: any, i: number) =>
+        `${i + 1}. ${c.name} — ${fmt(c.totalSpent)} — ${c.totalOrders} طلب`
+      ).join('\n')
+      return `👑 **أكثر العملاء شراءً:**\n\n${list}`
+    }
+  },
+
+  // performance report / stats this month
+  {
+    name: 'performance_report',
+    patterns: [/تقرير الأداء|إحصائيات هذا الشهر|إحصاءات الشهر|أداء المتجر/i],
+    async handler(_msg, ctx) {
+      const [r30, r7] = await Promise.all([
+        executeTool('get_analytics', { period: '30d' }, ctx) as any,
+        executeTool('get_analytics', { period: '7d' }, ctx) as any,
+      ])
+      return `📊 **تقرير الأداء:**\n\n` +
+        `**آخر 30 يوم:**\n💰 إيراد: **${fmt((r30.totalRevenue ?? 0) * 100)}**\n📦 طلبات: ${r30.totalOrders ?? 0}\n\n` +
+        `**آخر 7 أيام:**\n💰 إيراد: **${fmt((r7.totalRevenue ?? 0) * 100)}**\n📦 طلبات: ${r7.totalOrders ?? 0}`
+    }
+  },
+
+  // add new product
+  {
+    name: 'add_product_hint',
+    patterns: [/أضف منتج|إضافة منتج|منتج جديد/i],
+    async handler() {
+      return `لإضافة منتج جديد، اذهب إلى **المنتجات** في القائمة الجانبية ثم اضغط "إضافة منتج".\n\nأو أخبرني بتفاصيل المنتج (الاسم، السعر، الكمية) وسأساعدك.`
+    }
+  },
+
+  // delivery time
+  {
+    name: 'delivery_time',
+    patterns: [/متوسط وقت التوصيل|وقت التوصيل|كم يستغرق التوصيل/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_analytics', { period: '30d' }, ctx) as any
+      const avgDays = r.avgDeliveryDays ?? 3
+      return `🚚 متوسط وقت التوصيل (آخر 30 يوم): **${avgDays} أيام**`
+    }
+  },
+
   // list products
   {
     name: 'get_products',
-    patterns: [/منتجاتي|قائمة المنتجات|عندي منتجات|كل المنتجات|وريني المنتجات/i],
+    patterns: [/منتجاتي|قائمة المنتجات|عندي منتجات|كل المنتجات|وريني المنتجات|جميع المنتجات/i],
     async handler(_msg, ctx) {
       const r = await executeTool('get_products', { limit: 20 }, ctx) as any
       const products = r.products || []
