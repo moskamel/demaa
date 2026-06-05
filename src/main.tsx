@@ -10,6 +10,7 @@ function ScrollToTop() {
 import './index.css'
 import { ToastProvider } from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
+import { CurrencyProvider } from './context/CurrencyContext'
 
 function isTokenValid(): boolean {
   const token = localStorage.getItem('deema_token')
@@ -72,6 +73,7 @@ import Cookies from './pages/Cookies'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
+      <CurrencyProvider>
       <ToastProvider>
         <BrowserRouter>
           <ScrollToTop />
@@ -112,6 +114,7 @@ createRoot(document.getElementById('root')!).render(
           </Routes>
         </BrowserRouter>
       </ToastProvider>
+      </CurrencyProvider>
     </ErrorBoundary>
   </StrictMode>,
 )
