@@ -79,10 +79,15 @@ export default function VoiceMicButton({ onTranscript, size = 20, color = '#9090
       onClick={toggle}
       title={state === 'recording' ? 'أوقف التسجيل' : state === 'processing' ? 'جارٍ التفريغ...' : 'تحدث للبحث'}
       style={{
-        background: 'none', border: 'none', cursor: state === 'processing' ? 'default' : 'pointer',
-        padding: 4, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexShrink: 0, transition: 'opacity 0.15s',
-        opacity: state === 'processing' ? 0.6 : 1,
+        width: 34, height: 34,
+        background: state === 'recording' ? 'rgba(239,68,68,0.15)'
+          : state === 'processing' ? 'rgba(106,76,245,0.15)'
+          : 'rgba(255,255,255,0.08)',
+        border: `1px solid ${state === 'recording' ? 'rgba(239,68,68,0.4)' : state === 'processing' ? 'rgba(106,76,245,0.4)' : 'rgba(255,255,255,0.1)'}`,
+        borderRadius: '50%',
+        cursor: state === 'processing' ? 'default' : 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flexShrink: 0, transition: 'all 0.2s',
         position: 'relative',
       }}
     >
