@@ -11,6 +11,7 @@ interface Props {
 
 export default function VoiceMicButton({ onTranscript, size = 20, color = '#9090a2' }: Props) {
   const [state, setState] = useState<State>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
   const mediaRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
@@ -45,20 +46,25 @@ export default function VoiceMicButton({ onTranscript, size = 20, color = '#9090
           })
           const data = await res.json()
           if (!res.ok) throw new Error(data?.error?.message || 'فشل التفريغ')
-          onTranscript(data.text)
+          if (!data.text?.trim()) throw new Error('لم يُكتشف صوت')
+          onTranscript(data.text.trim())
           setState('idle')
-        } catch {
+        } catch (err) {
+          console.error('[VoiceMic]', err)
+          setErrorMsg(err instanceof Error ? err.message : 'فشل التفريغ الصوتي')
           setState('error')
-          setTimeout(() => setState('idle'), 2500)
+          setTimeout(() => { setState('idle'); setErrorMsg('') }, 3000)
         }
       }
 
       recorder.start()
       mediaRef.current = recorder
       setState('recording')
-    } catch {
+    } catch (err) {
+      console.error('[VoiceMic start]', err)
+      setErrorMsg('لا يمكن الوصول للميكروفون')
       setState('error')
-      setTimeout(() => setState('idle'), 2500)
+      setTimeout(() => { setState('idle'); setErrorMsg('') }, 3000)
     }
   }, [onTranscript])
 
@@ -103,6 +109,18 @@ export default function VoiceMicButton({ onTranscript, size = 20, color = '#9090
         ? <Stop size={size} color={iconColor} variant="Bold" />
         : <Microphone2 size={size} color={iconColor} variant={state === 'processing' ? 'Bold' : 'Outline'} />
       }
+      {/* Error tooltip */}
+      {state === 'error' && errorMsg && (
+        <div style={{
+          position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)',
+          background: '#1e1e26', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 8,
+          padding: '6px 10px', fontSize: 11, color: '#f87171', whiteSpace: 'nowrap',
+          pointerEvents: 'none', zIndex: 100,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+        }}>
+          {errorMsg}
+        </div>
+      )}
       <style>{`
         @keyframes mic-pulse {
           0%, 100% { transform: scale(1); opacity: 0.5; }
