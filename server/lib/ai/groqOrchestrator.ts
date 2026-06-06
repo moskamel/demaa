@@ -204,6 +204,44 @@ const GROQ_TOOLS: Groq.Chat.ChatCompletionTool[] = [
   {
     type: 'function',
     function: {
+      name: 'create_product',
+      description: 'إضافة منتج جديد إلى المتجر بالاسم والسعر والكمية',
+      parameters: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          price: { type: 'number', description: 'سعر البيع بالريال' },
+          stock: { type: 'number' },
+          category: { type: 'string' },
+          description: { type: 'string' },
+          sku: { type: 'string' },
+          costPrice: { type: 'number', description: 'سعر التكلفة بالريال' },
+        },
+        required: ['name', 'price'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'send_customer_message',
+      description: 'إرسال رسالة متابعة أو تواصل مع عميل معين',
+      parameters: {
+        type: 'object',
+        properties: {
+          customerId: { type: 'string' },
+          customerName: { type: 'string' },
+          channel: { type: 'string', enum: ['whatsapp', 'sms', 'email'] },
+          message: { type: 'string' },
+          orderId: { type: 'string' },
+        },
+        required: ['message'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
       name: 'create_return',
       description: 'إنشاء مرتجع لطلب — يعيد المخزون تلقائياً ويسجل السبب',
       parameters: {

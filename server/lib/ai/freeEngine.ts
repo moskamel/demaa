@@ -580,6 +580,126 @@ const INTENTS: Intent[] = [
     }
   },
 
+  // ── FEATURE: Add new product ─────────────────────────────────────────────────
+  {
+    name: 'create_product',
+    patterns: [/أضف منتج|إضافة منتج|منتج جديد.*اسمه|اسمه.*سعره|أنشئ? منتج/i],
+    async handler(msg, ctx) {
+      const nameMatch = msg.match(/اسمه\s+(.+?)\s+(?:سعره|بسعر|ب)/) || msg.match(/منتج[:\s]+(.+?)\s+(?:سعره|بسعر|ب)/)
+      const priceMatch = msg.match(/(?:سعره|بسعر|ب)\s*([\d,]+)/)
+      const stockMatch = msg.match(/(?:مخزون|كمية|عدد)\s*([\d]+)/)
+      const categoryMatch = msg.match(/(?:تصنيف|قسم|فئة)\s+(\S+)/)
+      const costMatch = msg.match(/(?:تكلفة|سعر الشراء|كلفة)\s*([\d,]+)/)
+
+      if (!nameMatch || !priceMatch) {
+        return `لإضافة منتج أخبرني:\n• الاسم\n• السعر\n• الكمية (اختياري)\n\nمثال: **"أضف منتج اسمه عطر الورد سعره 150 مخزون 30"**`
+      }
+
+      const name = nameMatch[1].trim()
+      const price = parseFloat(priceMatch[1].replace(/,/g, ''))
+      const stock = stockMatch ? parseInt(stockMatch[1]) : 0
+      const category = categoryMatch ? categoryMatch[1] : undefined
+      const costPrice = costMatch ? parseFloat(costMatch[1].replace(/,/g, '')) : undefined
+
+      const r = await executeTool('create_product', { name, price, stock, category, costPrice }, ctx) as any
+      if (r.error) return `❌ ${r.error}`
+      const p = r.product
+      return `✅ **تم إضافة المنتج بنجاح!**\n\n• الاسم: **${p.name}**\n• السعر: **${p.price} ريال**\n• المخزون: **${p.stock} قطعة**${category ? `\n• التصنيف: ${category}` : ''}`
+    }
+  },
+
+  // ── FEATURE: Returns ─────────────────────────────────────────────────────────
+  {
+    name: 'create_return',
+    patterns: [/إرجاع|مرتجع|استرجاع|أرجع طلب|إرجاع طلب|رجع طلب/i],
+    async handler(msg, ctx) {
+      const match = msg.match(/#?([a-z0-9]{4,})/i)
+      if (!match) return 'أعطني رقم الطلب، مثال: **"إرجاع طلب #10023"**'
+
+      const r = await executeTool('get_orders', { status: 'all', limit: 100 }, ctx) as any
+      const order = (r.orders || []).find((o: any) =>
+        o.externalRef === match[1] || o.id.endsWith(match[1])
+      )
+      if (!order) return `ما لقيت طلب #${match[1]}.`
+
+      const reasonMatch = msg.match(/(?:بسبب|سبب|لأن)\s+(.+)/)
+      const reason = reasonMatch ? reasonMatch[1].trim() : 'طلب العميل'
+
+      const res = await executeTool('create_return', { orderId: order.id, reason, restockItems: true }, ctx) as any
+      if (res.error) return `❌ ${res.error}`
+      return `↩️ **تم قبول المرتجع بنجاح!**\n\n• الطلب: **#${order.externalRef || match[1]}**\n• العميل: ${order.customerName}\n• السبب: ${reason}\n• المبلغ المسترد: **${(res.refundAmount).toLocaleString('ar-EG')} ريال**\n• المخزون: تم استعادته تلقائياً ✅`
+    }
+  },
+
+  {
+    name: 'get_returns',
+    patterns: [/المرتجعات|قائمة المرتجعات|وريني المرتجعات|كم مرتجع/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_returns', { status: 'all', limit: 20 }, ctx) as any
+      const returns = r.returns || []
+      if (!returns.length) return '✅ ما في مرتجعات حالياً.'
+      const list = returns.slice(0, 8).map((ret: any) =>
+        `• طلب #${ret.orderId?.slice(-6)} — ${ret.reason} — ${(ret.refundAmount / 100).toLocaleString('ar-EG')} ريال`
+      ).join('\n')
+      return `↩️ **المرتجعات (${returns.length}):**\n\n${list}`
+    }
+  },
+
+  // ── FEATURE: Real profit report ───────────────────────────────────────────────
+  {
+    name: 'profit_report',
+    patterns: [/تقرير الأرباح|الأرباح الحقيقية|صافي الربح|هامش الربح|كم ربحت|ربح المتجر|تكلفة.*إيراد/i],
+    async handler(msg, ctx) {
+      const period = /أسبوع|7/.test(msg) ? '7d' : /90|3 شهر/.test(msg) ? '90d' : /اليوم/.test(msg) ? 'today' : '30d'
+      const r = await executeTool('get_profit_report', { period }, ctx) as any
+      const label = period === 'today' ? 'اليوم' : period === '7d' ? 'آخر 7 أيام' : period === '90d' ? 'آخر 90 يوم' : 'آخر 30 يوم'
+      const fmt = (n: number) => n.toLocaleString('ar-EG', { minimumFractionDigits: 0 })
+      return `💰 **تقرير الأرباح الحقيقية — ${label}**\n\n` +
+        `📦 الطلبات: **${r.ordersCount}**\n` +
+        `💵 الإيراد الكلي: **${fmt(r.totalRevenue)} ريال**\n` +
+        `🏭 تكلفة البضاعة: ${fmt(r.totalCost)} ريال\n` +
+        `🚚 تكلفة الشحن: ${fmt(r.totalShipping)} ريال\n` +
+        `──────────────────\n` +
+        `✅ **صافي الربح: ${fmt(r.netProfit)} ريال**\n` +
+        `📊 هامش الربح: **${r.marginPercent}%**` +
+        (r.note ? `\n\n⚠️ ${r.note}` : '')
+    }
+  },
+
+  // ── FEATURE: Customer messages ────────────────────────────────────────────────
+  {
+    name: 'send_customer_message',
+    patterns: [/أرسل رسالة|ارسل.*عميل|واتساب.*عميل|تواصل مع|راسل العميل|أبلغ العميل/i],
+    async handler(msg, ctx) {
+      const nameMatch = msg.match(/(?:للعميل|العميل|لـ)\s+(\S+)/)
+      const msgMatch = msg.match(/(?:الرسالة|قل له|أخبره|النص)[:\s]+[""]?(.+?)[""]?$/)
+
+      if (!msgMatch) {
+        return `لإرسال رسالة لعميل قل:\n**"أرسل رسالة للعميل محمد الرسالة: شكراً لطلبك، سيصل غداً"**`
+      }
+
+      const customerName = nameMatch ? nameMatch[1] : 'العميل'
+      const message = msgMatch[1].trim()
+
+      const r = await executeTool('send_customer_message', { customerName, message, channel: 'whatsapp' }, ctx) as any
+      return `📱 **تم تحضير الرسالة:**\n\n• إلى: **${customerName}**\n• القناة: WhatsApp\n• الرسالة: "${message}"\n\n⚠️ ${r.note}`
+    }
+  },
+
+  {
+    name: 'vip_followup',
+    patterns: [/متابعة.*VIP|عملاء VIP|كبار العملاء|أفضل عملاء|راسل.*VIP/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('analyze_customers', {}, ctx) as any
+      const vip = r.vip || []
+      if (!vip.length) return 'ما في عملاء VIP بعد — يحتاج العميل 5+ طلبات أو إنفاق 1000+ ريال.'
+      const list = vip.slice(0, 5).map((c: any) =>
+        `• **${c.name}** — ${c.totalOrders} طلب — ${c.totalSpent?.toLocaleString('ar-EG')} ريال`
+      ).join('\n')
+      return `👑 **عملاء VIP (${vip.length}):**\n\n${list}\n\n💡 قول "أرسل رسالة للعميل [الاسم] الرسالة: [النص]" للتواصل معهم`
+    }
+  },
+
   // Thank you / appreciation
   {
     name: 'thanks',

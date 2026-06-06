@@ -641,6 +641,64 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       }
     }
 
+    case 'create_product': {
+      const { name, price, stock = 0, category, description, sku, costPrice } = input as {
+        name: string; price: number; stock?: number; category?: string
+        description?: string; sku?: string; costPrice?: number
+      }
+      if (!name || !price) return { error: 'اسم المنتج والسعر مطلوبان' }
+      if (!storeId) return { error: 'لا يوجد متجر مرتبط' }
+
+      const product = await prisma.product.create({
+        data: {
+          storeId,
+          name,
+          price: Math.round(price * 100),
+          stock,
+          category,
+          description,
+          sku,
+          ...(costPrice && { costPrice: Math.round(costPrice * 100) }),
+          isActive: true,
+        },
+      })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'create_product', entity: 'product', entityId: product.id,
+          summary: `إضافة منتج جديد: ${name} — ${price} ريال`,
+        },
+      })
+
+      return { product: { id: product.id, name: product.name, price: product.price / 100, stock: product.stock } }
+    }
+
+    case 'send_customer_message': {
+      const { customerId, customerName, message, channel = 'whatsapp' } = input as {
+        customerId?: string; customerName?: string; message: string; channel?: string
+      }
+
+      // Log the message attempt
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'send_message', entity: 'customer', entityId: customerId ?? 'unknown',
+          summary: `رسالة ${channel} لـ ${customerName ?? customerId}: ${message.slice(0, 80)}`,
+        },
+      })
+
+      // In real implementation, call WhatsApp Business API here
+      // For now, return the message as drafted
+      return {
+        drafted: true,
+        channel,
+        customerName: customerName ?? customerId,
+        message,
+        note: 'لإرسال حقيقي اربط WhatsApp Business API من الإعدادات',
+      }
+    }
+
     default:
       return { error: `أداة غير معروفة: ${name}` }
   }
