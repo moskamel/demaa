@@ -12,6 +12,7 @@
     "server:start": "tsx server/index.ts",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx server/seed.ts",
+    "seed:demo": "node server/seed-demo.mjs",
     "db:studio": "prisma studio"
   },
   "dependencies": {
