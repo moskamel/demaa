@@ -54,6 +54,7 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
       const savedId = localStorage.getItem(ACTIVE_STORE_KEY)
       const found = r.stores.find(s => s.id === savedId) ?? r.stores[0] ?? null
       setActiveStore(found)
+      if (found && !savedId) localStorage.setItem(ACTIVE_STORE_KEY, found.id)
     }).catch(() => {})
   }, [])
 
