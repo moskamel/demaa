@@ -188,6 +188,53 @@ function renderMarkdown(text: string) {
   })
 }
 
+// ── Seed demo data banner ────────────────────────────────────────────────────
+function SeedDemoBanner() {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+
+  const seed = async () => {
+    setStatus('loading')
+    try {
+      const token = localStorage.getItem('deema_token')
+      const res = await fetch('/api/ai/seed-demo', { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+      if (!res.ok) throw new Error()
+      setStatus('done')
+      setTimeout(() => window.location.reload(), 1200)
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 3000)
+    }
+  }
+
+  if (status === 'done') return (
+    <div style={{ marginTop: 24, textAlign: 'center', color: '#22c55e', fontSize: 14, fontWeight: 600 }}>
+      ✅ تم تحميل البيانات! جارٍ التحديث...
+    </div>
+  )
+
+  return (
+    <div style={{ marginTop: 28, padding: '16px 20px', background: 'rgba(106,76,245,0.08)', border: '1px dashed rgba(106,76,245,0.3)', borderRadius: 14, textAlign: 'center' }}>
+      <p style={{ fontSize: 13, color: 'var(--ink-muted)', margin: '0 0 12px', lineHeight: 1.6 }}>
+        🧪 المتجر فارغ — حمّل بيانات تجريبية واقعية لاختبار كل الميزات
+      </p>
+      <button
+        onClick={seed}
+        disabled={status === 'loading'}
+        style={{
+          background: 'linear-gradient(135deg,#6a4cf5,#d44df0)',
+          color: '#fff', border: 'none', borderRadius: 100,
+          padding: '10px 24px', fontSize: 14, fontWeight: 600,
+          cursor: status === 'loading' ? 'default' : 'pointer',
+          opacity: status === 'loading' ? 0.7 : 1,
+          fontFamily: 'inherit',
+        }}
+      >
+        {status === 'loading' ? '⏳ جارٍ التحميل...' : status === 'error' ? '❌ فشل، حاول مجدداً' : '🚀 تحميل 120 طلب + منتجات + عملاء'}
+      </button>
+    </div>
+  )
+}
+
 // ── QuickTag with popup ───────────────────────────────────────────────────────
 function QuickTag({ q, onSend, dark = false }: { q: typeof QUICK[0]; onSend: (cmd: string) => void; dark?: boolean }) {
   const [open, setOpen] = useState(false)
@@ -627,6 +674,9 @@ export default function Dashboard() {
                   <QuickTag key={q.label} q={q} onSend={handleSend} />
                 ))}
               </div>
+
+              {/* Seed demo data banner */}
+              <SeedDemoBanner />
             </div>
           </div>
         ) : (
