@@ -1,5 +1,6 @@
 // Demo seed script — fills the DB with realistic Arabic store data
 // Run: node server/seed-demo.mjs
+// Or target a specific user: node server/seed-demo.mjs your@email.com
 
 import { createClient } from '@libsql/client'
 import { join, dirname } from 'path'
@@ -67,66 +68,68 @@ const PAYMENT_METHODS = ['card', 'card', 'card', 'cash', 'tabby', 'tamara', 'stc
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-console.log('🌱 Starting demo seed...\n')
+const targetEmail = process.argv[2] || 'demo@deema.ai'
+console.log(`🌱 Starting demo seed for: ${targetEmail}\n`)
 
-// 1. User & Org
-const userId = cuid()
-const orgId = cuid()
-const storeId = cuid()
 const now = new Date().toISOString()
 
-// Check if demo user already exists
-const existing = await db.execute({ sql: 'SELECT id FROM users WHERE email = ?', args: ['demo@deema.ai'] })
-if (existing.rows.length > 0) {
-  console.log('⚠️  Demo user already exists. Clearing old data first...')
-  // Get org
-  const mem = await db.execute({ sql: 'SELECT organizationId FROM team_memberships WHERE userId = ?', args: [existing.rows[0].id] })
-  if (mem.rows.length > 0) {
-    const existingOrgId = mem.rows[0].organizationId
-    const stores = await db.execute({ sql: 'SELECT id FROM stores WHERE organizationId = ?', args: [existingOrgId] })
-    for (const s of stores.rows) {
-      await db.execute({ sql: 'DELETE FROM shipments WHERE orderId IN (SELECT id FROM orders WHERE storeId = ?)', args: [s.id] })
-      await db.execute({ sql: 'DELETE FROM order_items WHERE orderId IN (SELECT id FROM orders WHERE storeId = ?)', args: [s.id] })
-      await db.execute({ sql: 'DELETE FROM orders WHERE storeId = ?', args: [s.id] })
-      await db.execute({ sql: 'DELETE FROM products WHERE storeId = ?', args: [s.id] })
-    }
-    await db.execute({ sql: 'DELETE FROM customers WHERE organizationId = ?', args: [existingOrgId] })
-    await db.execute({ sql: 'DELETE FROM coupons WHERE organizationId = ?', args: [existingOrgId] })
-    await db.execute({ sql: 'DELETE FROM notifications WHERE organizationId = ?', args: [existingOrgId] })
-    await db.execute({ sql: 'DELETE FROM ai_memory WHERE organizationId = ?', args: [existingOrgId] })
-    await db.execute({ sql: 'DELETE FROM conversations WHERE organizationId = ?', args: [existingOrgId] })
-    await db.execute({ sql: 'DELETE FROM activity_logs WHERE organizationId = ?', args: [existingOrgId] })
-    console.log('✅ Old data cleared\n')
+// Find existing user by email
+const existing = await db.execute({ sql: 'SELECT id FROM users WHERE email = ?', args: [targetEmail] })
+
+async function clearOrgData(orgId) {
+  const stores = await db.execute({ sql: 'SELECT id FROM stores WHERE organizationId = ?', args: [orgId] })
+  for (const s of stores.rows) {
+    await db.execute({ sql: 'DELETE FROM shipments WHERE orderId IN (SELECT id FROM orders WHERE storeId = ?)', args: [s.id] })
+    await db.execute({ sql: 'DELETE FROM order_items WHERE orderId IN (SELECT id FROM orders WHERE storeId = ?)', args: [s.id] })
+    await db.execute({ sql: 'DELETE FROM orders WHERE storeId = ?', args: [s.id] })
+    await db.execute({ sql: 'DELETE FROM products WHERE storeId = ?', args: [s.id] })
+    await db.execute({ sql: 'DELETE FROM stores WHERE id = ?', args: [s.id] })
   }
-  // Use existing user/org
+  await db.execute({ sql: 'DELETE FROM customers WHERE organizationId = ?', args: [orgId] })
+  await db.execute({ sql: 'DELETE FROM coupons WHERE organizationId = ?', args: [orgId] })
+  await db.execute({ sql: 'DELETE FROM notifications WHERE organizationId = ?', args: [orgId] })
+  await db.execute({ sql: 'DELETE FROM ai_memory WHERE organizationId = ?', args: [orgId] })
+  await db.execute({ sql: 'DELETE FROM conversations WHERE organizationId = ?', args: [orgId] })
+  await db.execute({ sql: 'DELETE FROM activity_logs WHERE organizationId = ?', args: [orgId] })
+  console.log('✅ Old data cleared\n')
+}
+
+if (existing.rows.length > 0) {
   const existingUserId = existing.rows[0].id
   const existingMem = await db.execute({ sql: 'SELECT organizationId FROM team_memberships WHERE userId = ?', args: [existingUserId] })
   const existingOrgId = existingMem.rows[0]?.organizationId
 
-  await runSeed(existingUserId, existingOrgId)
+  if (existingOrgId) {
+    console.log(`⚠️  Found user. Clearing existing data...`)
+    await clearOrgData(existingOrgId)
+    await runSeed(existingUserId, existingOrgId)
+  } else {
+    console.log('❌ User has no organization. Create an account first by logging in.')
+    process.exit(1)
+  }
 } else {
-  // Create new user
+  // Create new demo user
+  const userId = cuid()
+  const orgId = cuid()
+
   await db.execute({
     sql: `INSERT INTO users (id, email, passwordHash, name, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
-    args: [userId, 'demo@deema.ai', hash('demo1234'), 'أحمد التاجر', now, now],
+    args: [userId, targetEmail, hash('demo1234'), 'أحمد التاجر', now, now],
   })
-
   await db.execute({
     sql: `INSERT INTO organizations (id, name, slug, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`,
-    args: [orgId, 'متجر ديما التجريبي', 'deema-demo', now, now],
+    args: [orgId, 'متجر ديما التجريبي', 'deema-demo-' + Date.now(), now, now],
   })
-
   await db.execute({
     sql: `INSERT INTO team_memberships (id, organizationId, userId, role, createdAt) VALUES (?, ?, ?, ?, ?)`,
     args: [cuid(), orgId, userId, 'OWNER', now],
   })
-
   await db.execute({
     sql: `INSERT INTO subscriptions (id, organizationId, planId, status, ordersUsed, ordersLimit, currentPeriodEnd, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [cuid(), orgId, 'growth', 'active', 0, 1000, daysAgo(-30), now, now],
   })
 
-  console.log('✅ User created: demo@deema.ai / demo1234')
+  console.log(`✅ New user created: ${targetEmail} / demo1234`)
   await runSeed(userId, orgId)
 }
 
