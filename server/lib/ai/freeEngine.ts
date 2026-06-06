@@ -19,7 +19,7 @@ interface Intent {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function fmt(n: number) { return (n / 100).toLocaleString('ar-EG', { minimumFractionDigits: 0 }) + ' $' }
+function fmt(n: number) { return (n / 100).toLocaleString('ar-EG', { minimumFractionDigits: 0 }) + ' ريال' }
 function pct(n: number) { return Math.round(n) + '%' }
 
 // ── Intents ──────────────────────────────────────────────────────────────────
