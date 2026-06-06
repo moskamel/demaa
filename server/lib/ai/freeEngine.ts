@@ -603,11 +603,13 @@ const INTENTS: Intent[] = [
       const stock = stockMatch ? parseInt(stockMatch[1]) : 0
       const category = categoryMatch ? categoryMatch[1] : undefined
       const costPrice = costMatch ? parseFloat(costMatch[1].replace(/,/g, '')) : undefined
+      const imageUrlMatch = msg.match(/https?:\/\/\S+(?:jpg|jpeg|png|webp|gif)(?:\?\S*)?/i)
+      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : undefined
 
-      const r = await executeTool('create_product', { name, price, stock, category, costPrice }, ctx) as any
+      const r = await executeTool('create_product', { name, price, stock, category, costPrice, imageUrl }, ctx) as any
       if (r.error) return `❌ ${r.error}`
       const p = r.product
-      return `✅ **تم إضافة المنتج بنجاح!**\n\n• الاسم: **${p.name}**\n• السعر: **${p.price} ريال**\n• المخزون: **${p.stock} قطعة**${category ? `\n• التصنيف: ${category}` : ''}`
+      return `✅ **تم إضافة المنتج بنجاح!**\n\n• الاسم: **${p.name}**\n• السعر: **${p.price} ريال**\n• المخزون: **${p.stock} قطعة**${category ? `\n• التصنيف: ${category}` : ''}${imageUrl ? `\n• الصورة: ✅ تم ربطها` : '\n• 💡 ألصق رابط الصورة في الرسالة لإضافتها'}`
     }
   },
 

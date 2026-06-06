@@ -642,9 +642,9 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
     }
 
     case 'create_product': {
-      const { name, price, stock = 0, category, description, sku, costPrice } = input as {
+      const { name, price, stock = 0, category, description, sku, costPrice, imageUrl } = input as {
         name: string; price: number; stock?: number; category?: string
-        description?: string; sku?: string; costPrice?: number
+        description?: string; sku?: string; costPrice?: number; imageUrl?: string
       }
       if (!name || !price) return { error: 'اسم المنتج والسعر مطلوبان' }
       if (!storeId) return { error: 'لا يوجد متجر مرتبط' }
@@ -659,6 +659,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
           description,
           sku,
           ...(costPrice && { costPrice: Math.round(costPrice * 100) }),
+          ...(imageUrl && { imageUrl }),
           isActive: true,
         },
       })

@@ -216,6 +216,7 @@ const GROQ_TOOLS: Groq.Chat.ChatCompletionTool[] = [
           description: { type: 'string' },
           sku: { type: 'string' },
           costPrice: { type: 'number', description: 'سعر التكلفة بالريال' },
+          imageUrl: { type: 'string', description: 'رابط صورة المنتج (URL)' },
         },
         required: ['name', 'price'],
       },

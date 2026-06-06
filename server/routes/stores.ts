@@ -418,7 +418,7 @@ async function syncShopify(storeId: string, domain: string, token: string, orgId
           imageUrl: p.image?.src || null,
           isActive: p.status === 'active',
         },
-        update: { price, stock, isActive: p.status === 'active' },
+        update: { price, stock, isActive: p.status === 'active', imageUrl: p.image?.src || undefined, description: p.body_html?.replace(/<[^>]*>/g, '') || undefined },
       })
     }
   }
