@@ -351,6 +351,244 @@ const GROQ_TOOLS: Groq.Chat.ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'create_order',
+      description: 'إنشاء طلب يدوي جديد للعميل مع منتجات وسعر',
+      parameters: {
+        type: 'object',
+        properties: {
+          customerName: { type: 'string' },
+          customerPhone: { type: 'string' },
+          city: { type: 'string' },
+          paymentMethod: { type: 'string', enum: ['cash', 'card', 'tabby', 'tamara'] },
+          notes: { type: 'string' },
+          items: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                qty: { type: 'number' },
+                unitPrice: { type: 'number' },
+                productId: { type: 'string' },
+              },
+              required: ['name', 'qty', 'unitPrice'],
+            },
+          },
+        },
+        required: ['customerName', 'city', 'items'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_team',
+      description: 'جلب قائمة أعضاء الفريق والموظفين في المتجر',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'invite_team_member',
+      description: 'دعوة موظف جديد أو إضافة عضو للفريق بدور معين',
+      parameters: {
+        type: 'object',
+        properties: {
+          email: { type: 'string' },
+          role: { type: 'string', enum: ['ADMIN', 'ORDER_MANAGER', 'CUSTOMER_SERVICE'] },
+        },
+        required: ['email'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'remove_team_member',
+      description: 'إزالة موظف من الفريق',
+      parameters: {
+        type: 'object',
+        properties: {
+          memberId: { type: 'string' },
+          memberEmail: { type: 'string' },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_cash_orders',
+      description: 'جلب طلبات الكاش المُسلَّمة التي لم يتم تحصيل ثمنها بعد',
+      parameters: {
+        type: 'object',
+        properties: { limit: { type: 'number' } },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'mark_payment_collected',
+      description: 'تسجيل تحصيل المبالغ النقدية لطلبات الكاش',
+      parameters: {
+        type: 'object',
+        properties: {
+          orderIds: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['orderIds'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'deactivate_product',
+      description: 'إيقاف منتج مؤقتاً وإخفاؤه عن المتجر دون حذفه',
+      parameters: {
+        type: 'object',
+        properties: {
+          productId: { type: 'string' },
+          productName: { type: 'string' },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_product',
+      description: 'حذف منتج من المتجر',
+      parameters: {
+        type: 'object',
+        properties: {
+          productId: { type: 'string' },
+          productName: { type: 'string' },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'search_order',
+      description: 'البحث عن طلب بالرقم أو اسم العميل أو الجوال',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'رقم الطلب أو اسم العميل' },
+        },
+        required: ['query'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'search_customer',
+      description: 'البحث عن عميل بالاسم أو رقم الجوال',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string' },
+        },
+        required: ['query'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'add_customer',
+      description: 'إضافة عميل جديد يدوياً',
+      parameters: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          phone: { type: 'string' },
+          email: { type: 'string' },
+          city: { type: 'string' },
+        },
+        required: ['name'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'block_customer',
+      description: 'حظر عميل من الطلب مستقبلاً',
+      parameters: {
+        type: 'object',
+        properties: {
+          customerId: { type: 'string' },
+        },
+        required: ['customerId'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_coupon',
+      description: 'إلغاء كوبون خصم وإيقافه',
+      parameters: {
+        type: 'object',
+        properties: {
+          code: { type: 'string' },
+        },
+        required: ['code'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_risk_orders',
+      description: 'جلب الطلبات المشبوهة ذات درجة مخاطرة عالية',
+      parameters: {
+        type: 'object',
+        properties: {
+          minRisk: { type: 'number', description: 'الحد الأدنى لدرجة المخاطرة (0-100)' },
+          limit: { type: 'number' },
+        },
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_stores',
+      description: 'جلب قائمة المتاجر المرتبطة بالحساب',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_churn_customers',
+      description: 'جلب العملاء الذين لم يشتروا منذ فترة طويلة (45+ يوم)',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_new_customers',
+      description: 'جلب العملاء الجدد في آخر X يوم',
+      parameters: {
+        type: 'object',
+        properties: {
+          days: { type: 'number' },
+          limit: { type: 'number' },
+        },
+      },
+    },
+  },
 ]
 
 async function buildSystemPrompt(ctx: ChatContext): Promise<string> {

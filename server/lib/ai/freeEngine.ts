@@ -530,12 +530,15 @@ const INTENTS: Intent[] = [
     name: 'help',
     patterns: [/مساعدة|ايش تقدر|شو تقدر|قدراتك|أوامر|كيف أستخدمك|شو تعرف تسوي/i],
     async handler() {
-      return `أنا ديما، مساعدك الذكي لإدارة المتجر. إليك ما أقدر أفعله:\n\n` +
-        `📦 **الطلبات**\n• "الطلبات المعلقة" — عرض الطلبات\n• "اقبل كل الطلبات" — قبول جماعي\n• "اشحن الطلبات المقبولة" — إنشاء شحنات\n• "ارفض طلب #10233" — رفض طلب\n\n` +
-        `📊 **التحليلات**\n• "تقرير المبيعات" — إحصاءات شاملة\n• "مبيعات آخر أسبوع"\n\n` +
-        `📦 **المنتجات**\n• "مخزون منخفض" — منتجات قاربت النفاد\n• "خفّض أسعار العطور 15%"\n• "زود أسعار الإلكترونيات 10%"\n\n` +
-        `👥 **العملاء**\n• "عملائي" — قائمة العملاء\n• "عملاء VIP"\n\n` +
-        `🎟️ **الكوبونات**\n• "أنشئ كوبون خصم 20%"\n• "أنشئ كوبون SUMMER30 بخصم 30%"\n\n` +
+      return `أنا ديما، مساعدك الذكي لإدارة المتجر. إليك كل ما أقدر أفعله:\n\n` +
+        `📦 **الطلبات**\n• "الطلبات المعلقة" / "اقبل كل الطلبات"\n• "اشحن الطلبات المقبولة" / "ارفض طلب #10233"\n• "أنشئ طلب للعميل محمد 0512..." — طلب يدوي\n• "ابحث عن طلب #10023" / "طلب اسمه محمد"\n• "الطلبات المشبوهة" — مخاطرة عالية\n\n` +
+        `💵 **الكاش والمدفوعات**\n• "طلبات الكاش" — المبالغ غير المحصلة\n• "سجّل تحصيل كل الكاش"\n\n` +
+        `📊 **التحليلات والتقارير**\n• "تقرير المبيعات" / "مبيعات آخر أسبوع"\n• "تقرير الأرباح الحقيقية"\n• "توقع المبيعات القادمة"\n• "أداء المتجر" — تقرير شامل\n\n` +
+        `📦 **المنتجات والمخزون**\n• "مخزون منخفض" / "تقرير المخزون الكامل"\n• "أضف منتج اسمه X سعره 150 مخزون 30"\n• "أوقف منتج [الاسم]" / "احذف منتج [الاسم]"\n• "خفّض أسعار العطور 15%"\n\n` +
+        `👥 **العملاء**\n• "عملائي" / "عملاء VIP" / "عملاء جدد"\n• "ابحث عن عميل محمد" / "أضف عميل [الاسم]"\n• "عملاء لم يشتروا" — churn\n• "احظر عميل [الاسم]"\n\n` +
+        `👨‍💼 **الفريق والموظفين**\n• "فريقي" — قائمة الموظفين\n• "أضف موظف ahmed@domain.com"\n• "احذف موظف ahmed@domain.com"\n\n` +
+        `🎟️ **الكوبونات**\n• "أنشئ كوبون خصم 20%" / "احذف كوبون SUMMER20"\n\n` +
+        `↩️ **المرتجعات**\n• "إرجاع طلب #10023 بسبب تلف"\n• "المرتجعات" — قائمة كاملة\n\n` +
         `🧠 **الذاكرة**\n• "ايش تعرف عن متجري؟"`
     }
   },
@@ -700,7 +703,335 @@ const INTENTS: Intent[] = [
     }
   },
 
-  // Thank you / appreciation
+  // ── Create manual order ─────────────────────────────────────────────────────
+  {
+    name: 'create_order',
+    patterns: [/أنشئ? طلب|طلب جديد|طلب يدوي|أضف طلب|سجّل طلب|إنشاء طلب/i],
+    async handler(msg, ctx) {
+      const nameMatch = msg.match(/(?:للعميل|الزبون|العميل)[:\s]+(\S+(?:\s+\S+)?)/i)
+        || msg.match(/(?:اسمه|اسم العميل)[:\s]+(\S+(?:\s+\S+)?)/i)
+      const phoneMatch = msg.match(/(?:رقمه|رقم الجوال|جوال|الرقم)[:\s]*(05\d{8}|\d{10})/i)
+        || msg.match(/(05\d{8})/)
+      const cityMatch = msg.match(/(?:مدينة|من|في)[:\s]+(\S+)/i)
+      const productMatch = msg.match(/(?:منتج|بضاعة|سلعة)[:\s]+(.+?)(?:\s+سعر|\s+بسعر|$)/i)
+      const priceMatch = msg.match(/(?:سعره?|بسعر|ثمنه)[:\s]*([\d,]+)/i) || msg.match(/([\d,]{2,}) ريال/i)
+
+      if (!nameMatch || !priceMatch) {
+        return `لإنشاء طلب يدوي أخبرني:\n• اسم العميل\n• رقم الجوال\n• المدينة\n• المنتج والسعر\n\nمثال:\n**"أنشئ طلب للعميل محمد 0512345678 من الرياض منتج عطر سعره 150"**`
+      }
+
+      const customerName = nameMatch[1].trim()
+      const customerPhone = phoneMatch?.[1] ?? undefined
+      const city = cityMatch?.[1] ?? 'غير محدد'
+      const productName = productMatch?.[1]?.trim() ?? 'منتج'
+      const price = parseFloat(priceMatch[1].replace(/,/g, ''))
+
+      const r = await executeTool('create_order', {
+        customerName, customerPhone, city,
+        items: [{ name: productName, qty: 1, unitPrice: price }],
+        paymentMethod: /كاش|نقد/.test(msg) ? 'cash' : 'card',
+      }, ctx) as any
+
+      if (r.error) return `❌ ${r.error}`
+      const o = r.order
+      return `✅ **تم إنشاء الطلب بنجاح!**\n\n• رقم الطلب: **#${o.externalRef}**\n• العميل: ${o.customerName}\n• المدينة: ${o.city}\n• الإجمالي: **${o.total} ريال**\n• الحالة: معلق`
+    }
+  },
+
+  // ── Team management ──────────────────────────────────────────────────────────
+  {
+    name: 'get_team',
+    patterns: [/فريقي|أعضاء الفريق|موظفيني|الموظفين|من في الفريق|أعضاء|قائمة الفريق/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_team', {}, ctx) as any
+      const members = r.members || []
+      if (!members.length) return 'ما في أعضاء في الفريق بعد. ادعُ موظفاً بقول "أضف موظف [البريد الإلكتروني]"'
+      const roleLabels: Record<string, string> = { ADMIN: 'مسؤول', ORDER_MANAGER: 'مدير طلبات', CUSTOMER_SERVICE: 'خدمة عملاء' }
+      const list = members.map((m: any) =>
+        `• **${m.name}** — ${roleLabels[m.role] || m.role} — ${m.email}`
+      ).join('\n')
+      return `👥 **فريقك (${members.length} عضو):**\n\n${list}`
+    }
+  },
+
+  {
+    name: 'invite_member',
+    patterns: [/أضف موظف|دعوة موظف|ادعُ|أضف عضو|موظف جديد|إضافة موظف/i],
+    async handler(msg, ctx) {
+      const emailMatch = msg.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i)
+      if (!emailMatch) return 'أعطني البريد الإلكتروني للموظف.\n\nمثال: **"أضف موظف ahmed@domain.com"**'
+
+      const role = /مسؤول|admin/i.test(msg) ? 'ADMIN'
+        : /خدمة عملاء|customer/i.test(msg) ? 'CUSTOMER_SERVICE'
+        : 'ORDER_MANAGER'
+
+      const r = await executeTool('invite_team_member', { email: emailMatch[0], role }, ctx) as any
+      if (r.error) return `❌ ${r.error}`
+
+      const roleLabels: Record<string, string> = { ADMIN: 'مسؤول', ORDER_MANAGER: 'مدير طلبات', CUSTOMER_SERVICE: 'خدمة عملاء' }
+      return `✅ **تم إضافة الموظف!**\n\n• البريد: **${emailMatch[0]}**\n• الدور: ${roleLabels[role]}\n\n💡 سيتمكن من تسجيل الدخول بهذا البريد.`
+    }
+  },
+
+  {
+    name: 'remove_member',
+    patterns: [/احذف موظف|أزل موظف|فصل موظف|إزالة عضو/i],
+    async handler(msg, ctx) {
+      const emailMatch = msg.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i)
+      if (!emailMatch) return 'أعطني البريد الإلكتروني للموظف الذي تريد إزالته.'
+
+      const r = await executeTool('remove_team_member', { memberEmail: emailMatch[0] }, ctx) as any
+      if (r.error) return `❌ ${r.error}`
+      return `✅ تم إزالة الموظف **${emailMatch[0]}** من الفريق.`
+    }
+  },
+
+  // ── Cash collection ──────────────────────────────────────────────────────────
+  {
+    name: 'cash_orders',
+    patterns: [/طلبات كاش|طلبات نقدية|كاش لم يُحصّل|ديون الكاش|طلبات بالكاش غير محصلة/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_cash_orders', { limit: 30 }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return '✅ كل طلبات الكاش محصّلة، ما في مبالغ معلقة.'
+      const list = orders.slice(0, 8).map((o: any) =>
+        `• #${o.externalRef || o.id.slice(-6)} — ${o.customerName} — ${(o.total / 100).toLocaleString('ar-EG')} ريال — ${o.city}`
+      ).join('\n')
+      return `💵 **طلبات الكاش غير المحصّلة (${orders.length}):**\n\n${list}\n\n💰 **إجمالي المبالغ: ${r.totalUnpaid.toLocaleString('ar-EG')} ريال**\n\nقول "سجّل تحصيل كل الكاش" لتحديثها.`
+    }
+  },
+
+  {
+    name: 'collect_cash',
+    patterns: [/سجّل تحصيل|تحصيل الكاش|حصّلت الكاش|تم التحصيل|وصل الكاش/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_cash_orders', { limit: 100 }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return '✅ ما في طلبات كاش تحتاج تحصيل.'
+      const ids = orders.map((o: any) => o.id)
+      await executeTool('mark_payment_collected', { orderIds: ids }, ctx)
+      return `✅ **تم تسجيل تحصيل ${orders.length} طلب كاش بنجاح!**\n\n💰 المبلغ المحصّل: **${r.totalUnpaid.toLocaleString('ar-EG')} ريال**`
+    }
+  },
+
+  // ── Product management ───────────────────────────────────────────────────────
+  {
+    name: 'deactivate_product',
+    patterns: [/أوقف منتج|عطّل منتج|أخفِ منتج|إيقاف منتج|أخرج منتج|سحب منتج/i],
+    async handler(msg, ctx) {
+      const nameMatch = msg.match(/(?:منتج|اسمه)[:\s]+(.+?)(?:\s*$)/i)
+      if (!nameMatch) return 'أخبرني اسم المنتج.\n\nمثال: **"أوقف منتج عطر الورد"**'
+      const r = await executeTool('deactivate_product', { productName: nameMatch[1].trim() }, ctx) as any
+      if (r.error) return `❌ ${r.error}`
+      return `⏸️ تم إيقاف منتج **"${r.name}"** — لن يظهر للعملاء حتى تعيد تشغيله.`
+    }
+  },
+
+  {
+    name: 'delete_product',
+    patterns: [/احذف منتج|حذف منتج|امسح منتج/i],
+    async handler(msg, ctx) {
+      const nameMatch = msg.match(/(?:منتج|اسمه)[:\s]+(.+?)(?:\s*$)/i)
+      if (!nameMatch) return 'أخبرني اسم المنتج.\n\nمثال: **"احذف منتج عطر الورد"**'
+      const r = await executeTool('delete_product', { productName: nameMatch[1].trim() }, ctx) as any
+      if (r.error) return `❌ ${r.error}`
+      return `🗑️ تم حذف منتج **"${r.name}"** بنجاح.`
+    }
+  },
+
+  // ── Search ───────────────────────────────────────────────────────────────────
+  {
+    name: 'search_order',
+    patterns: [/ابحث عن طلب|بحث طلب|فين طلب|وين طلب|أين طلب|طلب رقم|طلب اسمه/i],
+    async handler(msg, ctx) {
+      const match = msg.match(/(?:طلب|رقم|بحث)[:\s]+#?(\S+)/i)
+        || msg.match(/#?([a-z0-9]{4,})/i)
+        || msg.match(/اسمه\s+(\S+)/i)
+      if (!match) return 'أعطني رقم الطلب أو اسم العميل.\n\nمثال: **"ابحث عن طلب #10023"** أو **"طلب اسمه محمد"**'
+
+      const r = await executeTool('search_order', { query: match[1] }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return `ما لقيت طلبات بـ "${match[1]}".`
+      const list = orders.map((o: any) =>
+        `• #${o.externalRef || o.id.slice(-6)} — ${o.customerName} — ${fmt(o.total)} — ${statusLabels[o.status] || o.status} — ${o.city}`
+      ).join('\n')
+      return `🔍 **نتائج البحث (${orders.length}):**\n\n${list}`
+    }
+  },
+
+  {
+    name: 'search_customer',
+    patterns: [/ابحث عن عميل|بحث عميل|فين عميل|عميل اسمه|هل عندي عميل/i],
+    async handler(msg, ctx) {
+      const match = msg.match(/(?:عميل|اسمه|رقم)[:\s]+(\S+(?:\s+\S+)?)/i)
+        || msg.match(/(05\d{8})/)
+      if (!match) return 'أعطني اسم العميل أو رقم جواله.\n\nمثال: **"ابحث عن عميل محمد"**'
+
+      const r = await executeTool('search_customer', { query: match[1] }, ctx) as any
+      const customers = r.customers || []
+      if (!customers.length) return `ما لقيت عملاء بـ "${match[1]}".`
+      const list = customers.map((c: any) =>
+        `• **${c.name}** — ${c.city || '—'} — ${c.totalOrders} طلب — ${fmt(c.totalSpent)}`
+      ).join('\n')
+      return `🔍 **نتائج البحث (${customers.length}):**\n\n${list}`
+    }
+  },
+
+  // ── Add customer ─────────────────────────────────────────────────────────────
+  {
+    name: 'add_customer',
+    patterns: [/أضف عميل|عميل جديد|سجّل عميل|أنشئ? عميل/i],
+    async handler(msg, ctx) {
+      const nameMatch = msg.match(/(?:اسمه|الاسم)[:\s]+(\S+(?:\s+\S+)?)/i)
+        || msg.match(/(?:عميل)[:\s]+(\S+(?:\s+\S+)?)/i)
+      const phoneMatch = msg.match(/(05\d{8})/)
+      const cityMatch = msg.match(/(?:من|مدينة|في)[:\s]+(\S+)/i)
+
+      if (!nameMatch) return 'أعطني اسم العميل.\n\nمثال: **"أضف عميل اسمه محمد 0512345678 من جدة"**'
+
+      const r = await executeTool('add_customer', {
+        name: nameMatch[1].trim(),
+        phone: phoneMatch?.[1],
+        city: cityMatch?.[1],
+      }, ctx) as any
+
+      if (r.error) return `❌ ${r.error}`
+      const c = r.customer
+      return `✅ **تم إضافة العميل!**\n\n• الاسم: **${c.name}**${c.phone ? `\n• الجوال: ${c.phone}` : ''}${c.city ? `\n• المدينة: ${c.city}` : ''}`
+    }
+  },
+
+  // ── Block customer ────────────────────────────────────────────────────────────
+  {
+    name: 'block_customer',
+    patterns: [/احظر عميل|حظر عميل|بلوك عميل|أوقف عميل|امنع عميل/i],
+    async handler(msg, ctx) {
+      const match = msg.match(/(?:عميل|اسمه)[:\s]+(\S+(?:\s+\S+)?)/i)
+        || msg.match(/(05\d{8})/)
+      if (!match) return 'أعطني اسم أو رقم العميل.\n\nمثال: **"احظر عميل محمد"**'
+
+      const r = await executeTool('search_customer', { query: match[1] }, ctx) as any
+      const customers = r.customers || []
+      if (!customers.length) return `ما لقيت عميل بـ "${match[1]}".`
+      const c = customers[0]
+      const res = await executeTool('block_customer', { customerId: c.id }, ctx) as any
+      if (res.error) return `❌ ${res.error}`
+      return `🚫 تم حظر العميل **${c.name}** — لن يتمكن من الطلب مجدداً.`
+    }
+  },
+
+  // ── Delete coupon ─────────────────────────────────────────────────────────────
+  {
+    name: 'delete_coupon',
+    patterns: [/احذف كوبون|أوقف كوبون|ألغِ كوبون|أبطل كوبون/i],
+    async handler(msg, ctx) {
+      const codeMatch = msg.match(/(?:كوبون|رمز)[:\s]+([A-Z0-9]{2,15})/i)
+        || msg.match(/([A-Z][A-Z0-9]{3,14})/)
+      if (!codeMatch) return 'أعطني رمز الكوبون.\n\nمثال: **"احذف كوبون SUMMER20"**'
+      const r = await executeTool('delete_coupon', { code: codeMatch[1].toUpperCase() }, ctx) as any
+      if (r.error) return `❌ ${r.error}`
+      return `🗑️ تم إيقاف الكوبون **${r.deleted}** — لن يمكن استخدامه بعد الآن.`
+    }
+  },
+
+  // ── Risk orders ───────────────────────────────────────────────────────────────
+  {
+    name: 'risk_orders',
+    patterns: [/طلبات مشبوهة|طلبات خطرة|مخاطرة عالية|تقرير المخاطر|طلبات بمخاطرة/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_risk_orders', { minRisk: 60, limit: 20 }, ctx) as any
+      const orders = r.orders || []
+      if (!orders.length) return '✅ ما في طلبات مشبوهة حالياً.'
+      const list = orders.map((o: any) =>
+        `• #${o.externalRef || o.id.slice(-6)} — ${o.customerName} — ${fmt(o.total)} — ⚠️ مخاطرة ${o.riskScore}%`
+      ).join('\n')
+      return `⚠️ **الطلبات المشبوهة (${orders.length}):**\n\n${list}\n\n💡 راجع كل طلب قبل الشحن. قول "ارفض طلب #XXXX" لرفض أي منها.`
+    }
+  },
+
+  // ── Stores ────────────────────────────────────────────────────────────────────
+  {
+    name: 'get_stores',
+    patterns: [/متاجري|متجري|المتاجر المرتبطة|ايش المتاجر|المتاجر الموصولة/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_stores', {}, ctx) as any
+      const stores = r.stores || []
+      if (!stores.length) return 'ما في متاجر مرتبطة بعد. اذهب لـ "ربط متجر" لإضافة متجرك.'
+      const list = stores.map((s: any) =>
+        `• **${s.name}** — ${s.platform} — ${s.isActive ? '✅ نشط' : '⏸️ موقوف'}`
+      ).join('\n')
+      return `🏪 **متاجرك (${stores.length}):**\n\n${list}`
+    }
+  },
+
+  // ── Churn risk customers ──────────────────────────────────────────────────────
+  {
+    name: 'churn_customers',
+    patterns: [/عملاء لم يشتروا|عملاء مهجورين|عملاء غابوا|عملاء خسرناهم|churn|عملاء مفقودين/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('get_churn_customers', {}, ctx) as any
+      const customers = r.customers || []
+      if (!customers.length) return '✅ ما في عملاء في خطر الاختفاء.'
+      const list = customers.slice(0, 8).map((c: any) =>
+        `• **${c.name}** — ${c.totalOrders} طلب — ${fmt(c.totalSpent)} إجمالي — آخر طلب: ${c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString('ar-EG') : 'غير معروف'}`
+      ).join('\n')
+      return `⚠️ **${customers.length} عميل لم يشتر منذ ${r.daysInactive}+ يوم:**\n\n${list}\n\n💡 أرسل لهم رسالة أو كوبون خصم لاستعادتهم.`
+    }
+  },
+
+  // ── New customers ─────────────────────────────────────────────────────────────
+  {
+    name: 'new_customers',
+    patterns: [/عملاء جدد|العملاء الجدد|كم عميل جديد|عملاء هذا الشهر/i],
+    async handler(msg, ctx) {
+      const days = /أسبوع|7/.test(msg) ? 7 : 30
+      const r = await executeTool('get_new_customers', { days, limit: 10 }, ctx) as any
+      const customers = r.customers || []
+      const label = days === 7 ? 'آخر 7 أيام' : 'آخر 30 يوم'
+      if (!customers.length) return `ما في عملاء جدد في ${label}.`
+      const list = customers.slice(0, 6).map((c: any) =>
+        `• **${c.name}** — ${c.city || '—'}${c.phone ? ' — ' + c.phone : ''}`
+      ).join('\n')
+      return `🆕 **${customers.length} عميل جديد (${label}):**\n\n${list}`
+    }
+  },
+
+  // ── Inventory forecast ────────────────────────────────────────────────────────
+  {
+    name: 'inventory_report',
+    patterns: [/تقرير المخزون الكامل|وضع المخزون|تقرير الجرد|كامل المخزون/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('inventory_report', {}, ctx) as any
+      const out = r.outOfStock || {}
+      const low = r.lowStock || {}
+      return `📦 **تقرير المخزون الكامل:**\n\n` +
+        `• إجمالي المنتجات: **${r.total}**\n` +
+        `• 🔴 نافدة: **${out.count || 0}** منتج\n` +
+        `• 🟡 منخفضة: **${low.count || 0}** منتج\n` +
+        `• ✅ كافية: **${r.healthy || 0}** منتج\n` +
+        `• 💰 قيمة المخزون الكلية: **${(r.totalInventoryValue || 0).toLocaleString('ar-EG')} ريال**\n\n` +
+        (low.alerts?.length ? `**أقرب منتجات للنفاد:**\n` +
+          low.alerts.slice(0, 5).map((a: any) =>
+            `• ${a.name} — ${a.stock} قطعة — متبقي **${a.daysLeft} يوم**`
+          ).join('\n') : '')
+    }
+  },
+
+  // ── Sales forecast ────────────────────────────────────────────────────────────
+  {
+    name: 'sales_forecast',
+    patterns: [/توقع المبيعات|المبيعات القادمة|توقع الأسبوع القادم|ما المتوقع|متوقع الأسبوع/i],
+    async handler(_msg, ctx) {
+      const r = await executeTool('sales_forecast', {}, ctx) as any
+      const fc = r.nextWeekForecast || {}
+      return `📈 **توقع الأسبوع القادم:**\n\n` +
+        `💰 الإيراد المتوقع: **${(fc.revenue || 0).toLocaleString('ar-EG')} ريال**\n` +
+        `📦 الطلبات المتوقعة: **${fc.orders || 0} طلب**\n\n` +
+        `📊 الاتجاه العام: **${r.trendLabel || '—'}** (${r.trend >= 0 ? '+' : ''}${r.trend}% مقارنة ببداية الشهر)`
+    }
+  },
+
+  // ── Thank you / appreciation
   {
     name: 'thanks',
     patterns: [/شكر|ممتاز|عظيم|حلو|تمام|مشكور|برافو|أحسنت|يسلمو|الله يعطيك/i],

@@ -679,7 +679,6 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         customerId?: string; customerName?: string; message: string; channel?: string
       }
 
-      // Log the message attempt
       await prisma.activityLog.create({
         data: {
           organizationId: orgId, userId: ctx.userId,
@@ -688,8 +687,6 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         },
       })
 
-      // In real implementation, call WhatsApp Business API here
-      // For now, return the message as drafted
       return {
         drafted: true,
         channel,
@@ -697,6 +694,355 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         message,
         note: 'لإرسال حقيقي اربط WhatsApp Business API من الإعدادات',
       }
+    }
+
+    case 'create_order': {
+      const { customerName, customerPhone, city, items, paymentMethod = 'cash', notes } = input as {
+        customerName: string; customerPhone?: string; city: string
+        items: Array<{ productId?: string; name: string; qty: number; unitPrice: number }>
+        paymentMethod?: string; notes?: string
+      }
+      if (!storeId) return { error: 'لا يوجد متجر مرتبط' }
+
+      let customer = customerPhone
+        ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone: customerPhone } })
+        : null
+
+      if (!customer) {
+        customer = await prisma.customer.create({
+          data: { organizationId: orgId, name: customerName, phone: customerPhone, city, segment: 'new' },
+        })
+      }
+
+      const subtotal = (items as any[]).reduce((s: number, i: any) => s + i.qty * Math.round(i.unitPrice * 100), 0)
+      const shippingFee = 1500
+      const total = subtotal + shippingFee
+      const externalRef = String(Date.now()).slice(-6)
+
+      const order = await prisma.order.create({
+        data: {
+          storeId,
+          customerId: customer.id,
+          externalRef,
+          customerName,
+          customerPhone: customerPhone ?? '',
+          city,
+          status: 'pending',
+          paymentMethod,
+          paymentStatus: 'pending',
+          subtotal,
+          shippingFee,
+          total,
+          notes,
+          isNewCustomer: true,
+          items: {
+            create: (items as any[]).map((i: any) => ({
+              productId: i.productId ?? null,
+              name: i.name,
+              qty: i.qty,
+              unitPrice: Math.round(i.unitPrice * 100),
+              totalPrice: i.qty * Math.round(i.unitPrice * 100),
+            })),
+          },
+        },
+      })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'create_order', entity: 'order', entityId: order.id,
+          summary: `طلب يدوي جديد #${externalRef} للعميل ${customerName} — ${total / 100} ريال`,
+        },
+      })
+
+      return { order: { id: order.id, externalRef, customerName, city, total: total / 100, status: 'pending' } }
+    }
+
+    case 'get_team': {
+      const memberships = await prisma.teamMembership.findMany({
+        where: { organizationId: orgId },
+        include: { user: { select: { id: true, name: true, email: true, lastLoginAt: true } } },
+        orderBy: { createdAt: 'asc' },
+      })
+      return {
+        members: memberships.map(m => ({
+          id: m.id,
+          name: m.user.name,
+          email: m.user.email,
+          role: m.role,
+          lastActive: m.user.lastLoginAt,
+          joinedAt: m.createdAt,
+        })),
+        count: memberships.length,
+      }
+    }
+
+    case 'invite_team_member': {
+      const { email, role = 'ORDER_MANAGER' } = input as { email: string; role?: string }
+      const VALID_ROLES = ['ADMIN', 'ORDER_MANAGER', 'CUSTOMER_SERVICE']
+      if (!VALID_ROLES.includes(role)) return { error: 'دور غير صالح' }
+
+      let user = await prisma.user.findUnique({ where: { email } })
+      if (!user) {
+        const bcrypt = await import('bcryptjs')
+        const tempPassword = Math.random().toString(36).slice(2, 10)
+        const passwordHash = await bcrypt.hash(tempPassword, 12)
+        user = await prisma.user.create({ data: { name: email.split('@')[0], email, passwordHash } })
+      }
+
+      const existing = await prisma.teamMembership.findUnique({
+        where: { organizationId_userId: { organizationId: orgId, userId: user.id } },
+      })
+      if (existing) return { error: 'هذا المستخدم عضو بالفعل في الفريق' }
+
+      const membership = await prisma.teamMembership.create({
+        data: { organizationId: orgId, userId: user.id, role },
+      })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'invite_member', entity: 'team', entityId: membership.id,
+          summary: `دعوة عضو جديد: ${email} بدور ${role}`,
+        },
+      })
+
+      return { member: { id: membership.id, email, role, isNew: !existing } }
+    }
+
+    case 'remove_team_member': {
+      const { memberId, memberEmail } = input as { memberId?: string; memberEmail?: string }
+      let membership: any = null
+      if (memberId) {
+        membership = await prisma.teamMembership.findFirst({ where: { id: memberId, organizationId: orgId } })
+      } else if (memberEmail) {
+        const user = await prisma.user.findUnique({ where: { email: memberEmail } })
+        if (user) membership = await prisma.teamMembership.findUnique({
+          where: { organizationId_userId: { organizationId: orgId, userId: user.id } },
+        })
+      }
+      if (!membership) return { error: 'العضو غير موجود' }
+
+      const adminCount = await prisma.teamMembership.count({ where: { organizationId: orgId, role: 'ADMIN' } })
+      if (membership.role === 'ADMIN' && adminCount <= 1) return { error: 'لا يمكن حذف المسؤول الوحيد' }
+
+      await prisma.teamMembership.delete({ where: { id: membership.id } })
+      return { deleted: true, memberId: membership.id }
+    }
+
+    case 'get_cash_orders': {
+      const { limit = 30 } = input as { limit?: number }
+      const where: Record<string, unknown> = { paymentMethod: 'cash', status: { in: ['delivered'] }, paymentStatus: 'pending' }
+      if (storeId) where.storeId = storeId
+
+      const orders = await prisma.order.findMany({ where, orderBy: { placedAt: 'desc' }, take: Number(limit) })
+      const totalUnpaid = orders.reduce((s, o) => s + o.total, 0)
+      return { orders, count: orders.length, totalUnpaid: totalUnpaid / 100 }
+    }
+
+    case 'mark_payment_collected': {
+      const { orderIds } = input as { orderIds: string[] }
+      await prisma.order.updateMany({
+        where: { id: { in: orderIds } },
+        data: { paymentStatus: 'paid' },
+      })
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'mark_paid', entity: 'order',
+          summary: `تحصيل دفع ${orderIds.length} طلب نقدي`,
+          after: JSON.stringify(orderIds),
+        },
+      })
+      return { updated: orderIds.length }
+    }
+
+    case 'deactivate_product': {
+      const { productId, productName } = input as { productId?: string; productName?: string }
+      let product: any = null
+      if (productId) {
+        product = await prisma.product.findUnique({ where: { id: productId } })
+      } else if (productName && storeId) {
+        product = await prisma.product.findFirst({
+          where: { storeId, name: { contains: productName } },
+        })
+      }
+      if (!product) return { error: 'المنتج غير موجود' }
+
+      await prisma.product.update({ where: { id: product.id }, data: { isActive: false } })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'deactivate_product', entity: 'product', entityId: product.id,
+          summary: `إيقاف منتج "${product.name}"`,
+        },
+      })
+      return { deactivated: product.id, name: product.name }
+    }
+
+    case 'delete_product': {
+      const { productId, productName } = input as { productId?: string; productName?: string }
+      let product: any = null
+      if (productId) {
+        product = await prisma.product.findUnique({ where: { id: productId } })
+      } else if (productName && storeId) {
+        product = await prisma.product.findFirst({ where: { storeId, name: { contains: productName } } })
+      }
+      if (!product) return { error: 'المنتج غير موجود' }
+
+      await prisma.product.update({ where: { id: product.id }, data: { isActive: false } })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'delete_product', entity: 'product', entityId: product.id,
+          summary: `حذف منتج "${product.name}"`,
+        },
+      })
+      return { deleted: product.id, name: product.name }
+    }
+
+    case 'search_order': {
+      const { query } = input as { query: string }
+      const where: Record<string, unknown> = {}
+      if (storeId) where.storeId = storeId
+
+      const orders = await prisma.order.findMany({
+        where: {
+          ...where,
+          OR: [
+            { externalRef: { contains: query } },
+            { customerName: { contains: query } },
+            { customerPhone: { contains: query } },
+            { city: { contains: query } },
+          ],
+        },
+        include: { items: true },
+        orderBy: { placedAt: 'desc' },
+        take: 10,
+      })
+      return { orders, count: orders.length }
+    }
+
+    case 'search_customer': {
+      const { query } = input as { query: string }
+      const customers = await prisma.customer.findMany({
+        where: {
+          organizationId: orgId,
+          OR: [
+            { name: { contains: query } },
+            { phone: { contains: query } },
+            { city: { contains: query } },
+          ],
+        },
+        orderBy: { totalSpent: 'desc' },
+        take: 10,
+      })
+      return { customers, count: customers.length }
+    }
+
+    case 'block_customer': {
+      const { customerId } = input as { customerId: string }
+      const customer = await prisma.customer.findFirst({ where: { id: customerId, organizationId: orgId } })
+      if (!customer) return { error: 'العميل غير موجود' }
+
+      await prisma.customer.update({ where: { id: customerId }, data: { isBlocked: true } })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'block_customer', entity: 'customer', entityId: customerId,
+          summary: `حظر العميل "${customer.name}"`,
+        },
+      })
+      return { blocked: customerId, name: customer.name }
+    }
+
+    case 'add_customer': {
+      const { name, phone, email, city } = input as { name: string; phone?: string; email?: string; city?: string }
+
+      const existing = phone
+        ? await prisma.customer.findFirst({ where: { organizationId: orgId, phone } })
+        : null
+      if (existing) return { error: `يوجد عميل بهذا الرقم بالفعل: ${existing.name}` }
+
+      const customer = await prisma.customer.create({
+        data: { organizationId: orgId, name, phone, email, city, segment: 'new' },
+      })
+
+      await prisma.activityLog.create({
+        data: {
+          organizationId: orgId, userId: ctx.userId,
+          action: 'add_customer', entity: 'customer', entityId: customer.id,
+          summary: `إضافة عميل جديد: ${name}${phone ? ' — ' + phone : ''}`,
+        },
+      })
+      return { customer: { id: customer.id, name, phone, city } }
+    }
+
+    case 'delete_coupon': {
+      const { code } = input as { code: string }
+      const coupon = await prisma.coupon.findFirst({ where: { organizationId: orgId, code: code.toUpperCase() } })
+      if (!coupon) return { error: `كوبون ${code} غير موجود` }
+
+      await prisma.coupon.update({ where: { id: coupon.id }, data: { isActive: false } })
+      return { deleted: coupon.code }
+    }
+
+    case 'get_risk_orders': {
+      const { minRisk = 60, limit = 20 } = input as { minRisk?: number; limit?: number }
+      const where: Record<string, unknown> = { riskScore: { gte: minRisk }, status: 'pending' }
+      if (storeId) where.storeId = storeId
+
+      const orders = await prisma.order.findMany({
+        where,
+        orderBy: { riskScore: 'desc' },
+        take: Number(limit),
+      })
+      return { orders, count: orders.length }
+    }
+
+    case 'get_stores': {
+      const stores = await prisma.store.findMany({
+        where: { organizationId: orgId, isDeleted: false },
+        orderBy: { createdAt: 'asc' },
+      })
+      return {
+        stores: stores.map(s => ({
+          id: s.id, name: s.name, platform: s.platform,
+          isActive: s.isActive, connectionStatus: s.connectionStatus,
+          lastSyncAt: s.lastSyncAt,
+        })),
+        count: stores.length,
+      }
+    }
+
+    case 'get_churn_customers': {
+      const days = 45
+      const since = new Date(); since.setDate(since.getDate() - days)
+      const customers = await prisma.customer.findMany({
+        where: {
+          organizationId: orgId,
+          lastOrderAt: { lt: since },
+          totalOrders: { gte: 2 },
+          isBlocked: false,
+        },
+        orderBy: { totalSpent: 'desc' },
+        take: 20,
+      })
+      return { customers, count: customers.length, daysInactive: days }
+    }
+
+    case 'get_new_customers': {
+      const { days = 30, limit = 20 } = input as { days?: number; limit?: number }
+      const since = new Date(); since.setDate(since.getDate() - days)
+      const customers = await prisma.customer.findMany({
+        where: { organizationId: orgId, createdAt: { gte: since } },
+        orderBy: { createdAt: 'desc' },
+        take: Number(limit),
+      })
+      return { customers, count: customers.length }
     }
 
     default:
