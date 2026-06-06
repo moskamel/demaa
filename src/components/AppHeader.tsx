@@ -17,6 +17,8 @@ const PAGE_TITLES: Record<string, string> = {
   '/billing':       'الاشتراك',
   '/coupons':       'الكوبونات',
   '/dashboard':     'لوحة التحكم',
+  '/products':      'المنتجات',
+  '/orders':        'الطلبات',
 }
 
 const SECONDARY_PAGES = ['/notifications', '/activity', '/coupons', '/settings', '/billing']

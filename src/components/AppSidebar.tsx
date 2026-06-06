@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Notification as NotifIcon, ArrowDown2, MessageAdd1, Logout,
-  SearchNormal1, Activity, Setting2, Receipt21, Edit2, Trash, Box,
+  SearchNormal1, Activity, Setting2, Receipt21, Edit2, Trash, Box, Gallery,
 } from 'iconsax-react'
 import { clearToken, notifications as notifApi, conversations as convApi } from '../lib/api'
 import SearchModal from './SearchModal'
@@ -20,6 +20,7 @@ interface AppSidebarProps {
 
 const TOP_NAV = [
   { label: 'الطلبات', path: '/orders', icon: Box },
+  { label: 'المنتجات', path: '/products', icon: Gallery },
 ]
 
 const BOTTOM_NAV = [

@@ -1,9 +1,20 @@
 import { Router } from 'express'
+import multer from 'multer'
 import prisma from '../lib/prisma.js'
 import { requireAuth, type AuthRequest } from '../middleware/auth.js'
+import { uploadImageBuffer, deleteImage } from '../lib/cloudinary.js'
 
 const router = Router()
 router.use(requireAuth)
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter(_req, file, cb) {
+    if (file.mimetype.startsWith('image/')) cb(null, true)
+    else cb(new Error('يجب أن يكون الملف صورة'))
+  },
+})
 
 // GET /products
 router.get('/', async (req: AuthRequest, res) => {
@@ -53,19 +64,102 @@ router.get('/:id', async (req: AuthRequest, res) => {
 router.patch('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({ where: { organizationId: req.orgId } })
   if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
-  const { name, price, stock, category, lowStockAlert } = req.body
+  const { name, price, stock, category, lowStockAlert, description, sku } = req.body
   const data: Record<string, unknown> = {}
   if (name !== undefined) data.name = name
   if (price !== undefined) data.price = Math.round(Number(price) * 100)
   if (stock !== undefined) data.stock = Number(stock)
   if (category !== undefined) data.category = category
   if (lowStockAlert !== undefined) data.lowStockAlert = Number(lowStockAlert)
+  if (description !== undefined) data.description = description
+  if (sku !== undefined) data.sku = sku
 
   const product = await prisma.product.updateMany({
     where: { id: req.params.id, storeId: store.id },
     data,
   })
   res.json({ updated: product.count })
+})
+
+// POST /products/:id/image — upload or replace product image
+router.post('/:id/image', upload.single('image'), async (req: AuthRequest, res) => {
+  try {
+    const store = await prisma.store.findFirst({ where: { organizationId: req.orgId } })
+    if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+
+    const product = await prisma.product.findFirst({
+      where: { id: req.params.id, storeId: store.id },
+    })
+    if (!product) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+    if (!req.file) { res.status(400).json({ error: { code: 'NO_FILE', message: 'لم يتم رفع أي صورة' } }); return }
+
+    // Delete old image from Cloudinary if it exists
+    if (product.imageUrl) {
+      const match = product.imageUrl.match(/deema\/products\/(.+?)(?:\.[^.]+)?$/)
+      if (match) await deleteImage(`deema/products/${match[1]}`).catch(() => {})
+    }
+
+    const { url } = await uploadImageBuffer(
+      req.file.buffer,
+      'deema/products',
+      `product_${product.id}`
+    )
+
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { imageUrl: url },
+    })
+
+    res.json({ imageUrl: url })
+  } catch (err: any) {
+    console.error('Image upload error:', err)
+    res.status(500).json({ error: { code: 'UPLOAD_FAILED', message: err.message || 'فشل رفع الصورة' } })
+  }
+})
+
+// DELETE /products/:id/image — remove product image
+router.delete('/:id/image', async (req: AuthRequest, res) => {
+  const store = await prisma.store.findFirst({ where: { organizationId: req.orgId } })
+  if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+
+  const product = await prisma.product.findFirst({ where: { id: req.params.id, storeId: store.id } })
+  if (!product) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
+
+  if (product.imageUrl) {
+    const match = product.imageUrl.match(/deema\/products\/(.+?)(?:\.[^.]+)?$/)
+    if (match) await deleteImage(`deema/products/${match[1]}`).catch(() => {})
+    await prisma.product.update({ where: { id: product.id }, data: { imageUrl: null } })
+  }
+
+  res.json({ deleted: true })
+})
+
+// POST /products — create new product
+router.post('/', async (req: AuthRequest, res) => {
+  const store = await prisma.store.findFirst({ where: { organizationId: req.orgId, isActive: true } })
+  if (!store) { res.status(400).json({ error: { code: 'NO_STORE' } }); return }
+
+  const { name, price, stock = 0, category, description, sku, costPrice, lowStockAlert = 5 } = req.body
+  if (!name || price === undefined) {
+    res.status(400).json({ error: { code: 'MISSING_FIELDS', message: 'الاسم والسعر مطلوبان' } }); return
+  }
+
+  const product = await prisma.product.create({
+    data: {
+      storeId: store.id,
+      name,
+      price: Math.round(Number(price) * 100),
+      stock: Number(stock),
+      category,
+      description,
+      sku,
+      ...(costPrice && { costPrice: Math.round(Number(costPrice) * 100) }),
+      lowStockAlert: Number(lowStockAlert),
+      isActive: true,
+    },
+  })
+
+  res.json({ product })
 })
 
 export default router

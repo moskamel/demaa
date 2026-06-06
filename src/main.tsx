@@ -55,6 +55,7 @@ import Orders from './pages/Orders'
 import Subscribe from './pages/Subscribe'
 import PaymentCallback from './pages/PaymentCallback'
 import Coupons from './pages/Coupons'
+import Products from './pages/Products'
 import NotFound from './pages/NotFound'
 import Features from './pages/Features'
 import Pricing from './pages/Pricing'
@@ -95,6 +96,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/customers" element={<PrivateRoute><Customers /></PrivateRoute>} />
             <Route path="/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
             <Route path="/coupons" element={<PrivateRoute><Coupons /></PrivateRoute>} />
+            <Route path="/products" element={<PrivateRoute><Products /></PrivateRoute>} />
             <Route path="/subscribe" element={<PrivateRoute><Subscribe /></PrivateRoute>} />
             <Route path="/subscribe/callback" element={<PrivateRoute><PaymentCallback /></PrivateRoute>} />
             <Route path="/features" element={<Features />} />

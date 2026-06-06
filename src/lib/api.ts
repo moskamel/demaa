@@ -92,8 +92,29 @@ export const products = {
   async lowStock() {
     return request<{ products: Product[] }>('/products/low-stock')
   },
+  async create(data: { name: string; price: number; stock?: number; category?: string; description?: string; sku?: string; costPrice?: number }) {
+    return request<{ product: Product }>('/products', { method: 'POST', body: JSON.stringify(data) })
+  },
   async update(id: string, data: Partial<Product>) {
     return request(`/products/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+  },
+  async uploadImage(id: string, file: File): Promise<{ imageUrl: string }> {
+    const token = localStorage.getItem('deema_token')
+    const form = new FormData()
+    form.append('image', file)
+    const res = await fetch(`/api/products/${id}/image`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err?.error?.message || 'فشل رفع الصورة')
+    }
+    return res.json()
+  },
+  async deleteImage(id: string) {
+    return request(`/products/${id}/image`, { method: 'DELETE' })
   },
 }
 
@@ -241,6 +262,7 @@ export interface OrderStats { pending: number; accepted: number; shipped: number
 export interface Product {
   id: string; name: string; price: number; stock: number
   lowStockAlert: number; category?: string; imageUrl?: string; sku?: string
+  description?: string; costPrice?: number; isActive?: boolean
 }
 
 export interface Customer {
