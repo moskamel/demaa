@@ -110,7 +110,7 @@ const INTENTS: Intent[] = [
   // products low stock
   {
     name: 'low_stock',
-    patterns: [/مخزون (منخفض|ناقص|نفد)|نفد المخزون|مخزون قليل|منتجات? ناقص/i, /المنتجات المنخفضة/i, /كام باقي/i],
+    patterns: [/مخزون (منخفض|ناقص|نفد|قليل)|نفد المخزون|مخزون قليل|منتجات? ناقص|قليلة المخزون|منخفض المخزون/i, /المنتجات المنخفضة/i, /كام باقي/i],
     async handler(_msg, ctx) {
       const r = await executeTool('get_products', { lowStock: true, limit: 20 }, ctx) as any
       const products = r.products || []
@@ -409,10 +409,11 @@ const INTENTS: Intent[] = [
       // Extract percent from message e.g. "كوبون خصم 20%"
       const pctMatch = msg.match(/(\d+)\s*%/)
       const fixedMatch = msg.match(/(\d+)\s*ج\.?م/)
-      const codeMatch = msg.match(/[A-Z]{3,10}/)
+      const namedCode = msg.match(/اسمه\s+([A-Z0-9]{2,15})/i) || msg.match(/رمزه\s+([A-Z0-9]{2,15})/i) || msg.match(/كود\s+([A-Z0-9]{2,15})/i)
+      const codeMatch = namedCode ? null : msg.match(/[A-Z][A-Z0-9]{2,14}/)
       const value = pctMatch ? parseInt(pctMatch[1]) : fixedMatch ? parseInt(fixedMatch[1]) : 10
       const type = pctMatch ? 'percentage' : 'fixed'
-      const code = codeMatch ? codeMatch[0] : 'DEEMA' + Math.floor(Math.random() * 900 + 100)
+      const code = namedCode ? namedCode[1].toUpperCase() : codeMatch ? codeMatch[0] : 'DEEMA' + Math.floor(Math.random() * 900 + 100)
       const r = await executeTool('create_coupon', { code, type, value, maxUsage: 100 }, ctx) as any
       const c = r.coupon
       return `🎟️ تم إنشاء الكوبون!\n\n• الرمز: **${c.code}**\n• الخصم: ${type === 'percentage' ? value + '%' : fmt(value * 100)}\n• الحد الأقصى: 100 استخدام`
