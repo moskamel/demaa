@@ -116,6 +116,10 @@ export const products = {
   async deleteImage(id: string) {
     return request(`/products/${id}/image`, { method: 'DELETE' })
   },
+  async suggestImages(q: string, category?: string): Promise<{ images: Array<{ url: string; thumb: string; alt: string }> }> {
+    const params = new URLSearchParams({ q, ...(category ? { category } : {}) })
+    return request(`/products/suggest-images?${params}`)
+  },
 }
 
 // ── Analytics ───────────────────────────────────────────────

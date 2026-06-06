@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { Add, SearchNormal1, Edit2, Trash, Image, Gallery, TickCircle, Warning2, CloseCircle } from 'iconsax-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Add, SearchNormal1, Edit2, Trash, Image, Gallery, TickCircle, Warning2, CloseCircle, Refresh } from 'iconsax-react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { products as productsApi, type Product } from '../lib/api'
@@ -113,6 +113,8 @@ function ProductImage({
   )
 }
 
+interface SuggestedImage { url: string; thumb: string; alt: string }
+
 interface ProductFormData {
   name: string
   price: string
@@ -122,9 +124,10 @@ interface ProductFormData {
   sku: string
   costPrice: string
   lowStockAlert: string
+  selectedImageUrl: string
 }
 
-const EMPTY_FORM: ProductFormData = { name: '', price: '', stock: '0', category: '', description: '', sku: '', costPrice: '', lowStockAlert: '5' }
+const EMPTY_FORM: ProductFormData = { name: '', price: '', stock: '0', category: '', description: '', sku: '', costPrice: '', lowStockAlert: '5', selectedImageUrl: '' }
 
 const CATEGORIES = ['عطور', 'إلكترونيات', 'أزياء', 'عناية', 'منزل', 'رياضة', 'غذاء', 'أخرى']
 
@@ -140,6 +143,9 @@ export default function Products() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [suggestedImages, setSuggestedImages] = useState<SuggestedImage[]>([])
+  const [suggestLoading, setSuggestLoading] = useState(false)
+  const suggestTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const load = () => {
     productsApi.list({ search: search || undefined, category: filterCat || undefined, lowStock: filterStock || undefined })
@@ -150,10 +156,27 @@ export default function Products() {
 
   useEffect(() => { load() }, [search, filterCat, filterStock])
 
+  const fetchSuggestions = useCallback((name: string, category: string) => {
+    if (suggestTimer.current) clearTimeout(suggestTimer.current)
+    if (name.trim().length < 2) { setSuggestedImages([]); return }
+    suggestTimer.current = setTimeout(async () => {
+      setSuggestLoading(true)
+      try {
+        const r = await productsApi.suggestImages(name, category)
+        setSuggestedImages(r.images || [])
+      } catch {
+        setSuggestedImages([])
+      } finally {
+        setSuggestLoading(false)
+      }
+    }, 700)
+  }, [])
+
   const openAdd = () => {
     setEditingId(null)
     setForm(EMPTY_FORM)
     setSaveError('')
+    setSuggestedImages([])
     setShowForm(true)
   }
 
@@ -168,8 +191,10 @@ export default function Products() {
       sku: p.sku || '',
       costPrice: p.costPrice ? String(p.costPrice / 100) : '',
       lowStockAlert: String(p.lowStockAlert),
+      selectedImageUrl: p.imageUrl || '',
     })
     setSaveError('')
+    setSuggestedImages([])
     setShowForm(true)
   }
 
@@ -187,6 +212,7 @@ export default function Products() {
         sku: form.sku || undefined,
         costPrice: form.costPrice ? parseFloat(form.costPrice) : undefined,
         lowStockAlert: parseInt(form.lowStockAlert) || 5,
+        imageUrl: form.selectedImageUrl || undefined,
       }
       if (editingId) {
         await productsApi.update(editingId, data)
@@ -394,8 +420,8 @@ export default function Products() {
           onClick={e => { if (e.target === e.currentTarget) setShowForm(false) }}
         >
           <div style={{
-            background: 'var(--canvas)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 480,
-            maxHeight: '90vh', overflow: 'auto', direction: 'rtl',
+            background: 'var(--canvas)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 520,
+            maxHeight: '92vh', overflow: 'auto', direction: 'rtl',
             boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
           }}>
             <h2 style={{ margin: '0 0 20px', fontSize: 17, fontWeight: 700, color: 'var(--ink)' }}>
@@ -403,7 +429,136 @@ export default function Products() {
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <Field label="اسم المنتج *" value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} placeholder="مثال: عطر الأوقات الذهبية" />
+
+              {/* Product name — triggers image suggestions */}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)', marginBottom: 6 }}>اسم المنتج *</label>
+                <input
+                  value={form.name}
+                  onChange={e => {
+                    const v = e.target.value
+                    setForm(f => ({ ...f, name: v }))
+                    fetchSuggestions(v, form.category)
+                  }}
+                  placeholder="مثال: عطر الأوقات الذهبية"
+                  style={{
+                    width: '100%', padding: '9px 12px', borderRadius: 10,
+                    border: '1px solid var(--hairline)', background: 'var(--canvas-soft)',
+                    color: 'var(--ink)', fontSize: 13, outline: 'none', boxSizing: 'border-box',
+                    fontFamily: "'Zain','Inter',sans-serif",
+                  }}
+                />
+              </div>
+
+              {/* Image selection panel */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)' }}>
+                    صورة المنتج
+                  </label>
+                  {form.name.trim().length >= 2 && (
+                    <button
+                      onClick={() => fetchSuggestions(form.name, form.category)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--brand)', padding: 0 }}
+                    >
+                      <Refresh size={12} color="var(--brand)" />
+                      اقتراحات جديدة
+                    </button>
+                  )}
+                </div>
+
+                {/* Selected image preview */}
+                {form.selectedImageUrl && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, padding: '8px 12px', background: 'rgba(var(--brand-rgb,106,76,245),0.08)', borderRadius: 10, border: '1px solid rgba(var(--brand-rgb,106,76,245),0.2)' }}>
+                    <img src={form.selectedImageUrl} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
+                    <span style={{ flex: 1, fontSize: 12, color: 'var(--ink-muted)' }}>تم اختيار الصورة ✅</span>
+                    <button
+                      onClick={() => setForm(f => ({ ...f, selectedImageUrl: '' }))}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', padding: 4 }}
+                    >
+                      <CloseCircle size={16} color="var(--ink-muted)" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Suggestions grid */}
+                {suggestLoading && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0', color: 'var(--ink-muted)', fontSize: 12 }}>
+                    <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--hairline)', borderTopColor: 'var(--brand)', animation: 'spin 0.7s linear infinite' }} />
+                    جاري البحث عن صور مقترحة...
+                  </div>
+                )}
+
+                {!suggestLoading && suggestedImages.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginBottom: 8 }}>اختر صورة أو ارفع صورتك الخاصة:</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                      {suggestedImages.map((img, i) => {
+                        const selected = form.selectedImageUrl === img.url
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => setForm(f => ({ ...f, selectedImageUrl: selected ? '' : img.url }))}
+                            style={{
+                              position: 'relative', borderRadius: 10, overflow: 'hidden',
+                              cursor: 'pointer', aspectRatio: '1',
+                              border: selected ? '2.5px solid var(--brand)' : '2.5px solid transparent',
+                              transition: 'border-color 0.15s, transform 0.1s',
+                              transform: selected ? 'scale(0.95)' : 'scale(1)',
+                            }}
+                          >
+                            <img
+                              src={img.thumb}
+                              alt={img.alt}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            />
+                            {selected && (
+                              <div style={{
+                                position: 'absolute', inset: 0, background: 'rgba(106,76,245,0.35)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}>
+                                <TickCircle size={22} color="#fff" variant="Bold" />
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {!suggestLoading && form.name.trim().length < 2 && !form.selectedImageUrl && (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    padding: '16px 0', gap: 6, color: 'var(--ink-disabled)',
+                    border: '1.5px dashed var(--hairline)', borderRadius: 10,
+                  }}>
+                    <Gallery size={24} color="var(--ink-disabled)" variant="Outline" />
+                    <span style={{ fontSize: 11 }}>اكتب اسم المنتج لعرض الصور المقترحة</span>
+                  </div>
+                )}
+
+                {!suggestLoading && form.name.trim().length >= 2 && suggestedImages.length === 0 && !form.selectedImageUrl && (
+                  <div style={{ fontSize: 11, color: 'var(--ink-muted)', padding: '8px 0' }}>
+                    💡 ألصق رابط صورة في حقل "رابط الصورة" أدناه
+                  </div>
+                )}
+
+                {/* Manual URL input */}
+                <div style={{ marginTop: 8 }}>
+                  <input
+                    value={form.selectedImageUrl}
+                    onChange={e => setForm(f => ({ ...f, selectedImageUrl: e.target.value }))}
+                    placeholder="أو الصق رابط صورة https://..."
+                    style={{
+                      width: '100%', padding: '8px 12px', borderRadius: 10,
+                      border: '1px solid var(--hairline)', background: 'var(--canvas-soft)',
+                      color: 'var(--ink)', fontSize: 12, outline: 'none', boxSizing: 'border-box',
+                      fontFamily: "'Zain','Inter',sans-serif", direction: 'ltr', textAlign: 'left',
+                    }}
+                  />
+                </div>
+              </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <Field label="سعر البيع (ريال) *" value={form.price} onChange={v => setForm(f => ({ ...f, price: v }))} placeholder="0.00" type="number" />
@@ -419,7 +574,11 @@ export default function Products() {
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)', marginBottom: 6 }}>التصنيف</label>
                 <select
                   value={form.category}
-                  onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                  onChange={e => {
+                    const cat = e.target.value
+                    setForm(f => ({ ...f, category: cat }))
+                    if (form.name.trim().length >= 2) fetchSuggestions(form.name, cat)
+                  }}
                   style={{
                     width: '100%', padding: '9px 12px', borderRadius: 10,
                     border: '1px solid var(--hairline)', background: 'var(--canvas-soft)',

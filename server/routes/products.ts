@@ -7,6 +7,57 @@ import { uploadImageBuffer, deleteImage } from '../lib/cloudinary.js'
 const router = Router()
 router.use(requireAuth)
 
+// Arabic category → English search terms for better image results
+const CATEGORY_KEYWORDS: Record<string, string> = {
+  'عطور': 'perfume bottle luxury',
+  'إلكترونيات': 'electronics gadget',
+  'أزياء': 'fashion clothing apparel',
+  'عناية': 'skincare beauty cosmetics',
+  'منزل': 'home decor interior',
+  'رياضة': 'sports fitness equipment',
+  'غذاء': 'food product',
+}
+
+// GET /products/suggest-images?q=product+name&category=cat
+router.get('/suggest-images', async (req: AuthRequest, res) => {
+  const q = String(req.query.q || '').trim()
+  const category = String(req.query.category || '').trim()
+
+  if (!q) { res.json({ images: [] }); return }
+
+  const pexelsKey = process.env.PEXELS_API_KEY
+  if (!pexelsKey) {
+    // Fallback: return placeholder images based on category
+    res.json({ images: [], note: 'PEXELS_API_KEY not configured' }); return
+  }
+
+  try {
+    // Build search query: combine Arabic name transliteration hint + category hint
+    const catKeywords = CATEGORY_KEYWORDS[category] || ''
+    const query = encodeURIComponent(`${q} ${catKeywords}`.trim().slice(0, 100))
+
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${query}&per_page=8&orientation=square`,
+      { headers: { Authorization: pexelsKey } }
+    )
+
+    if (!response.ok) {
+      res.json({ images: [] }); return
+    }
+
+    const data = await response.json() as { photos: Array<{ src: { medium: string; small: string }; alt: string }> }
+    const images = data.photos.map(p => ({
+      url: p.src.medium,
+      thumb: p.src.small,
+      alt: p.alt,
+    }))
+
+    res.json({ images })
+  } catch {
+    res.json({ images: [] })
+  }
+})
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
@@ -64,7 +115,7 @@ router.get('/:id', async (req: AuthRequest, res) => {
 router.patch('/:id', async (req: AuthRequest, res) => {
   const store = await prisma.store.findFirst({ where: { organizationId: req.orgId } })
   if (!store) { res.status(404).json({ error: { code: 'NOT_FOUND' } }); return }
-  const { name, price, stock, category, lowStockAlert, description, sku } = req.body
+  const { name, price, stock, category, lowStockAlert, description, sku, imageUrl, costPrice } = req.body
   const data: Record<string, unknown> = {}
   if (name !== undefined) data.name = name
   if (price !== undefined) data.price = Math.round(Number(price) * 100)
@@ -73,6 +124,8 @@ router.patch('/:id', async (req: AuthRequest, res) => {
   if (lowStockAlert !== undefined) data.lowStockAlert = Number(lowStockAlert)
   if (description !== undefined) data.description = description
   if (sku !== undefined) data.sku = sku
+  if (imageUrl !== undefined) data.imageUrl = imageUrl
+  if (costPrice !== undefined) data.costPrice = Math.round(Number(costPrice) * 100)
 
   const product = await prisma.product.updateMany({
     where: { id: req.params.id, storeId: store.id },
