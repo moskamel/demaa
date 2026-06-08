@@ -82,10 +82,24 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', version: '1.0.0', timestamp: new Date().toISOString() })
 })
 
-// 404
-app.use((_req, res) => {
-  res.status(404).json({ error: { code: 'NOT_FOUND', message: 'المسار غير موجود' } })
-})
+// Serve built frontend in production
+if (process.env.NODE_ENV === 'production') {
+  import('path').then(({ default: path }) => {
+    import('url').then(({ fileURLToPath }) => {
+      const __dirname = path.dirname(fileURLToPath(import.meta.url))
+      const distPath = path.join(__dirname, '../dist')
+      app.use(express.static(distPath))
+      app.get('*', (_req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'))
+      })
+    })
+  })
+} else {
+  // 404
+  app.use((_req, res) => {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'المسار غير موجود' } })
+  })
+}
 
 // Global error handler (Express 5 async errors land here)
 import type { Request, Response, NextFunction } from 'express'
