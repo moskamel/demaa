@@ -10,6 +10,7 @@ import { encryptToken, generateOAuthState, validateOAuthState } from '../../lib/
 import { getPlatformIntegration, isValidPlatform, getPlatformMeta } from '../../lib/platforms/registry.js'
 import type { Platform } from '../../lib/platforms/types.js'
 import rateLimit from 'express-rate-limit'
+import { syncStore } from '../../jobs/storeSync.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -157,9 +158,14 @@ router.get('/:platform/callback', async (req: AuthRequest, res) => {
     })
 
     // Register webhooks in background
-    const webhookBase = `${req.protocol}://${req.hostname}`
+    const webhookBase = process.env.DEEMA_BASE_URL ?? `${req.protocol}://${req.hostname}`
     integration.registerWebhooks(tokens.accessToken, store.id, webhookBase).catch((err: unknown) => {
       console.error(`[oauth] webhook registration failed for ${platform}:`, err)
+    })
+
+    // Trigger full initial sync in background
+    syncStore(store.id, platform as Platform).catch((err: unknown) => {
+      console.error(`[oauth] initial sync failed for ${platform} store ${store.id}:`, err)
     })
 
     await logActivity(req.orgId!, req.userId!, 'store_connected', 'store', store.id, `ربط متجر ${store.name} (${platform})`)
