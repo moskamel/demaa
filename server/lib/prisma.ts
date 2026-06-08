@@ -12,8 +12,13 @@ const DB_URL = (() => {
   return HARDCODED_DB
 })()
 
+const DB_AUTH_TOKEN = process.env.DATABASE_AUTH_TOKEN
+
 // PrismaLibSql (Prisma 7) takes a config object { url }, not a pre-created libsql client
-const adapter = new PrismaLibSql({ url: DB_URL })
+const adapter = new PrismaLibSql({
+  url: DB_URL,
+  ...(DB_AUTH_TOKEN ? { authToken: DB_AUTH_TOKEN } : {}),
+})
 
 // Prisma 7 generates the client in server/node_modules
 // @ts-ignore

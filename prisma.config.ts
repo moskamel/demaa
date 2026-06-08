@@ -2,6 +2,7 @@ import path from 'node:path'
 import { defineConfig } from 'prisma/config'
 
 const dbUrl = process.env.DATABASE_URL ?? `file://${path.resolve('server/dev.db')}`
+const authToken = process.env.DATABASE_AUTH_TOKEN
 
 export default defineConfig({
   earlyAccess: true,
@@ -12,7 +13,7 @@ export default defineConfig({
   migrate: {
     async adapter() {
       const { PrismaLibSql } = await import('@prisma/adapter-libsql')
-      return new PrismaLibSql({ url: dbUrl })
+      return new PrismaLibSql({ url: dbUrl, ...(authToken ? { authToken } : {}) })
     }
   }
 })
