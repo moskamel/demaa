@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import { useIsMobile } from '../hooks/useIsMobile'
 import { ArrowDown2, TickCircle, Add, ArrowRight, Pause, Play, Trash } from 'iconsax-react'
 import { orders as ordersApi, storesApi, type StoreData } from '../lib/api'
 import { getPlatformLogo } from '../lib/platformLogos'
@@ -109,11 +110,12 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
   }
 
   const pColor = activeStore ? (platformColors[activeStore.platform] ?? '#6a4cf5') : '#6a4cf5'
+  const isMobile = useIsMobile()
 
   return (
     <div style={{
       minHeight: 56, borderRadius: 15,
-      margin: '20px 200px 0 200px',
+      margin: isMobile ? '12px 12px 0' : '20px 200px 0 200px',
       display: 'flex', alignItems: 'center', padding: '0 20px',
       gap: 12, flexShrink: 0, background: 'var(--canvas-soft)',
       boxShadow: '0 4px 24px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)',
@@ -139,7 +141,7 @@ export default function AppHeader({ title, children }: AppHeaderProps) {
       {children}
 
       {/* Stats badges */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: isMobile ? 'none' : 'flex', alignItems: 'center', gap: 6 }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
           background: 'rgba(255,122,61,0.1)', borderRadius: 20,

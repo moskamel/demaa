@@ -3,9 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Notification as NotifIcon, ArrowDown2, MessageAdd1, Logout,
   SearchNormal1, Activity, Setting2, Receipt21, Edit2, Trash, Box, Gallery,
+  HambergerMenu, Messages2,
 } from 'iconsax-react'
 import { clearToken, notifications as notifApi, conversations as convApi } from '../lib/api'
 import SearchModal from './SearchModal'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 interface Conversation { id: string; title?: string }
 
@@ -46,6 +48,8 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
   const [editTitle, setEditTitle] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
+  const isMobile = useIsMobile()
+  const [showMobileDrawer, setShowMobileDrawer] = useState(false)
 
   const user = (() => {
     try { return JSON.parse(localStorage.getItem('deema_user') || '{}') } catch { return {} }
@@ -81,6 +85,120 @@ export default function AppSidebar({ convList, activeConv, onSelectConv, onNewCh
   const iconBtn: React.CSSProperties = {
     background: 'none', border: 'none', cursor: 'pointer',
     color: 'rgba(255,255,255,0.4)', padding: 4, display: 'flex', borderRadius: 6,
+  }
+
+  const BOTTOM_TAB_NAV = [
+    { label: 'الرئيسية', path: '/dashboard', icon: Messages2 },
+    { label: 'الطلبات', path: '/orders', icon: Box },
+    { label: 'المنتجات', path: '/products', icon: Gallery },
+    { label: 'العملاء', path: '/customers', icon: NotifIcon },
+  ]
+
+  if (isMobile) {
+    return (
+      <>
+        {showSearch && <SearchModal onClose={() => setShowSearch(false)} />}
+
+        {/* Mobile overlay drawer */}
+        {showMobileDrawer && (
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowMobileDrawer(false)}
+          >
+            <div
+              style={{ position: 'absolute', bottom: 0, right: 0, left: 0, background: '#111', borderRadius: '16px 16px 0 0', padding: '16px 0 80px', maxHeight: '80vh', overflowY: 'auto' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.2)', margin: '0 auto 16px' }} />
+
+              {/* Nav items */}
+              {[
+                { label: 'لوحة التحكم', path: '/dashboard', icon: Messages2 },
+                { label: 'الطلبات', path: '/orders', icon: Box },
+                { label: 'المنتجات', path: '/products', icon: Gallery },
+                { label: 'العملاء', path: '/customers', icon: NotifIcon },
+                { label: 'الإشعارات', path: '/notifications', icon: NotifIcon },
+                { label: 'سجل الأنشطة', path: '/activity', icon: Activity },
+                { label: 'الإعدادات', path: '/settings', icon: Setting2 },
+                { label: 'الاشتراك', path: '/billing', icon: Receipt21 },
+              ].map(({ label, path, icon: Icon }) => {
+                const active = location.pathname === path
+                return (
+                  <button key={path} onClick={() => { navigate(path); setShowMobileDrawer(false) }} style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '13px 20px', background: active ? 'rgba(106,76,245,0.15)' : 'transparent',
+                    border: 'none', cursor: 'pointer', fontFamily: 'inherit', direction: 'rtl',
+                  }}>
+                    <Icon size={18} variant="Outline" color={active ? '#a78bfa' : 'rgba(255,255,255,0.6)'} />
+                    <span style={{ fontSize: 14, color: active ? '#a78bfa' : 'rgba(255,255,255,0.8)', fontWeight: active ? 600 : 400 }}>{label}</span>
+                  </button>
+                )
+              })}
+
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '8px 16px' }} />
+
+              <button onClick={() => setShowLogoutConfirm(true)} style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                padding: '13px 20px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', direction: 'rtl',
+              }}>
+                <Logout size={18} variant="Outline" color="#ff5577" />
+                <span style={{ fontSize: 14, color: '#ff5577' }}>تسجيل الخروج</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Logout confirm modal */}
+        {showLogoutConfirm && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            onClick={() => setShowLogoutConfirm(false)}>
+            <div style={{ background: '#1a1a1a', borderRadius: 16, padding: '24px', width: 300, border: '1px solid rgba(255,255,255,0.1)', fontFamily: "'Zain','Inter',sans-serif", direction: 'rtl', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 8 }}>تسجيل الخروج</div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>هل أنت متأكد أنك تريد تسجيل الخروج؟</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={handleLogout} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: '#ff5577', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  تسجيل الخروج
+                </button>
+                <button onClick={() => setShowLogoutConfirm(false)} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom tab bar */}
+        <nav style={{
+          position: 'fixed', bottom: 0, right: 0, left: 0, height: 60,
+          background: '#111', borderTop: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex', alignItems: 'center', zIndex: 300,
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}>
+          {BOTTOM_TAB_NAV.map(({ label, path, icon: Icon }) => {
+            const active = location.pathname === path
+            return (
+              <button key={path} onClick={() => navigate(path)} style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 3, background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 0',
+                color: active ? '#a78bfa' : 'rgba(255,255,255,0.5)',
+              }}>
+                <Icon size={20} variant={active ? 'Bold' : 'Outline'} color={active ? '#a78bfa' : 'rgba(255,255,255,0.5)'} />
+                <span style={{ fontSize: 10, fontWeight: active ? 600 : 400 }}>{label}</span>
+              </button>
+            )
+          })}
+          <button onClick={() => setShowMobileDrawer(true)} style={{
+            flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 3, background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 0',
+            color: 'rgba(255,255,255,0.5)',
+          }}>
+            <HambergerMenu size={20} variant="Outline" color="rgba(255,255,255,0.5)" />
+            <span style={{ fontSize: 10 }}>المزيد</span>
+          </button>
+        </nav>
+      </>
+    )
   }
 
   return (

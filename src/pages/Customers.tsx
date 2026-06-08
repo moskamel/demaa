@@ -6,6 +6,8 @@ import AppSidebar from '../components/AppSidebar'
 import { useDebounce } from '../hooks/useDebounce'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 const segmentColors: Record<string, string> = { vip: '#d44df0', loyal: '#6a4cf5', regular: '#0099ff', new: '#22c55e' }
 const segmentLabels: Record<string, string> = { vip: 'VIP', loyal: 'مخلص', regular: 'عادي', new: 'جديد' }
@@ -199,6 +201,7 @@ function CustomerDrawer({ customer, onClose }: { customer: Customer; onClose: ()
 }
 
 export default function Customers() {
+  const isMobile = useIsMobile()
   const navigate = useNavigate()
   const [allCustomers, setAllCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
@@ -234,7 +237,7 @@ export default function Customers() {
       <AppSidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)', paddingBottom: 60 }}>
       <AppHeader />
-      <div style={{ padding: '30px 200px' }}>
+      <div style={{ padding: rp(isMobile) }}>
       <PageEnter>
 
         {/* KPIs */}
