@@ -5,6 +5,8 @@ import { notifications as notifApi, type Notification } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 const typeConfig: Record<string, { icon: typeof NotificationIcon; color: string; bg: string }> = {
   low_stock: { icon: Box, color: '#ff7a3d', bg: 'rgba(255,122,61,0.12)' },
@@ -21,6 +23,7 @@ const priorityLabel: Record<string, string> = { urgent: 'عاجل', important: '
 const priorityColor: Record<string, string> = { urgent: '#ff5577', important: '#ff7a3d', info: 'var(--ink-muted)' }
 
 export default function Notifications() {
+  const isMobile = useIsMobile()
   const [notifs, setNotifs] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'unread' | 'urgent'>('all')
@@ -55,7 +58,7 @@ export default function Notifications() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '30px 200px' }}>
+      <div style={{ padding: rp(isMobile) }}>
       <PageEnter>
         {/* filter tabs */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 24, background: 'var(--canvas-soft)', borderRadius: 10, padding: 4 }}>

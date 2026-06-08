@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useIsMobile } from '../hooks/useIsMobile'
 import {
   Flash, TickCircle, CloseCircle, Warning2, Clock, Refresh2,
   Box, Shop, People, ArrowUp, InfoCircle,
@@ -110,6 +111,7 @@ function AlertBanner({ sub }: { sub: SubStatus }) {
 
 export default function Billing() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const { currency } = useCurrency()
   const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly')
   const [sub, setSub] = useState<SubStatus | null>(null)
@@ -194,7 +196,7 @@ export default function Billing() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
         <AppHeader title="الاشتراك" />
 
-        <div style={{ padding: '24px 200px', boxSizing: 'border-box' }}>
+        <div style={{ padding: isMobile ? '16px' : '24px 200px', boxSizing: 'border-box' }}>
         <PageEnter>
 
           {/* Alert banner */}

@@ -5,6 +5,8 @@ import { settingsApi } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -42,6 +44,7 @@ function Section({ icon: Icon, title, children }: { icon: typeof Sun1; title: st
 }
 
 export default function Settings() {
+  const isMobile = useIsMobile()
   const [settings, setSettings] = useState({
     morningBrief: true,
     morningTime: '09:00',
@@ -120,7 +123,7 @@ export default function Settings() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '30px 200px' }}>
+      <div style={{ padding: rp(isMobile) }}>
       <PageEnter>
         <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 28 }}>الإعدادات</h1>
 

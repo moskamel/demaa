@@ -17,6 +17,7 @@ import AnimatedNumber from '../components/AnimatedNumber'
 import AppHeader from '../components/AppHeader'
 import AppSidebar from '../components/AppSidebar'
 import VoiceMicButton from '../components/VoiceMicButton'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 // ── Status helpers ───────────────────────────────────────────────────────────
 const statusColors: Record<string, string> = {
@@ -429,6 +430,7 @@ function getDailySuggestion(stats: { pending: number; accepted: number }) {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const [searchParams] = useSearchParams()
   const handleLogout = () => { clearToken(); navigate('/login') }
   const { confirm: confirmAction, Dialog: ConfirmDialog } = useConfirm()
@@ -682,7 +684,7 @@ export default function Dashboard() {
         ) : (
           <>
             {/* messages */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 200px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px' : '24px 200px', display: 'flex', flexDirection: 'column', gap: 16 }} onClick={() => showNotifs && setShowNotifs(false)}>
               {messages.length === 0 && !isTyping && (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ fontSize: 13, color: 'var(--ink-disabled)' }}>ابدأ المحادثة بكتابة رسالة...</span>
@@ -737,7 +739,7 @@ export default function Dashboard() {
             </div>
 
             {/* input area */}
-            <div style={{ margin: '0 200px 20px', borderRadius: 15, background: 'var(--canvas-soft)', padding: '12px 20px 14px', flexShrink: 0, boxShadow: '0 -4px 24px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.18)' }}>
+            <div style={{ margin: isMobile ? '0 12px 12px' : '0 200px 20px', borderRadius: 15, background: 'var(--canvas-soft)', padding: '12px 20px 14px', flexShrink: 0, boxShadow: '0 -4px 24px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.18)' }}>
               <div style={{ position: 'relative', marginBottom: 10 }}>
                 <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
                   {QUICK.map(q => (

@@ -6,6 +6,8 @@ import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
 import { useToast } from '../components/Toast'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 const INPUT: React.CSSProperties = {
   width: '100%', padding: '9px 12px', borderRadius: 8,
@@ -19,6 +21,7 @@ function formatVal(c: CouponData) {
 }
 
 export default function Coupons() {
+  const isMobile = useIsMobile()
   const [coupons, setCoupons] = useState<CouponData[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -98,7 +101,7 @@ export default function Coupons() {
           </button>
         </AppHeader>
 
-        <div style={{ padding: '30px 200px', width: '100%' }}>
+        <div style={{ padding: rp(isMobile), width: '100%' }}>
         <PageEnter>
 
           {/* Create form */}

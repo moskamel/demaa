@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { Add, Refresh2, Link as LinkIcon, TickCircle, Clock, Pause, Play, Trash } from 'iconsax-react'
 import { storesApi, type StoreData } from '../lib/api'
 import { getPlatformLogo } from '../lib/platformLogos'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
@@ -24,6 +26,7 @@ const platformLabel: Record<string, string> = {
 }
 
 export default function Stores() {
+  const isMobile = useIsMobile()
   const [stores, setStores] = useState<StoreData[]>([])
   const [syncing, setSyncing] = useState<string | null>(null)
   const [disconnecting, setDisconnecting] = useState<string | null>(null)
@@ -119,7 +122,7 @@ export default function Stores() {
       <AppSidebar />
       <div style={{ flex: 1, overflowY: 'auto', background: 'var(--canvas)', display: 'flex', flexDirection: 'column' }}>
       <AppHeader />
-      <div style={{ padding: '30px 200px', width: '100%' }}>
+      <div style={{ padding: rp(isMobile), width: '100%' }}>
       <PageEnter>
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>متاجري</h1>

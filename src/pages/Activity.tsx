@@ -4,6 +4,8 @@ import { analytics, type ActivityLog } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 const filters = [
   { id: 'all', label: 'الكل' },
@@ -72,6 +74,7 @@ function ActivityRow({ item, index, total }: { item: { id: string; time: string;
 }
 
 export default function Activity() {
+  const isMobile = useIsMobile()
   const [active, setActive] = useState('all')
   const [logs, setLogs] = useState<ActivityLog[]>([])
   const [loading, setLoading] = useState(true)
@@ -120,7 +123,7 @@ export default function Activity() {
         )}
       </AppHeader>
 
-      <div style={{ padding: '30px 200px' }}>
+      <div style={{ padding: rp(isMobile) }}>
       <PageEnter>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
           <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 1 }}>

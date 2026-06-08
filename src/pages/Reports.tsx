@@ -7,6 +7,8 @@ import AppHeader from '../components/AppHeader'
 import AnimatedNumber from '../components/AnimatedNumber'
 import { SkeletonKPI, SkeletonRow } from '../components/Skeleton'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 const paymentLabels: Record<string, string> = { card: 'بطاقة', cash: 'كاش', tabby: 'تابby', tamara: 'تمارا' }
 const paymentColors: Record<string, string> = { card: '#6a4cf5', cash: '#ff7a3d', tabby: '#22c55e', tamara: '#0099ff' }
@@ -15,6 +17,7 @@ type Period = '7d' | '30d' | '90d'
 
 export default function Reports() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const [period, setPeriod] = useState<Period>('30d')
   const [overview, setOverview] = useState<AnalyticsOverview | null>(null)
   const [allProducts, setAllProducts] = useState<Product[]>([])
@@ -83,7 +86,7 @@ export default function Reports() {
           <Refresh2 size={13} variant="Outline" style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} /> تحديث
         </button>
       </AppHeader>
-      <div style={{ padding: '30px 200px', width: '100%' }}>
+      <div style={{ padding: rp(isMobile), width: '100%' }}>
       <PageEnter>
         {loading ? (
           <div>

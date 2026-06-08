@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useIsMobile } from '../hooks/useIsMobile'
 import { Link } from 'react-router-dom'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { fadeUp, fadeIn, scaleIn, slideInRight, stagger, buttonTap, popIn } from '../lib/animations'
@@ -122,13 +123,14 @@ function GlowOrb({ top, left, right, color = T.purple, size = 400, opacity = 0.1
 
 function TestimonialsSlider() {
   const [current, setCurrent] = useState(0)
+  const isMobile = useIsMobile()
   useEffect(() => {
     const t = setInterval(() => setCurrent(i => (i + 1) % TESTIMONIALS.length), 4500)
     return () => clearInterval(t)
   }, [])
   const t = TESTIMONIALS[current]
   return (
-    <section style={{ padding: '96px 200px', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: isMobile ? '48px 20px' : '96px 200px', position: 'relative', overflow: 'hidden' }}>
       <GlowOrb top={-100} left="50%" color={T.purple} size={500} opacity={0.07} />
       <div style={{ textAlign: 'center', marginBottom: 56, position: 'relative' }}>
         <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>آراء التجار</p>
@@ -167,6 +169,8 @@ function TestimonialsSlider() {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Landing() {
+  const isMobile = useIsMobile()
+  const lp = isMobile ? '48px 20px' : '96px 200px'
   const isAuthed = !!localStorage.getItem('deema_token')
   const ctaTo = isAuthed ? '/dashboard' : '/signup'
   const { currency } = useCurrency()
@@ -248,7 +252,7 @@ export default function Landing() {
       <LandingNav />
 
       {/* ── HERO ── */}
-      <section style={{ padding: '100px 200px 80px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: isMobile ? '48px 20px 40px' : '100px 200px 80px', position: 'relative', overflow: 'hidden' }}>
         <GlowOrb top={-80} right={80} color={T.purple} size={480} opacity={0.14} />
         <GlowOrb top={60} right={-60} color={T.pink} size={320} opacity={0.09} />
 
@@ -341,7 +345,7 @@ export default function Landing() {
       </section>
 
       {/* ── STATS ── */}
-      <section style={{ padding: '0 200px 80px' }}>
+      <section style={{ padding: isMobile ? '0 20px 40px' : '0 200px 80px' }}>
         <div ref={statsRef} style={{ background: 'linear-gradient(135deg,rgba(106,76,245,0.07),rgba(212,77,240,0.04))', border: `1px solid rgba(106,76,245,0.15)`, borderRadius: 28, padding: '52px 40px', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
           {[
             { value: countOrders.toLocaleString('ar-EG') + '+', label: 'طلب تمت معالجته', sub: 'خلال الأشهر الماضية', icon: <Box size={22} color="#ff7a3d" variant="Outline" />, accent: '#ff7a3d' },
@@ -360,7 +364,7 @@ export default function Landing() {
 
       {/* ── PAIN POINTS ── */}
       <ScrollSection>
-      <section style={{ background: T.well, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '88px 200px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: T.well, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: isMobile ? '48px 20px' : '88px 200px', position: 'relative', overflow: 'hidden' }}>
         <GlowOrb top={-100} left={-100} color="#ff5577" size={400} opacity={0.05} />
         <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: 56, position: 'relative', zIndex: 1 }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#ff7a3d', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>مشاكل يومية</p>
@@ -415,7 +419,7 @@ export default function Landing() {
 
       {/* ── FEATURES ── */}
       <ScrollSection>
-      <section style={{ padding: '96px 200px' }}>
+      <section style={{ padding: lp }}>
         <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: 60 }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>المميزات</p>
           <h2 style={{ fontSize: 'clamp(32px,4vw,50px)', fontWeight: 800, letterSpacing: '-1.5px', color: T.ink, marginBottom: 14 }}>كل ما يحتاجه متجرك في مكان واحد</h2>
@@ -462,7 +466,7 @@ export default function Landing() {
       </ScrollSection>
 
       {/* ── INTERACTIVE DEMO ── */}
-      <section id="demo" style={{ padding: '0 200px 96px', position: 'relative', overflow: 'hidden' }}>
+      <section id="demo" style={{ padding: isMobile ? '0 20px 48px' : '0 200px 96px', position: 'relative', overflow: 'hidden' }}>
         <GlowOrb top={0} left="50%" color={T.purple} size={400} opacity={0.07} />
         <div style={{ textAlign: 'center', marginBottom: 52, position: 'relative', zIndex: 1 }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>جرب بنفسك</p>
@@ -561,7 +565,7 @@ export default function Landing() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section style={{ background: T.well, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: '96px 200px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: T.well, borderTop: `1px solid ${T.hairline}`, borderBottom: `1px solid ${T.hairline}`, padding: lp, position: 'relative', overflow: 'hidden' }}>
         <GlowOrb top={-60} right={-80} color={T.purple} size={380} opacity={0.07} />
         <div style={{ textAlign: 'center', marginBottom: 60, position: 'relative', zIndex: 1 }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>كيف تبدأ</p>
@@ -598,7 +602,7 @@ export default function Landing() {
       <TestimonialsSlider />
 
       {/* ── PRICING ── */}
-      <section style={{ background: T.well, padding: '96px 200px', borderTop: `1px solid ${T.hairline}`, position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: T.well, padding: lp, borderTop: `1px solid ${T.hairline}`, position: 'relative', overflow: 'hidden' }}>
         <GlowOrb top={-80} left="50%" color={T.pink} size={450} opacity={0.06} />
         <div style={{ textAlign: 'center', marginBottom: 60, position: 'relative', zIndex: 1 }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>الأسعار</p>
@@ -655,7 +659,7 @@ export default function Landing() {
 
       {/* ── FAQ ── */}
       <ScrollSection>
-      <section style={{ padding: '96px 200px' }}>
+      <section style={{ padding: lp }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: 52 }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: T.purple, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>الأسئلة الشائعة</p>
@@ -693,7 +697,7 @@ export default function Landing() {
 
       {/* ── FINAL CTA ── */}
       <ScrollSection>
-      <section style={{ padding: '0 200px 100px' }}>
+      <section style={{ padding: isMobile ? '0 20px 50px' : '0 200px 100px' }}>
         <motion.div variants={scaleIn}
           style={{ background: 'linear-gradient(135deg,rgba(106,76,245,0.18),rgba(212,77,240,0.12))', borderRadius: 36, padding: '88px 48px', border: '1px solid rgba(106,76,245,0.3)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <GlowOrb top={-120} left={-100} color={T.purple} size={400} opacity={0.2} />
@@ -730,7 +734,7 @@ export default function Landing() {
       </ScrollSection>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: T.well, padding: '64px 200px 40px', borderTop: `1px solid ${T.hairline}` }}>
+      <footer style={{ background: T.well, padding: isMobile ? '40px 20px 24px' : '64px 200px 40px', borderTop: `1px solid ${T.hairline}` }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>

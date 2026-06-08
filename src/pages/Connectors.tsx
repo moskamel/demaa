@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { TickCircle, InfoCircle, Clock, Add, ExportSquare } from 'iconsax-react'
 import { connectorsApi, type ConnectorData as Connector } from '../lib/api'
 import AppSidebar from '../components/AppSidebar'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn, PopNumber } from '../components/Anim'
@@ -87,6 +89,7 @@ function ConnectorCard({ c, onToggle }: { c: Connector; onToggle: (type: string)
 }
 
 export default function Connectors() {
+  const isMobile = useIsMobile()
   const [connectors, setConnectors] = useState<Connector[]>([])
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState<string | null>(null)
@@ -135,7 +138,7 @@ export default function Connectors() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '30px 200px' }}>
+      <div style={{ padding: rp(isMobile) }}>
       <PageEnter>
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)', marginBottom: 6 }}>التطبيقات المتصلة</h1>

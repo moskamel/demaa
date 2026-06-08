@@ -6,6 +6,8 @@ import AppHeader from '../components/AppHeader'
 import { useConfirm } from '../hooks/useConfirm'
 import { useToast } from '../components/Toast'
 import { PageEnter, FadeUp, StaggerList, StaggerItem, AnimCard, AnimBtn } from '../components/Anim'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { rp } from '../lib/responsive'
 
 type NormRole = 'admin' | 'order_manager' | 'customer_service'
 
@@ -29,6 +31,7 @@ const PERMISSIONS: Record<NormRole, string[]> = {
 }
 
 export default function Team() {
+  const isMobile = useIsMobile()
   const [members, setMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
   const [showHelp, setShowHelp] = useState(false)
@@ -97,7 +100,7 @@ export default function Team() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', background: 'var(--canvas)' }}>
       <AppHeader />
 
-      <div style={{ padding: '30px 200px' }}>
+      <div style={{ padding: rp(isMobile) }}>
       <PageEnter>
         <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
